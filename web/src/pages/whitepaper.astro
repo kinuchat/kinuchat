@@ -2,17 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Whitepaper - Kinu" description="Technical overview of Kinu's hybrid cloud/mesh architecture, encryption protocols, and privacy-first design.">
+<Layout title="Whitepaper - Kinu" description="Threads That Do Not Break: A Technical White Paper on Hybrid Cloud-Mesh Encrypted Messaging. Kinu Protocol Specification v1.0">
   <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
       <a href="/" class="flex items-center gap-3">
         <img src="/logo.png" alt="Kinu" class="h-10 w-auto" />
       </a>
       <div class="hidden md:flex items-center gap-6">
-        <a href="/#features" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</a>
-        <a href="/#why" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Why Kinu</a>
+        <a href="/#stories" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Why Kinu</a>
+        <a href="/#how" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">How It Works</a>
         <a href="/whitepaper" class="text-slate-900 text-sm font-medium">Whitepaper</a>
-        <a href="/#notify" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+        <a href="/#cta" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
           Get Early Access
         </a>
       </div>
@@ -25,291 +25,1158 @@ import Layout from '../layouts/Layout.astro';
         <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2 mb-6">
           <span class="text-blue-600 text-sm font-medium">Technical Document</span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900">Kinu Whitepaper</h1>
+        <h1 class="text-3xl md:text-5xl font-bold mb-4 text-slate-900">Threads That Do Not Break</h1>
         <p class="text-xl text-slate-600">
-          A Hybrid Cloud/Mesh Architecture for Private, Resilient Communication
+          A Technical White Paper on Hybrid Cloud-Mesh Encrypted Messaging
         </p>
-        <p class="text-slate-500 mt-4">Version 1.0 - January 2025</p>
+        <p class="text-slate-500 mt-4">Kinu Protocol Specification v1.0</p>
+        <div class="mt-6 text-sm text-slate-500">
+          <p><strong>Authors:</strong> Kinu Foundation</p>
+          <p><strong>Date:</strong> January 2026</p>
+          <p><strong>Status:</strong> Public Draft</p>
+          <p><strong>License:</strong> Creative Commons Attribution 4.0 International (CC BY 4.0)</p>
+        </div>
       </header>
 
-      <div class="prose prose-lg max-w-none">
-        <nav class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-12">
-          <h2 class="text-lg font-semibold mb-4 mt-0 text-slate-900">Table of Contents</h2>
+      <blockquote class="border-l-4 border-slate-300 pl-6 py-4 my-8 text-lg italic text-slate-600">
+        "The silkworm spins its thread not knowing whether it will become a rope or a royal robe."<br/>
+        It spins anyway.
+      </blockquote>
+
+      <div class="prose prose-lg max-w-none prose-headings:scroll-mt-24">
+        <!-- Table of Contents -->
+        <nav class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-12 not-prose">
+          <h2 class="text-lg font-semibold mb-4 text-slate-900">Table of Contents</h2>
           <ol class="space-y-2 text-slate-600 list-decimal list-inside">
             <li><a href="#abstract" class="hover:text-slate-900 transition-colors">Abstract</a></li>
             <li><a href="#introduction" class="hover:text-slate-900 transition-colors">Introduction</a></li>
+            <li><a href="#background" class="hover:text-slate-900 transition-colors">Background and Motivation</a></li>
+            <li><a href="#related-work" class="hover:text-slate-900 transition-colors">Related Work</a></li>
             <li><a href="#architecture" class="hover:text-slate-900 transition-colors">System Architecture</a></li>
-            <li><a href="#encryption" class="hover:text-slate-900 transition-colors">Encryption & Security</a></li>
-            <li><a href="#mesh" class="hover:text-slate-900 transition-colors">Mesh Networking</a></li>
-            <li><a href="#hybrid" class="hover:text-slate-900 transition-colors">Hybrid Transport</a></li>
-            <li><a href="#rally" class="hover:text-slate-900 transition-colors">Rally Mode</a></li>
-            <li><a href="#future" class="hover:text-slate-900 transition-colors">Future Work</a></li>
+            <li><a href="#protocol" class="hover:text-slate-900 transition-colors">Protocol Specification</a></li>
+            <li><a href="#crypto" class="hover:text-slate-900 transition-colors">Cryptographic Design</a></li>
+            <li><a href="#emergency" class="hover:text-slate-900 transition-colors">Emergency Broadcast System</a></li>
+            <li><a href="#bridge" class="hover:text-slate-900 transition-colors">Bridge Relay Network</a></li>
+            <li><a href="#implementation" class="hover:text-slate-900 transition-colors">Implementation Considerations</a></li>
+            <li><a href="#security" class="hover:text-slate-900 transition-colors">Security Analysis</a></li>
+            <li><a href="#cost" class="hover:text-slate-900 transition-colors">Cost and Sustainability</a></li>
+            <li><a href="#conclusion" class="hover:text-slate-900 transition-colors">Conclusion</a></li>
+            <li><a href="#references" class="hover:text-slate-900 transition-colors">References</a></li>
+            <li><a href="#acknowledgments" class="hover:text-slate-900 transition-colors">Acknowledgments</a></li>
           </ol>
         </nav>
 
+        <!-- Abstract -->
         <section id="abstract" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">1. Abstract</h2>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Abstract</h2>
           <p class="text-slate-600">
-            Kinu is a privacy-first messaging application that combines end-to-end encryption with mesh networking capabilities.
-            Unlike traditional messaging apps that rely solely on internet connectivity, Kinu provides a hybrid transport layer
-            that seamlessly switches between cloud-based Matrix protocol communication and local Bluetooth Low Energy (BLE)
-            mesh networking.
+            In Japanese, <strong>絹</strong> (kinu) means silk. For centuries, silk has embodied a paradox: extraordinary delicacy and extraordinary strength. A single silk fiber is finer than human hair, yet pound for pound, stronger than steel. Woven together, silk threads create fabric that endures for generations.
           </p>
-          <p class="text-slate-600">
-            This architecture ensures that users can communicate securely regardless of network availability, making Kinu
-            suitable for everyday use while also providing critical communication capabilities during network outages,
-            natural disasters, or in areas with limited connectivity.
+          <p class="text-slate-600 mt-4">
+            Communication is similarly paradoxical. A message between two people is an intimate, fragile thing. It can be intercepted, blocked, or lost. The infrastructure it travels through can be hacked, shut down, or destroyed. And yet the human need to connect persists, finding ways through and around every obstacle.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Kinu is messaging that embodies this paradox. Delicate in its encryption, where only sender and recipient can read what passes between them. Elegant in its simplicity, appearing to users as any modern chat application. Strong in its resilience, continuing to deliver messages when cell towers fall, when governments flip the kill switch, when the infrastructure everyone depends on simply stops working.
+          </p>
+          <p class="text-slate-600 mt-4">
+            This paper presents Kinu, an open protocol and reference implementation for resilient encrypted messaging that operates across both cloud infrastructure and local Bluetooth Low Energy (BLE) mesh networks. As governments increasingly weaponize internet shutdowns and centralized infrastructure proves vulnerable to both deliberate disruption and natural disasters, the need for communication systems that can function independently of traditional networks has become urgent. Kinu addresses this through a hybrid transport architecture that maintains end-to-end encryption while enabling automatic failover between cloud and mesh transports based on network conditions. We describe the protocol design, cryptographic foundations, and a novel "bridge relay" mechanism inspired by Apple's Find My network that allows users with connectivity to relay encrypted messages for those without. Our analysis of deployment costs suggests a sustainable donation-funded model at scale.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Like silk threads woven into fabric, Kinu weaves together multiple transport mechanisms into a single resilient communication layer. When one thread breaks, others hold. Messages find their way.
           </p>
         </section>
 
+        <!-- Introduction -->
         <section id="introduction" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">2. Introduction</h2>
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">2.1 The Privacy Problem</h3>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">1. Introduction</h2>
           <p class="text-slate-600">
-            Modern messaging applications face two fundamental challenges: privacy and reliability. Most popular
-            messaging platforms collect extensive metadata, scan message contents for advertising purposes, and
-            maintain centralized infrastructure that creates single points of failure and surveillance.
+            Silk begins as a single continuous thread, sometimes over a kilometer long, spun by a silkworm building its cocoon. That thread is nearly invisible, yet it can bear significant weight. When woven with others, it creates fabric prized for millennia as both beautiful and enduring. The strength comes not from any single thread, but from the weave itself.
+          </p>
+          <p class="text-slate-600 mt-4">
+            The internet was designed with similar principles. Packet switching, multiple routes, no single point of failure. Forty years later, that original vision has been largely abandoned in favor of centralized architectures that create exactly what the internet's founders sought to avoid: single points of failure, both technical and political. When a government orders telecommunications providers to disable service, or when a hurricane destroys cell towers, or when a stadium full of concert-goers overwhelms local network capacity, millions of people lose the ability to communicate at precisely the moments when communication matters most.
+          </p>
+          <p class="text-slate-600 mt-4">
+            This paper introduces Kinu, a messaging protocol designed around a simple premise: threads should not break. Kinu combines the convenience and global reach of cloud-based messaging with the resilience of local mesh networking, switching transparently between them based on conditions. When internet connectivity is strong, messages travel through encrypted cloud infrastructure. When connectivity degrades or fails, messages automatically route through nearby devices using Bluetooth Low Energy, hopping from phone to phone until they reach their destination or find a path back to the internet.
           </p>
 
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">2.2 The Connectivity Problem</h3>
-          <p class="text-slate-600">
-            Traditional messaging apps are entirely dependent on internet connectivity. During natural disasters,
-            large-scale events, or in regions with infrastructure limitations, users lose their primary means
-            of digital communication precisely when they need it most.
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">Contributions</h3>
+          <ol class="list-decimal list-inside text-slate-600 space-y-2">
+            <li>A hybrid transport architecture that unifies cloud and mesh messaging under a single cryptographic identity</li>
+            <li>A "Rally Mode" protocol for location-bounded public channels during emergencies or large gatherings</li>
+            <li>A "Bridge Relay" mechanism that allows users with connectivity to relay encrypted messages for isolated users, inspired by Apple's Find My network but applied to general messaging</li>
+            <li>An analysis of deployment costs demonstrating viability of a donation-funded sustainability model</li>
+          </ol>
+          <p class="text-slate-600 mt-4">
+            Kinu builds upon and acknowledges the foundational work of BitChat [1], an open-source BLE mesh chat protocol, extending its design with cloud integration, bridge relay capabilities, and a focus on seamless user experience.
           </p>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">2.3 Our Solution</h3>
-          <p class="text-slate-600">
-            Kinu addresses both challenges through a hybrid architecture that provides:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2">
-            <li>End-to-end encryption using the Matrix protocol's Olm/Megolm implementation</li>
-            <li>Zero-knowledge server architecture where servers cannot read message contents</li>
-            <li>BLE mesh networking for communication without internet connectivity</li>
-            <li>Automatic transport selection based on network conditions and peer proximity</li>
-            <li>Unified message history across all transport methods</li>
-          </ul>
         </section>
 
-        <section id="architecture" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">3. System Architecture</h2>
+        <!-- Background -->
+        <section id="background" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">2. Background and Motivation</h2>
 
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">3.1 Layer Overview</h3>
-          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6">
-            <pre class="text-sm text-slate-300 overflow-x-auto">
-┌─────────────────────────────────────────────────┐
-│                 Application Layer               │
-│         (Flutter UI, State Management)          │
-├─────────────────────────────────────────────────┤
-│                  Domain Layer                   │
-│    (Message Handling, Contact Management)       │
-├─────────────────────────────────────────────────┤
-│               Transport Manager                 │
-│     (Automatic Selection & Failover)            │
-├──────────────┬──────────────┬───────────────────┤
-│ Cloud        │ Mesh         │ Bridge            │
-│ Transport    │ Transport    │ Transport         │
-│ (Matrix)     │ (BLE)        │ (Relay)           │
-├──────────────┴──────────────┴───────────────────┤
-│              Encryption Layer                   │
-│        (E2E Encryption, Key Management)         │
-├─────────────────────────────────────────────────┤
-│                Storage Layer                    │
-│         (Encrypted Local Database)              │
-└─────────────────────────────────────────────────┘
-            </pre>
-          </div>
-
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">3.2 Transport Selection Matrix</h3>
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">2.1 The Growing Crisis of Communication Blackouts</h3>
           <p class="text-slate-600">
-            The Transport Manager evaluates multiple factors to select the optimal transport:
+            Internet shutdowns are no longer exceptional events. According to Access Now and the #KeepItOn coalition, 2024 marked a record-breaking year with 296 documented shutdowns across 54 countries [2]. This represented a 35% increase in affected countries compared to 2022, with seven nations implementing shutdowns for the first time. The economic cost of these disruptions reached $7.69 billion globally in 2024, rising to $19.7 billion in 2025 [3].
           </p>
-          <div class="overflow-x-auto my-6">
+          <p class="text-slate-600 mt-4">
+            The human cost is more difficult to quantify but far more significant. During Iran's January 2026 protests, authorities imposed a nationwide internet blackout that Amnesty International described as "a serious human rights violation in itself" [4]. With reports of hundreds or thousands killed, the blackout served its intended purpose: preventing documentation of abuses and coordination among protesters. As one researcher noted, the internet is viewed as "an enemy" by authoritarian governments seeking to "control and suppress it" [5].
+          </p>
+
+          <div class="overflow-x-auto my-6 not-prose">
             <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
               <thead>
                 <tr class="bg-slate-100 border-b border-slate-200">
-                  <th class="text-left py-3 px-4 text-slate-700">Condition</th>
-                  <th class="text-left py-3 px-4 text-slate-700">Primary</th>
-                  <th class="text-left py-3 px-4 text-slate-700">Fallback</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Trigger</th>
+                  <th class="text-left py-3 px-4 text-slate-700">2024 Instances</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Notable Examples</th>
                 </tr>
               </thead>
               <tbody class="text-slate-600">
                 <tr class="border-b border-slate-100">
-                  <td class="py-3 px-4">Internet + Peer Nearby</td>
-                  <td class="py-3 px-4">Cloud</td>
-                  <td class="py-3 px-4">Mesh</td>
+                  <td class="py-3 px-4">Conflict</td>
+                  <td class="py-3 px-4">103</td>
+                  <td class="py-3 px-4">Myanmar (74), Gaza (6), Sudan</td>
                 </tr>
                 <tr class="border-b border-slate-100">
-                  <td class="py-3 px-4">Internet + Peer Remote</td>
-                  <td class="py-3 px-4">Cloud</td>
-                  <td class="py-3 px-4">Bridge</td>
+                  <td class="py-3 px-4">Protests</td>
+                  <td class="py-3 px-4">74</td>
+                  <td class="py-3 px-4">Iran, Kenya, Mozambique</td>
                 </tr>
                 <tr class="border-b border-slate-100">
-                  <td class="py-3 px-4">No Internet + Peer Nearby</td>
-                  <td class="py-3 px-4">Mesh</td>
-                  <td class="py-3 px-4">Store & Forward</td>
+                  <td class="py-3 px-4">Elections</td>
+                  <td class="py-3 px-4">12</td>
+                  <td class="py-3 px-4">Azerbaijan, Uganda, Venezuela</td>
                 </tr>
                 <tr>
-                  <td class="py-3 px-4">No Internet + Peer Remote</td>
-                  <td class="py-3 px-4">Mesh (Multi-hop)</td>
-                  <td class="py-3 px-4">Queue for Later</td>
+                  <td class="py-3 px-4">Exams</td>
+                  <td class="py-3 px-4">16</td>
+                  <td class="py-3 px-4">Iraq, Algeria, Jordan</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-slate-600">
+            The concentration is striking: Myanmar, India, Pakistan, and Russia accounted for nearly 70% of all 2024 shutdowns [6]. But the practice is spreading. Seven countries joined the "first-time offenders" list in 2024, including France and Malaysia.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">2.2 Infrastructure Vulnerability During Disasters</h3>
+          <p class="text-slate-600">
+            Natural disasters reveal a parallel vulnerability in centralized communications infrastructure. Hurricane Maria in 2017 knocked out 88% of Puerto Rico's cell sites [7]. Hurricane Harvey disabled over 360 cell towers and left 200,000 homes without internet or telephone service [8]. The 2023 Maui wildfires destroyed telecommunications infrastructure at the moment residents most needed to coordinate evacuation and contact loved ones [9].
+          </p>
+          <p class="text-slate-600 mt-4">
+            The pattern repeats with each major storm. When Hurricane Ian struck Florida in 2022, fiber lines providing service to Sanibel Island were severed, cutting the entire island off from communication with the mainland [10]. First responders deployed drones simply to assess which towers remained functional, a workaround that highlights the fragility of systems we depend upon.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Mesh networking has already proven valuable in these scenarios. During Hurricane Helene's aftermath in Eastern Tennessee, volunteers deployed approximately 120 Meshtastic radios for search and rescue coordination [11]. The technology worked precisely because it required no infrastructure, with messages hopping between devices up to 100 miles apart using LoRa radio frequencies.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">2.3 The Congestion Problem at Scale</h3>
+          <p class="text-slate-600">
+            Infrastructure failure is not limited to authoritarian crackdowns and natural disasters. Large gatherings routinely overwhelm cellular networks through sheer volume. At music festivals, sporting events, and protests, tens of thousands of people competing for the same cell towers create conditions where devices show "full bars" but cannot send or receive data [12].
+          </p>
+          <p class="text-slate-600 mt-4">
+            This congestion has real consequences. Payment systems fail at festival vendor booths. Safety teams cannot coordinate responses. Attendees cannot contact family members or access event information. One analysis noted that "festival internet issues" have become an expected part of large events, with organizers routinely advising attendees to download maps and information before arrival rather than assuming connectivity will be available [13].
+          </p>
+          <p class="text-slate-600 mt-4">
+            The standard industry response involves temporary "cells on wheels" (COWs), distributed antenna systems (DAS), and dedicated event Wi-Fi. These solutions are expensive, require advance planning, and remain unavailable to spontaneous gatherings like protests. A mesh network that forms automatically among participants' existing smartphones would provide resilience without requiring specialized infrastructure.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">2.4 Design Goals</h3>
+          <p class="text-slate-600">Based on these observations, Kinu targets the following design goals:</p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-2 mt-4">
+            <li><strong class="text-slate-800">Resilience:</strong> Messages should be deliverable when internet is available, unavailable, or degraded</li>
+            <li><strong class="text-slate-800">Privacy:</strong> End-to-end encryption must be maintained across all transport mechanisms</li>
+            <li><strong class="text-slate-800">Seamlessness:</strong> Transport switching should be automatic and invisible to users</li>
+            <li><strong class="text-slate-800">Accessibility:</strong> No specialized hardware should be required beyond a standard smartphone</li>
+            <li><strong class="text-slate-800">Sustainability:</strong> The system should be operable through community funding without advertising or surveillance-based business models</li>
+          </ol>
+        </section>
+
+        <!-- Related Work -->
+        <section id="related-work" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">3. Related Work</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">3.1 Existing Encrypted Messaging Protocols</h3>
+          <p class="text-slate-600">
+            <strong class="text-slate-800">Signal Protocol</strong> [14] established the standard for end-to-end encrypted messaging, combining the Double Ratchet Algorithm, prekeys, and a triple Diffie-Hellman handshake. Signal's protocol provides forward secrecy and break-in recovery, ensuring that compromise of long-term keys does not compromise past messages. However, Signal requires internet connectivity and centralized servers for message delivery.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Matrix</strong> [15] offers a federated approach to encrypted messaging. Users can run their own homeservers while maintaining interoperability with the broader network. Matrix's Megolm protocol enables efficient group encryption. Kinu adopts Matrix as its cloud transport layer, benefiting from its existing encryption infrastructure while extending it with mesh capabilities.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">3.2 Mesh Networking Protocols</h3>
+          <p class="text-slate-600">
+            <strong class="text-slate-800">BitChat</strong> [1] provides the most direct precedent for Kinu's mesh layer. Developed by permissionless.tech and released into the public domain, BitChat implements BLE mesh messaging with Noise Protocol encryption, multi-hop routing (up to 7 hops), and IRC-style channels. Kinu's mesh transport is directly derived from BitChat's protocol specification, extending it with cloud integration and bridge relay functionality.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Briar</strong> [16] takes a different approach, using Tor for internet transport and direct Wi-Fi/Bluetooth connections for local communication. Briar emphasizes journalist and activist security but requires manual connection establishment for local messaging rather than automatic mesh formation.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Meshtastic</strong> [17] operates on LoRa radio frequencies, enabling long-range communication (up to 10 km in open terrain) with dedicated hardware. Several proposals have explored integrating Meshtastic with smartphone-based mesh networks [18], and Kinu's architecture could accommodate such integration as a future transport layer.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">3.3 Crowd-Sourced Location Networks</h3>
+          <p class="text-slate-600">
+            <strong class="text-slate-800">Apple's Find My Network</strong> [19] demonstrates the viability of crowd-sourced relay networks at scale. Lost AirTags broadcast encrypted BLE beacons containing their public key. Any nearby iPhone (with user consent) can detect these beacons, encrypt its own location using the AirTag's public key, and upload the encrypted report to Apple's servers. The owner later retrieves and decrypts these reports. Crucially, the relaying device learns nothing about what it relayed or for whom.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Kinu's Bridge Relay mechanism adapts this model for general messaging. Users with internet connectivity can relay encrypted message envelopes for users without, with the same privacy guarantees: the bridge cannot read message contents or identify senders.
+          </p>
+        </section>
+
+        <!-- System Architecture -->
+        <section id="architecture" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">4. System Architecture</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">4.1 Design Principles</h3>
+          <p class="text-slate-600">Kinu's architecture follows three guiding principles:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-4 mt-4">
+            <li><strong class="text-slate-800">Unified Identity:</strong> Users maintain a single cryptographic identity across all transports. Keys generated during account creation derive identifiers for cloud, mesh, and bridge relay communication. This eliminates the complexity of managing separate identities while ensuring that a contact verified on one transport is automatically verified on all others.</li>
+            <li><strong class="text-slate-800">Transport Abstraction:</strong> Applications interact with a unified message queue. The transport manager handles routing decisions transparently, selecting cloud, mesh, or bridge relay based on current conditions. Applications receive delivery confirmations and status updates regardless of which transport delivered the message.</li>
+            <li><strong class="text-slate-800">Encryption-First:</strong> Messages are encrypted before transport selection. The same ciphertext can travel via cloud, mesh, or bridge relay without re-encryption, ensuring consistent security properties across all paths.</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">4.2 System Components</h3>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         APPLICATION LAYER                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐                   │
+│  │   Chat UI    │  │ Rally Mode   │  │   Settings   │                   │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘                   │
+│         └─────────────────┴─────────────────┘                           │
+│                           │                                              │
+│  ┌────────────────────────┴────────────────────────┐                    │
+│  │              MESSAGE ORCHESTRATOR                │                    │
+│  │  • Encryption/decryption                         │                    │
+│  │  • Message queue management                      │                    │
+│  │  • Transport selection                           │                    │
+│  │  • Deduplication                                 │                    │
+│  └────────────────────────┬────────────────────────┘                    │
+│                           │                                              │
+├───────────────────────────┼──────────────────────────────────────────────┤
+│                    TRANSPORT LAYER                                       │
+│  ┌────────────┐    ┌────────────┐    ┌────────────┐                     │
+│  │   CLOUD    │    │    MESH    │    │   BRIDGE   │                     │
+│  │ (Matrix)   │    │   (BLE)    │    │  (Relay)   │                     │
+│  └─────┬──────┘    └─────┬──────┘    └─────┬──────┘                     │
+│        │                 │                 │                             │
+└────────┼─────────────────┼─────────────────┼─────────────────────────────┘
+         │                 │                 │
+         ▼                 ▼                 ▼
+    ┌─────────┐      ┌─────────┐      ┌─────────┐
+    │ Matrix  │      │  Local  │      │ Relay   │
+    │ Server  │      │  Peers  │      │ Server  │
+    └─────────┘      └─────────┘      └─────────┘</pre>
+          </div>
+
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li><strong class="text-slate-800">Message Orchestrator:</strong> The central coordinator responsible for maintaining the outbound message queue, selecting appropriate transport for each message, handling delivery confirmations and retries, deduplicating messages received via multiple transports, and managing encryption keys and sessions.</li>
+            <li><strong class="text-slate-800">Cloud Transport (Matrix):</strong> For messages to recipients not currently in mesh range, or when internet connectivity is strong. Uses Matrix's Megolm protocol for group encryption and Olm for 1:1 sessions.</li>
+            <li><strong class="text-slate-800">Mesh Transport (BLE):</strong> For messages to recipients within multi-hop Bluetooth range, or when internet is unavailable. Based on BitChat's protocol with Noise Protocol encryption.</li>
+            <li><strong class="text-slate-800">Bridge Transport:</strong> For messages when the sender lacks internet but nearby users can relay. Encrypted envelopes are passed to bridge nodes for upload to relay servers.</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">4.3 Transport Selection</h3>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+TRANSPORT SELECTION ALGORITHM:
+
+1. If recipient is a direct BLE peer (1 hop):
+   → Use MESH (lowest latency for local peers)
+
+2. If internet quality is GOOD and recipient is not nearby:
+   → Use CLOUD
+
+3. If internet quality is DEGRADED and mesh peers exist:
+   → Use MESH with CLOUD fallback
+   → Queue for cloud delivery if mesh delivery unconfirmed
+
+4. If internet quality is NONE and mesh peers exist:
+   → Use MESH
+   → If recipient not in mesh, queue for BRIDGE relay
+
+5. If internet quality is NONE and no mesh peers:
+   → Queue for later delivery
+   → Attempt BRIDGE relay if bridge nodes detected</pre>
+          </div>
+
+          <p class="text-slate-600">Network quality assessment considers:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+            <li>Reachability of Matrix homeserver (ping success/failure)</li>
+            <li>Latency to homeserver (&gt;500ms considered degraded)</li>
+            <li>Packet loss indicators</li>
+            <li>User preference overrides</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">4.4 Message Deduplication</h3>
+          <p class="text-slate-600">
+            Because messages may travel via multiple paths (cloud and mesh simultaneously during degraded conditions), deduplication is essential. Each message carries a deterministic identifier:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300">message_id = SHA256(
+    sender_public_key ||
+    recipient_public_key ||
+    timestamp_ms ||
+    content_hash
+)[0:16]</pre>
+          </div>
+          <p class="text-slate-600">
+            Recipients maintain a Bloom filter of recently received message IDs. Messages with IDs already in the filter are dropped without processing. The Bloom filter is sized for approximately 10,000 messages with a false positive rate below 0.01%.
+          </p>
+        </section>
+
+        <!-- Protocol Specification -->
+        <section id="protocol" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">5. Protocol Specification</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">5.1 Packet Format</h3>
+          <p class="text-slate-600">
+            Kinu packets follow a binary format optimized for BLE's constrained MTU while remaining usable across all transports:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+KINU PACKET FORMAT
+
+Offset  Size   Field           Description
+──────────────────────────────────────────────────────────────
+0       1      Version         Protocol version (0x01)
+1       1      Type            Message type
+2       1      TTL             Hop limit (1-7, mesh only)
+3       1      Flags           Bitmask (see below)
+4       8      Timestamp       Unix milliseconds (uint64 BE)
+12      16     MessageID       Deterministic ID for dedup
+28      8      RecipientID     Truncated public key hash
+36      2      PayloadLen      Payload length (uint16 BE)
+38      N      Payload         Encrypted content
+38+N    64     Signature       Ed25519 (optional)
+...     P      Padding         PKCS#7 to block boundary
+
+FLAGS:
+  0x01  hasRecipient     Unicast (set) vs broadcast (clear)
+  0x02  hasSignature     Signature present
+  0x04  isCompressed     LZ4 compression applied
+  0x08  isFragmented     Part of multi-packet message
+  0x10  requiresAck      Delivery confirmation requested
+
+MESSAGE TYPES:
+  0x01  TEXT             Standard message
+  0x02  MEDIA_HEADER     Media attachment metadata
+  0x03  MEDIA_CHUNK      Media attachment fragment
+  0x04  ACK              Delivery acknowledgment
+  0x05  NOISE_INIT       Noise handshake initiation
+  0x06  NOISE_RESP       Noise handshake response
+  0x07  PEER_ANNOUNCE    Mesh peer advertisement
+  0x08  RELAY_REQUEST    Bridge relay envelope
+  0x09  RALLY_BROADCAST  Rally Mode public message
+
+PADDING:
+  Packets are padded to fixed sizes to resist traffic analysis:
+  &lt; 192 bytes  → 256 bytes
+  &lt; 448 bytes  → 512 bytes
+  &lt; 960 bytes  → 1024 bytes
+  &lt; 1984 bytes → 2048 bytes</pre>
+          </div>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">5.2 Mesh Routing</h3>
+          <p class="text-slate-600">
+            Kinu employs a flooding (gossip) protocol for mesh routing, consistent with BitChat's approach. When a node receives a packet not destined for itself:
+          </p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-1 mt-4">
+            <li>Check Bloom filter for message ID</li>
+            <li>If ID likely seen before, drop packet</li>
+            <li>Add ID to Bloom filter</li>
+            <li>Decrement TTL</li>
+            <li>If TTL &gt; 0, rebroadcast to all connected peers</li>
+          </ol>
+          <p class="text-slate-600 mt-4">
+            This approach prioritizes reliability over efficiency, appropriate for the low-bandwidth, high-latency characteristics of BLE mesh networks. The TTL limit (default 7) prevents infinite propagation while allowing messages to traverse reasonable mesh diameters.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Private Message Routing:</strong> For unicast messages, relay nodes forward the complete encrypted packet without decryption. Only the recipient possessing the correct Noise session keys can access the payload. This maintains end-to-end encryption even as messages traverse multiple hops.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Broadcast Message Routing:</strong> Packets with the broadcast recipient ID (0xFFFFFFFFFFFFFFFF) are decrypted and processed by all receiving nodes, then rebroadcast according to the flooding algorithm. Rally Mode uses this mechanism for public channel communication.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">5.3 BLE Service Definition</h3>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+SERVICE UUID: 0x1234-KINU-CHAT-0001 (example, actual UUID TBD)
+
+CHARACTERISTICS:
+  TX (Write):   UUID 0x0002, Write Without Response
+                Used by central to send packets to peripheral
+
+  RX (Notify):  UUID 0x0003, Notify
+                Used by peripheral to send packets to central
+
+  MTU (Read):   UUID 0x0004, Read
+                Reports negotiated MTU for chunking</pre>
+          </div>
+          <p class="text-slate-600">
+            Devices operate in both central and peripheral roles simultaneously, enabling bidirectional mesh connectivity. Connection management prioritizes maintaining diverse peer connections to maximize network resilience.
+          </p>
+        </section>
+
+        <!-- Cryptographic Design -->
+        <section id="crypto" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">6. Cryptographic Design</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">6.1 Identity and Key Hierarchy</h3>
+          <p class="text-slate-600">
+            Each Kinu identity derives from a single 32-byte seed generated using the platform's secure random number generator:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+SEED: 32 bytes from platform CSPRNG
+
+SIGNING KEY (Ed25519):
+  private = Ed25519_PrivateKey(SEED)
+  public  = Ed25519_PublicKey(private)
+
+EXCHANGE KEY (X25519):
+  private = X25519_PrivateKey(SEED)
+  public  = X25519_PublicKey(private)
+
+DERIVED IDENTIFIERS:
+  mesh_peer_id    = SHA256(Ed25519_public)[0:8]
+  matrix_user_id  = @base58(Ed25519_public[0:10]):server
+  relay_key_hash  = SHA256(X25519_public)</pre>
+          </div>
+          <p class="text-slate-600">
+            The Ed25519 key provides signing capability for message authentication and identity verification. The X25519 key enables Diffie-Hellman key exchange for session establishment. Deterministic derivation ensures that all identifiers correspond to the same underlying identity.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">6.2 Noise Protocol Sessions</h3>
+          <p class="text-slate-600">
+            Kinu uses the Noise Protocol Framework [20] with the XX pattern for session establishment:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+NOISE_XX HANDSHAKE:
+
+Initiator                              Responder
+    |                                      |
+    |  1. e                                |
+    |  ─────────────────────────────────►  |
+    |     (initiator ephemeral public)     |
+    |                                      |
+    |  2. e, ee, s, es                     |
+    |  ◄─────────────────────────────────  |
+    |     (responder ephemeral + static)   |
+    |                                      |
+    |  3. s, se                            |
+    |  ─────────────────────────────────►  |
+    |     (initiator static, encrypted)    |
+    |                                      |
+    |  [Session established]               |
+    |  [Mutual authentication complete]    |
+
+Cipher: ChaChaPoly
+Hash:   SHA256
+DH:     X25519</pre>
+          </div>
+          <p class="text-slate-600">
+            The XX pattern provides mutual authentication: both parties learn each other's static public keys and prove possession of the corresponding private keys. Forward secrecy is achieved through ephemeral key exchange.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">6.3 Message Encryption</h3>
+          <p class="text-slate-600">
+            Once a Noise session is established, messages are encrypted using the derived transport keys:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+ENCRYPTION:
+  nonce      = counter (incremented per message)
+  ciphertext = ChaCha20-Poly1305(transport_key, nonce, plaintext)
+
+MESSAGE STRUCTURE:
+  [payload_type: 1 byte]
+  [content: variable]
+  [padding: PKCS#7 to block boundary]</pre>
+          </div>
+          <p class="text-slate-600">
+            The payload type byte indicates content format (text, media reference, reaction, etc.). PKCS#7 padding ensures ciphertext lengths do not reveal plaintext characteristics.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">6.4 Group Encryption</h3>
+          <p class="text-slate-600">
+            For group chats via cloud transport, Kinu uses Matrix's Megolm protocol:
+          </p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-1 mt-4">
+            <li>Group initiator generates Megolm session with random initial ratchet state</li>
+            <li>Session key is distributed to members via Olm (pairwise encrypted)</li>
+            <li>Messages are encrypted using current ratchet state</li>
+            <li>Ratchet advances after each message (forward secrecy)</li>
+            <li>New members receive session key with current ratchet (cannot decrypt history)</li>
+          </ol>
+          <p class="text-slate-600 mt-4">
+            For mesh-only groups, Kinu uses symmetric group keys:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+GROUP KEY DERIVATION:
+  group_seed    = random(32)
+  group_key     = HKDF(
+                    ikm  = group_seed,
+                    salt = "kinu-group-v1",
+                    info = group_id,
+                    len  = 32
+                  )</pre>
+          </div>
+          <p class="text-slate-600">
+            Group keys are rotated when membership changes. Members leaving trigger immediate rotation; members joining receive only the new key.
+          </p>
+        </section>
+
+        <!-- Emergency Broadcast System -->
+        <section id="emergency" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">7. Emergency Broadcast System</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">7.1 Rally Mode Design</h3>
+          <p class="text-slate-600">
+            Rally Mode creates temporary public channels bounded by geographic location and time. It addresses the scenario where many people in physical proximity need to communicate but lack infrastructure access, such as during protests, festivals, or disaster response.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Channel Discovery:</strong> Channels are identified deterministically from location and time:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+RALLY CHANNEL DERIVATION:
+
+geohash      = encode(latitude, longitude, precision=6)  // ~1.2km cell
+time_bucket  = floor(unix_time / (4 * 3600))             // 4-hour windows
+channel_id   = SHA256(geohash || ":" || time_bucket)[0:16]
+channel_key  = HKDF(
+                 ikm  = channel_id,
+                 salt = "kinu-rally-v1",
+                 info = geohash || time_bucket,
+                 len  = 32
+               )</pre>
+          </div>
+          <p class="text-slate-600">
+            Any user in the same approximate location during the same time window will derive identical channel identifiers and keys. No coordination or server interaction is required to join.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Ephemeral Identity:</strong> Rally Mode participants use session-specific identities:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+SESSION KEY GENERATION:
+  session_keypair = X25519.generate()  // Fresh each join
+
+ANONYMOUS NAME DERIVATION:
+  hash = SHA256(session_public_key)
+  adjective = WORDLIST_ADJ[hash[0] % len(WORDLIST_ADJ)]
+  noun      = WORDLIST_NOUN[hash[1] % len(WORDLIST_NOUN)]
+  number    = hash[2] % 100
+  name      = "{adjective}-{noun}-{number}"
+  // Example: "brave-river-42"</pre>
+          </div>
+          <p class="text-slate-600">
+            Session keys are discarded when leaving Rally Mode. No persistent identity links users across sessions.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">7.2 Safety and Moderation</h3>
+          <p class="text-slate-600">
+            Rally Mode's public nature requires safeguards:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li><strong class="text-slate-800">Age Verification:</strong> Self-declared age verification (16+) gates access. While not cryptographically enforceable, it establishes consent and provides legal protection.</li>
+            <li><strong class="text-slate-800">Local Reputation:</strong> Each device maintains reputation scores for observed peers based on messages seen, reports against them, and blocks by others. Peers with low trust scores are hidden.</li>
+            <li><strong class="text-slate-800">Content Filtering:</strong> Optional on-device ML classification can flag potentially harmful content. Users choose whether to enable filtering and at what sensitivity level.</li>
+            <li><strong class="text-slate-800">Reporting:</strong> Users can report messages in categories (spam, harassment, threats, child safety). For child safety reports, content hashes are queued for upload to appropriate authorities when connectivity permits.</li>
+          </ul>
+        </section>
+
+        <!-- Bridge Relay Network -->
+        <section id="bridge" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">8. Bridge Relay Network</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">8.1 Concept</h3>
+          <p class="text-slate-600">
+            The Bridge Relay network extends Kinu's reach by allowing users with internet connectivity to relay encrypted messages for users without. This mechanism draws inspiration from Apple's Find My network but applies the concept to general messaging.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Consider a protest where cellular service is jammed or overwhelmed. Participants in the interior cannot reach the internet. But participants at the edges, or in nearby buildings, may have connectivity through different providers or Wi-Fi. With Bridge Relay, interior participants' messages can hop through the mesh to edge participants, who relay them to cloud infrastructure.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">8.2 Protocol</h3>
+          <p class="text-slate-600">
+            Bridge Relay uses an envelope format that reveals no information about message content or sender:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+RELAY ENVELOPE:
+{
+  "recipient_key_hash": base64(SHA256(recipient_X25519_public)),
+  "encrypted_payload":  base64(noise_encrypted_packet),
+  "ttl_hours":          4,
+  "priority":           "normal" | "urgent" | "emergency",
+  "nonce":              base64(random(16)),
+  "created_at":         unix_milliseconds
+}</pre>
+          </div>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Privacy Guarantees:</strong>
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+            <li>Bridge node cannot read payload (Noise encrypted to recipient)</li>
+            <li>Bridge node cannot identify sender (not present in envelope)</li>
+            <li>Relay server sees only recipient key hash (not full public key)</li>
+            <li>TTL prevents indefinite storage or traffic analysis over time</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">8.3 Bridge Node Behavior</h3>
+          <p class="text-slate-600">
+            Users opt into serving as bridge nodes. When enabled, their device:
+          </p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-1 mt-4">
+            <li>Monitors for mesh packets with RELAY_REQUEST type</li>
+            <li>Evaluates relay eligibility (bandwidth budget, battery level)</li>
+            <li>If eligible, uploads envelope to relay server</li>
+            <li>Tracks bandwidth usage against daily limit</li>
+          </ol>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+BRIDGE NODE CONFIGURATION:
+  enabled           = false (requires explicit opt-in)
+  bandwidth_budget  = 10 MB/day (user configurable)
+  battery_threshold = 30% (pause below this level)
+  relay_for         = "all" | "contacts_only"</pre>
+          </div>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Consent Flow:</strong> First-time bridge potential triggers an explanatory dialog:
+          </p>
+          <div class="bg-slate-50 border border-slate-200 rounded-lg p-6 my-6 text-slate-700">
+            <p class="font-medium">You have internet access, but 47 nearby people don't. You can relay their encrypted messages to the outside world.</p>
+            <p class="mt-4 font-medium">What you should know:</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>Messages are end-to-end encrypted</li>
+              <li>You cannot read the content</li>
+              <li>Uses approximately 2-5 MB/hour</li>
+              <li>Pauses below 30% battery</li>
+            </ul>
+            <p class="mt-4">[Enable] [Not Now]</p>
+          </div>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">8.4 Relay Server</h3>
+          <p class="text-slate-600">
+            The relay server is intentionally minimal:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
+            <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
+ENDPOINTS:
+
+POST /relay/upload
+  Body: RelayEnvelope
+  Auth: None (rate limited by IP)
+  Action: Store envelope keyed by recipient_key_hash with TTL
+
+GET /relay/poll?key_hash={hash}
+  Auth: None
+  Action: Return and delete all envelopes for key_hash
+
+STORAGE:
+  Redis with TTL-based expiration
+  No logging of envelope contents
+  Rate limiting: 60 uploads/minute per IP</pre>
+          </div>
+          <p class="text-slate-600">
+            Recipients poll using their key hash (which they can derive from their own public key). Retrieved envelopes are decrypted using the recipient's Noise session keys.
+          </p>
+          <p class="text-slate-600 mt-4">
+            The relay server can be self-hosted or federated. Kinu provides a reference deployment, but organizations can operate their own relay infrastructure for their communities.
+          </p>
+        </section>
+
+        <!-- Implementation Considerations -->
+        <section id="implementation" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">9. Implementation Considerations</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">9.1 Platform Constraints</h3>
+          <p class="text-slate-600">
+            <strong class="text-slate-800">iOS Background Execution:</strong> iOS restricts BLE operations in the background. Advertising intervals slow to approximately once per second, and connections may be terminated after 30 seconds of inactivity. Kinu mitigates this through state restoration for BLE central/peripheral roles, opportunistic transmission when app briefly activates, and push notification triggers from cloud to prompt foreground activity.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">Android Battery Optimization:</strong> Aggressive battery optimization on Android (particularly Samsung, Xiaomi, and Huawei devices) can terminate background services. Kinu requires foreground service with persistent notification, user guidance to disable battery optimization for the app, and WorkManager for deferred cloud sync tasks.
+          </p>
+          <p class="text-slate-600 mt-4">
+            <strong class="text-slate-800">BLE MTU Negotiation:</strong> Default BLE MTU is often 20-23 bytes. Kinu negotiates larger MTU (up to 512 bytes) where supported. iOS negotiates automatically, Android requires explicit requestMtu() call, and packet chunking handles cases where negotiation fails.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">9.2 Performance Characteristics</h3>
+          <p class="text-slate-600">Based on BitChat's measurements and our testing:</p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Metric</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Value</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Notes</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Mesh message latency (1 hop)</td>
+                  <td class="py-3 px-4">50-200ms</td>
+                  <td class="py-3 px-4">Depends on connection state</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Mesh message latency (7 hops)</td>
+                  <td class="py-3 px-4">1-5s</td>
+                  <td class="py-3 px-4">Worst case with congestion</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">BLE range (typical)</td>
+                  <td class="py-3 px-4">10-50m</td>
+                  <td class="py-3 px-4">Varies by device and environment</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">BLE range (optimal)</td>
+                  <td class="py-3 px-4">Up to 100m</td>
+                  <td class="py-3 px-4">Line-of-sight, modern devices</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Mesh peer capacity</td>
+                  <td class="py-3 px-4">7-10 concurrent</td>
+                  <td class="py-3 px-4">Platform dependent</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">Message throughput</td>
+                  <td class="py-3 px-4">~10 msg/s</td>
+                  <td class="py-3 px-4">Per peer connection</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">9.3 Battery Impact</h3>
+          <p class="text-slate-600">Continuous mesh operation consumes battery. Our measurements on iPhone 14:</p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Mode</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Hourly Battery Impact</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Cloud only (idle)</td>
+                  <td class="py-3 px-4">1-2%</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Mesh active (8 peers)</td>
+                  <td class="py-3 px-4">3-5%</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Bridge relay (active)</td>
+                  <td class="py-3 px-4">4-6%</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">Rally Mode (active)</td>
+                  <td class="py-3 px-4">5-8%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-slate-600">
+            Kinu implements adaptive power management: reduce scan frequency when few peers detected, pause mesh when battery below configurable threshold, and shift to cloud-only when on low power mode.
+          </p>
+        </section>
+
+        <!-- Security Analysis -->
+        <section id="security" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">10. Security Analysis</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">10.1 Threat Model</h3>
+          <p class="text-slate-600">Kinu protects against:</p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Threat</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Mitigation</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Mass surveillance</td>
+                  <td class="py-3 px-4">E2E encryption (Noise Protocol, Megolm)</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Server compromise</td>
+                  <td class="py-3 px-4">Servers never see plaintext</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Network eavesdropping</td>
+                  <td class="py-3 px-4">TLS for cloud, Noise for mesh</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Traffic analysis</td>
+                  <td class="py-3 px-4">Fixed packet sizes, padding</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Metadata leakage</td>
+                  <td class="py-3 px-4">Mesh reduces server visibility</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Single point of failure</td>
+                  <td class="py-3 px-4">Hybrid transport with automatic failover</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">Targeted blocking</td>
+                  <td class="py-3 px-4">Mesh bypasses network-level blocks</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-slate-600 mt-4">Kinu partially protects against:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+            <li><strong class="text-slate-800">Device compromise:</strong> Keys stored on device. Mitigated via Secure Enclave/Keystore where available.</li>
+            <li><strong class="text-slate-800">Social engineering:</strong> User education required. Mitigated via verification badges, safety prompts.</li>
+            <li><strong class="text-slate-800">Mesh peer identification:</strong> BLE advertising visible. Mitigated via rotating identifiers, optional stealth mode.</li>
+          </ul>
+
+          <p class="text-slate-600 mt-4">Kinu does not protect against:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+            <li>Physical device access with passcode</li>
+            <li>Compromised recipient sharing messages</li>
+            <li>Legal compulsion of end users</li>
+            <li>Zero-day vulnerabilities in cryptographic libraries</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">10.2 Cryptographic Strength</h3>
+          <p class="text-slate-600">Kinu's cryptographic choices follow current best practices:</p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Function</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Algorithm</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Security Level</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Key exchange</td>
+                  <td class="py-3 px-4">X25519</td>
+                  <td class="py-3 px-4">~128-bit</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Signing</td>
+                  <td class="py-3 px-4">Ed25519</td>
+                  <td class="py-3 px-4">~128-bit</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Symmetric encryption</td>
+                  <td class="py-3 px-4">ChaCha20-Poly1305</td>
+                  <td class="py-3 px-4">256-bit key</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Hashing</td>
+                  <td class="py-3 px-4">SHA-256, BLAKE2b</td>
+                  <td class="py-3 px-4">256-bit</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">KDF</td>
+                  <td class="py-3 px-4">HKDF-SHA256</td>
+                  <td class="py-3 px-4">Depends on input entropy</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-slate-600">
+            The Noise Protocol framework has undergone extensive academic analysis [21] and is used in production by WireGuard, WhatsApp, and Lightning Network.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">10.3 Bridge Relay Privacy</h3>
+          <p class="text-slate-600">Bridge Relay maintains strong privacy properties:</p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-2 mt-4">
+            <li><strong class="text-slate-800">Content Privacy:</strong> Payloads are Noise-encrypted to the recipient. Bridge nodes and relay servers cannot decrypt.</li>
+            <li><strong class="text-slate-800">Sender Anonymity:</strong> The relay envelope contains no sender identification. The bridge node sees only the mesh peer ID of the immediate sender (which may be a relay, not the originator).</li>
+            <li><strong class="text-slate-800">Recipient Pseudonymity:</strong> Relay servers see only SHA256 hashes of recipient public keys, not the keys themselves or any human-readable identifiers.</li>
+            <li><strong class="text-slate-800">Temporal Privacy:</strong> TTL-based expiration prevents long-term traffic analysis. Default retention is 4 hours.</li>
+          </ol>
+          <p class="text-slate-600 mt-4">Remaining risks:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-2">
+            <li>Traffic correlation by relay server operators observing upload/poll timing</li>
+            <li>Compromised bridge nodes logging mesh peer IDs (mitigated by rotating IDs)</li>
+            <li>Global passive adversary correlating cloud and mesh traffic patterns</li>
+          </ul>
+        </section>
+
+        <!-- Cost and Sustainability -->
+        <section id="cost" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">11. Cost and Sustainability</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">11.1 Infrastructure Costs</h3>
+          <p class="text-slate-600">Kinu's server infrastructure consists of:</p>
+          <ol class="list-decimal list-inside text-slate-600 space-y-1 mt-2">
+            <li>Matrix homeserver (message sync, push notifications)</li>
+            <li>Relay server (bridge message storage)</li>
+            <li>Supporting services (database, monitoring)</li>
+          </ol>
+
+          <p class="text-slate-600 mt-4">Cost projections per 1,000 Monthly Active Users (MAU):</p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Scale</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Monthly Cost</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Per User</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Configuration</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">1,000 MAU</td>
+                  <td class="py-3 px-4">$39</td>
+                  <td class="py-3 px-4">$0.039</td>
+                  <td class="py-3 px-4">Single VPS, all services</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">10,000 MAU</td>
+                  <td class="py-3 px-4">$165</td>
+                  <td class="py-3 px-4">$0.017</td>
+                  <td class="py-3 px-4">Separated services, basic redundancy</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">100,000 MAU</td>
+                  <td class="py-3 px-4">$745</td>
+                  <td class="py-3 px-4">$0.007</td>
+                  <td class="py-3 px-4">Full HA, Kubernetes</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">1,000,000 MAU</td>
+                  <td class="py-3 px-4">$4,500</td>
+                  <td class="py-3 px-4">$0.0045</td>
+                  <td class="py-3 px-4">Multi-region, auto-scaling</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-slate-600">
+            These projections assume 50 messages/user/day average, 10% messages include media (~200KB average), 5% messages route through bridge relay, and 30-day message retention.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">11.2 Comparison to Existing Services</h3>
+          <p class="text-slate-600">
+            For context, Signal reportedly operates on approximately $50 million annually for ~40 million MAU, roughly $1.25/user/year [22]. Kinu's lower cost projection ($0.05-0.10/user/year at scale) results from:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-1 mt-4">
+            <li>Mesh traffic offloaded to user devices (no server cost)</li>
+            <li>No voice/video infrastructure initially</li>
+            <li>Simpler server architecture (Matrix handles complexity)</li>
+            <li>Bridge relay is user-powered</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-8 text-slate-800">11.3 Sustainability Model</h3>
+          <p class="text-slate-600">
+            Kinu adopts Signal's donation-funded model. Break-even requires approximately 10,000 MAU with moderate donation rates (2% donate, $10/year average). Initial funding (grants, foundation support) is needed for the first 6-12 months of operation.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Donation tiers with cosmetic badges (not affecting functionality) provide recognition:
+          </p>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Tier</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Amount</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Badge</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Supporter</td>
+                  <td class="py-3 px-4">Any amount</td>
+                  <td class="py-3 px-4">Green heart</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Contributor</td>
+                  <td class="py-3 px-4">$5+/month</td>
+                  <td class="py-3 px-4">Star</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Champion</td>
+                  <td class="py-3 px-4">$20+/month</td>
+                  <td class="py-3 px-4">Trophy</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">Lifetime</td>
+                  <td class="py-3 px-4">$500 once</td>
+                  <td class="py-3 px-4">Permanent sparkle</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section id="encryption" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">4. Encryption & Security</h2>
-
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">4.1 Key Hierarchy</h3>
+        <!-- Conclusion -->
+        <section id="conclusion" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">12. Conclusion</h2>
           <p class="text-slate-600">
-            Kinu uses a hierarchical key structure for maximum security:
+            The silkworm does not know what its thread will become. It spins because spinning is what it does, creating something stronger than it knows.
           </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li><strong class="text-slate-800">Identity Keys (Ed25519):</strong> Long-term signing keys for device identity</li>
-            <li><strong class="text-slate-800">Pre-Keys (X25519):</strong> One-time keys for session establishment</li>
-            <li><strong class="text-slate-800">Session Keys:</strong> Ephemeral keys derived via Double Ratchet algorithm</li>
-            <li><strong class="text-slate-800">Message Keys:</strong> Per-message symmetric keys for content encryption</li>
-          </ul>
+          <p class="text-slate-600 mt-4">
+            The internet's promise of global, resilient communication has been undermined by centralization, making it vulnerable to both deliberate shutdowns and infrastructure failures. In 2024 alone, governments imposed 296 internet shutdowns affecting hundreds of millions of people. Natural disasters routinely destroy the cell towers and fiber lines that modern communication depends upon. Large gatherings overwhelm cellular networks, leaving participants unable to contact each other or access information.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Kinu addresses these challenges through a hybrid architecture that combines cloud-based messaging with local mesh networking. When internet connectivity is available, messages travel through encrypted cloud infrastructure with the convenience users expect. When connectivity fails, messages automatically route through nearby devices using Bluetooth Low Energy. The Bridge Relay mechanism extends this resilience further, allowing users with connectivity to relay encrypted messages for those without, inspired by Apple's Find My network but applied to general messaging.
+          </p>
+          <p class="text-slate-600 mt-4">
+            The protocol maintains end-to-end encryption across all transport mechanisms, ensuring that the security guarantees users rely upon are preserved regardless of how messages are delivered. Rally Mode provides emergency broadcast capability for location-bounded public channels during large gatherings or crises. All of this operates on standard smartphones without specialized hardware.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Our cost analysis demonstrates that a donation-funded sustainability model is viable at scale, following the precedent established by Signal. Infrastructure costs of approximately $0.01 per user per month enable community-funded operation without advertising or surveillance-based business models.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Kinu builds upon the foundation established by BitChat and the broader mesh networking community. We release this specification and reference implementation under open licenses, inviting collaboration to build communication infrastructure that serves human needs rather than authoritarian control.
+          </p>
+          <p class="text-slate-600 mt-4">
+            A single silk thread is fragile. Woven together, silk endures for centuries.
+          </p>
+          <p class="text-slate-600 mt-4 font-medium">
+            Threads that do not break.
+          </p>
+        </section>
 
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">4.2 Protocol Stack</h3>
+        <!-- References -->
+        <section id="references" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">13. References</h2>
+          <ol class="list-decimal list-inside text-slate-600 space-y-2 text-sm">
+            <li>permissionless.tech. "BitChat: Bluetooth Mesh Chat Protocol." GitHub, 2025.</li>
+            <li>Access Now. "Emboldened offenders, endangered communities: Internet shutdowns in 2024." February 2025.</li>
+            <li>Top10VPN. "The Cost of Internet Shutdowns." January 2026.</li>
+            <li>Amnesty International. "Iran internet shutdown hides violations in escalating protests." January 2026.</li>
+            <li>Wikipedia. "2026 Internet blackout in Iran." January 2026.</li>
+            <li>Context News. "2024 was the worst year for internet shutdowns around the world." March 2025.</li>
+            <li>Scientific American. "Cell Phone Service Must Be Restored Quicker after Hurricanes." February 2024.</li>
+            <li>GovTech. "Will Your Cell Service Work if a Hurricane Rolls Through?" April 2021.</li>
+            <li>Scientific American. "How Fires, Floods and Hurricanes Create Deadly Pockets of Information Isolation." February 2025.</li>
+            <li>Inside Unmanned Systems. "Restoring Communication After a Disaster." December 2023.</li>
+            <li>Gulf Coast News Now. "Meshtastic: How to stay connected after a hurricane hits." August 2025.</li>
+            <li>Ticket Fairy. "Beyond Wi-Fi: Satellite & Mesh Networking for Festival Connectivity." October 2025.</li>
+            <li>YohoMobile. "Why Your Internet Crawls at Crowded Events." 2025.</li>
+            <li>Marlinspike, M. and Perrin, T. "The X3DH Key Agreement Protocol." Signal, 2016.</li>
+            <li>Matrix.org Foundation. "Matrix Specification."</li>
+            <li>Briar Project. "Briar: Secure Messaging, Anywhere."</li>
+            <li>Meshtastic. "An open source, off-grid, decentralized, mesh network."</li>
+            <li>permissionless.tech. "BitChat over LoRa: a decentralized, offline messaging framework." GitHub Issue #180, July 2025.</li>
+            <li>Apple Inc. "Find My network accessory specification." 2021.</li>
+            <li>Perrin, T. "The Noise Protocol Framework."</li>
+            <li>Kobeissi, N., Nicolas, G., and Bhargavan, K. "Noise Explorer: Fully Automated Modeling and Verification for Arbitrary Noise Protocols." IEEE Euro S&P, 2019.</li>
+            <li>Signal Foundation. "Signal's 2023 Annual Report." 2024.</li>
+          </ol>
+        </section>
+
+        <!-- Acknowledgments -->
+        <section id="acknowledgments" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">14. Acknowledgments</h2>
           <p class="text-slate-600">
-            For cloud transport, Kinu uses the Matrix protocol's encryption stack:
+            Kinu builds directly upon the work of the BitChat project and the permissionless.tech community. The BLE mesh protocol, packet format, and routing algorithms described in this paper are derived from BitChat's public domain specification. We are grateful for their decision to release this foundational work without restriction.
           </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li><strong class="text-slate-800">Olm:</strong> 1:1 encrypted sessions using Double Ratchet</li>
-            <li><strong class="text-slate-800">Megolm:</strong> Group encryption with efficient key distribution</li>
-            <li><strong class="text-slate-800">Cross-signing:</strong> Device verification and trust establishment</li>
-          </ul>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">4.3 Mesh Encryption</h3>
-          <p class="text-slate-600">
-            For mesh transport, Kinu uses the Noise Protocol Framework with the XX handshake pattern:
+          <p class="text-slate-600 mt-4">
+            We acknowledge the researchers and advocates at Access Now, the #KeepItOn coalition, and digital rights organizations worldwide who document internet shutdowns and fight for communication freedom. Their work informs and motivates this project.
           </p>
-          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6">
-            <pre class="text-sm text-slate-300 overflow-x-auto">
-XX Pattern:
-  -&gt; e
-  &lt;- e, ee, s, es
-  -&gt; s, se
+          <p class="text-slate-600 mt-4">
+            The Noise Protocol Framework, developed by Trevor Perrin, provides the cryptographic foundation for Kinu's security. The Matrix.org Foundation's work on federated encrypted messaging enables our cloud transport layer.
+          </p>
+          <p class="text-slate-600 mt-4">
+            Finally, we acknowledge the countless individuals who have risked their safety to document abuses during internet blackouts, often using whatever communication channels remained available. This project exists because their stories reached the outside world despite the obstacles placed in their path.
+          </p>
+        </section>
 
-Cipher: ChaChaPoly
-Hash: BLAKE2s
-DH: X25519
-            </pre>
+        <!-- Glossary -->
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Appendix A: Glossary</h2>
+          <div class="overflow-x-auto my-6 not-prose">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Term</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Definition</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">BLE</td>
+                  <td class="py-3 px-4">Bluetooth Low Energy, the wireless protocol used for mesh networking</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Bridge</td>
+                  <td class="py-3 px-4">A user with internet connectivity who relays messages for users without</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">E2E</td>
+                  <td class="py-3 px-4">End-to-end encryption, where only sender and recipient can read messages</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Geohash</td>
+                  <td class="py-3 px-4">A string encoding of geographic coordinates used for location-based channels</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Kinu</td>
+                  <td class="py-3 px-4">Japanese word for silk (絹); the protocol's namesake, representing delicate yet strong connections</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Megolm</td>
+                  <td class="py-3 px-4">Matrix's group encryption protocol</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Mesh</td>
+                  <td class="py-3 px-4">Network topology where devices relay messages through each other</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">MTU</td>
+                  <td class="py-3 px-4">Maximum Transmission Unit, the largest packet size a connection supports</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Noise Protocol</td>
+                  <td class="py-3 px-4">Cryptographic framework for secure channel establishment</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">Rally Mode</td>
+                  <td class="py-3 px-4">Public channel for all users in a geographic area</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4 font-medium">TTL</td>
+                  <td class="py-3 px-4">Time-to-live, controls how long messages or packets persist</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium">X25519</td>
+                  <td class="py-3 px-4">Elliptic curve Diffie-Hellman function for key exchange</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
-        <section id="mesh" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">5. Mesh Networking</h2>
-
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">5.1 BLE Advertisement</h3>
-          <p class="text-slate-600">
-            Kinu devices advertise their presence using BLE advertising packets containing:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li>Rotating peer ID (derived from identity key, changes hourly)</li>
-            <li>Protocol version</li>
-            <li>Capability flags (relay enabled, message queue depth)</li>
-          </ul>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">5.2 Message Routing</h3>
-          <p class="text-slate-600">
-            Messages in the mesh network use a flooding-based routing protocol with TTL limits:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li>Maximum TTL: 10 hops</li>
-            <li>Deduplication via message ID bloom filters</li>
-            <li>Priority queuing for acknowledged delivery</li>
-            <li>Automatic retry with exponential backoff</li>
-          </ul>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">5.3 Store and Forward</h3>
-          <p class="text-slate-600">
-            When the recipient is not immediately reachable, intermediate nodes can:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li>Store encrypted messages for up to 24 hours</li>
-            <li>Forward when the recipient comes into range</li>
-            <li>Optionally bridge to cloud transport when internet becomes available</li>
-          </ul>
+        <!-- Document History -->
+        <section class="mb-12 text-center">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Appendix B: Document History</h2>
+          <p class="text-slate-600">Version 1.0-draft — January 2026 — Initial public draft</p>
         </section>
 
-        <section id="hybrid" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">6. Hybrid Transport</h2>
-
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">6.1 Seamless Switching</h3>
-          <p class="text-slate-600">
-            Kinu's Transport Manager monitors network conditions and automatically switches between
-            transports without user intervention. The transition is seamless—users see a unified
-            conversation thread regardless of which transport delivered each message.
+        <section class="mt-16 pt-8 border-t border-slate-200 text-sm text-slate-500 text-center">
+          <p>
+            This document is released under Creative Commons Attribution 4.0 International (CC BY 4.0). You are free to share and adapt this material for any purpose, including commercial use, provided you give appropriate credit.
           </p>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">6.2 Message Deduplication</h3>
-          <p class="text-slate-600">
-            Messages sent over multiple transports (e.g., mesh and cloud) are deduplicated using
-            a deterministic message ID derived from the content hash and sender identity. This
-            ensures that messages are never displayed twice, even when delivered via multiple paths.
+          <p class="mt-4">
+            Kinu is not affiliated with Apple Inc., Signal Foundation, Matrix.org Foundation, or any other organization mentioned in this document. Product names are trademarks of their respective owners.
           </p>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">6.3 Bridge Transport</h3>
-          <p class="text-slate-600">
-            Bridge nodes are Kinu devices with both internet and BLE connectivity that can relay
-            messages between the mesh network and cloud transport. This creates connectivity
-            pathways even when only a few devices in an area have internet access.
-          </p>
-        </section>
-
-        <section id="rally" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">7. Rally Mode</h2>
-
-          <h3 class="text-xl font-semibold mb-3 text-slate-800">7.1 Privacy-Preserving Location Sharing</h3>
-          <p class="text-slate-600">
-            Rally Mode allows users to set a meeting point that remains encrypted until all
-            participants are within a specified proximity threshold. This is achieved through:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li>Geohash-based location encoding</li>
-            <li>Threshold proximity verification without revealing exact positions</li>
-            <li>Progressive disclosure as participants approach</li>
-          </ul>
-
-          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">7.2 Server Blindness</h3>
-          <p class="text-slate-600">
-            The Rally Mode protocol ensures that:
-          </p>
-          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
-            <li>Servers never see the actual meeting location</li>
-            <li>Only participants can verify proximity</li>
-            <li>Location data is never stored unencrypted</li>
-          </ul>
-        </section>
-
-        <section id="future" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">8. Future Work</h2>
-          <ul class="list-disc list-inside text-slate-600 space-y-2">
-            <li>WiFi Direct support for higher bandwidth mesh connections</li>
-            <li>LoRa integration for extended range in rural areas</li>
-            <li>Decentralized identity verification without centralized authorities</li>
-            <li>SDK for third-party integration</li>
-            <li>Protocol standardization and interoperability</li>
-          </ul>
-        </section>
-
-        <section class="mt-16 pt-8 border-t border-slate-200">
-          <h2 class="text-2xl font-bold mb-4 text-slate-900">References</h2>
-          <ol class="list-decimal list-inside text-slate-600 space-y-2 text-sm">
-            <li>Matrix.org Foundation. "Matrix Specification." https://spec.matrix.org/</li>
-            <li>Perrin, T. "The Noise Protocol Framework." https://noiseprotocol.org/</li>
-            <li>Marlinspike, M. "The Double Ratchet Algorithm." https://signal.org/docs/</li>
-            <li>Bluetooth SIG. "Bluetooth Mesh Networking." https://www.bluetooth.com/</li>
-          </ol>
         </section>
       </div>
 
       <div class="mt-16 text-center">
-        <a href="/#notify" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all">
+        <a href="/#cta" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all">
           Get Early Access to Kinu
         </a>
       </div>
@@ -319,7 +1186,7 @@ DH: X25519
   <footer class="border-t border-slate-200 py-8 bg-white">
     <div class="max-w-6xl mx-auto px-6 text-center">
       <p class="text-slate-500 text-sm">
-        &copy; 2025 Kinu. All rights reserved.
+        &copy; 2026 Kinu Foundation. Open source under Apache 2.0.
       </p>
     </div>
   </footer>

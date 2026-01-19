@@ -1,0 +1,289 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:meshlink_core/database/app_database.dart';
+
+import '../../../core/providers/group_providers.dart';
+
+/// Screen for creating a new group chat
+class CreateGroupScreen extends ConsumerStatefulWidget {
+  const CreateGroupScreen({super.key});
+
+  @override
+  ConsumerState<CreateGroupScreen> createState() => _CreateGroupScreenState();
+}
+
+class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _topicController = TextEditingController();
+  final List<String> _selectedMembers = [];
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _topicController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final createState = ref.watch(createGroupProvider);
+
+    ref.listen<AsyncValue<ConversationEntity?>>(createGroupProvider,
+        (previous, next) {
+      next.whenData((group) {
+        if (group != null) {
+          // Navigate to the new group chat
+          Navigator.of(context).pop(group);
+        }
+      });
+
+      if (next.hasError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to create group: ${next.error}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    });
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Create Group'),
+        actions: [
+          TextButton(
+            onPressed: createState.isLoading ? null : _createGroup,
+            child: createState.isLoading
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Create'),
+          ),
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            // Group avatar placeholder
+            Center(
+              child: Stack(
+                children: [
+                  CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.blue.shade100,
+                    child: Icon(
+                      Icons.group,
+                      size: 50,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.blue,
+                      child: IconButton(
+                        icon: const Icon(Icons.camera_alt, size: 18),
+                        color: Colors.white,
+                        onPressed: () {
+                          // TODO: Add avatar picker
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Group name
+            TextFormField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Group Name',
+                hintText: 'Enter group name',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.group),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter a group name';
+                }
+                if (value.trim().length < 3) {
+                  return 'Name must be at least 3 characters';
+                }
+                return null;
+              },
+              textCapitalization: TextCapitalization.words,
+            ),
+
+            const SizedBox(height: 16),
+
+            // Group topic/description
+            TextFormField(
+              controller: _topicController,
+              decoration: const InputDecoration(
+                labelText: 'Description (optional)',
+                hintText: 'What is this group about?',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.description),
+              ),
+              maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
+            ),
+
+            const SizedBox(height: 24),
+
+            // Add members section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Add Members',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                TextButton.icon(
+                  onPressed: _showMemberPicker,
+                  icon: const Icon(Icons.person_add),
+                  label: const Text('Add'),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            if (_selectedMembers.isEmpty)
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.people_outline,
+                      size: 48,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'No members added yet',
+                      style: TextStyle(color: Colors.grey.shade600),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'You can add members now or later',
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              Column(
+                children: _selectedMembers.map((memberId) {
+                  return ListTile(
+                    leading: CircleAvatar(
+                      child: Text(memberId[0].toUpperCase()),
+                    ),
+                    title: Text(memberId),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove_circle_outline),
+                      color: Colors.red,
+                      onPressed: () {
+                        setState(() {
+                          _selectedMembers.remove(memberId);
+                        });
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
+
+            const SizedBox(height: 24),
+
+            // Info card
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.lock, color: Colors.blue.shade700),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'End-to-End Encrypted',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade900,
+                          ),
+                        ),
+                        Text(
+                          'All messages in this group will be encrypted',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showMemberPicker() {
+    // TODO: Show contact picker dialog
+    // For now, show a placeholder dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Members'),
+        content: const Text(
+          'Contact picker will be implemented here.\n\n'
+          'For now, members can be invited after creating the group.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _createGroup() {
+    if (_formKey.currentState!.validate()) {
+      ref.read(createGroupProvider.notifier).createGroup(
+            name: _nameController.text.trim(),
+            memberIds: _selectedMembers.isEmpty ? null : _selectedMembers,
+            topic: _topicController.text.trim().isEmpty
+                ? null
+                : _topicController.text.trim(),
+          );
+    }
+  }
+}

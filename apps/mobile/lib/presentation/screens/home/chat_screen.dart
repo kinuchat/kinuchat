@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_ui/meshlink_ui.dart';
 import '../../../core/providers/providers.dart';
 import '../../widgets/transport_indicator.dart';
+import '../groups/group_info_screen.dart';
 
 /// Chat conversation screen
 class ChatScreen extends ConsumerStatefulWidget {
@@ -138,31 +139,70 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               // TODO: Voice call (future feature)
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () {
-              // TODO: Conversation options
-            },
+          conversationAsync.when(
+            data: (conversation) => IconButton(
+              icon: Icon(
+                conversation.isGroup == true ? Icons.group : Icons.more_vert,
+              ),
+              onPressed: () {
+                if (conversation.isGroup == true) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => GroupInfoScreen(
+                        groupId: widget.conversationId,
+                      ),
+                    ),
+                  );
+                } else {
+                  // TODO: Direct message options
+                }
+              },
+            ),
+            loading: () => const SizedBox.shrink(),
+            error: (_, __) => const SizedBox.shrink(),
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: MessageListView(
-              conversationId: widget.conversationId,
-              scrollController: _scrollController,
+      body: conversationAsync.when(
+        data: (conversation) => Column(
+          children: [
+            Expanded(
+              child: MessageListView(
+                conversationId: widget.conversationId,
+                scrollController: _scrollController,
+                isGroup: conversation.isGroup == true,
+              ),
             ),
-          ),
-          SafeArea(
-            top: false,
-            child: MessageInputBar(
-              controller: _messageController,
-              isSending: _isSending,
-              onSend: _sendMessage,
+            SafeArea(
+              top: false,
+              child: MessageInputBar(
+                controller: _messageController,
+                isSending: _isSending,
+                onSend: _sendMessage,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, __) => Column(
+          children: [
+            Expanded(
+              child: MessageListView(
+                conversationId: widget.conversationId,
+                scrollController: _scrollController,
+              ),
+            ),
+            SafeArea(
+              top: false,
+              child: MessageInputBar(
+                controller: _messageController,
+                isSending: _isSending,
+                onSend: _sendMessage,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -173,11 +213,13 @@ class MessageListView extends ConsumerWidget {
   const MessageListView({
     required this.conversationId,
     required this.scrollController,
+    this.isGroup = false,
     super.key,
   });
 
   final String conversationId;
   final ScrollController scrollController;
+  final bool isGroup;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -219,7 +261,10 @@ class MessageListView extends ConsumerWidget {
           itemCount: messages.length,
           itemBuilder: (context, index) {
             final message = messages[messages.length - 1 - index];
-            return MessageBubble(message: message);
+            return MessageBubble(
+              message: message,
+              showSenderName: isGroup,
+            );
           },
         );
       },
@@ -260,14 +305,17 @@ class MessageListView extends ConsumerWidget {
 class MessageBubble extends StatelessWidget {
   const MessageBubble({
     required this.message,
+    this.showSenderName = false,
     super.key,
   });
 
   final dynamic message;
+  final bool showSenderName;
 
   @override
   Widget build(BuildContext context) {
     final isFromMe = message.isFromMe as bool;
+    final senderName = message.senderName as String?;
 
     return Align(
       alignment: isFromMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -289,6 +337,17 @@ class MessageBubble extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (showSenderName && !isFromMe && senderName != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: Spacing.xs),
+                child: Text(
+                  senderName,
+                  style: AppTypography.caption.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
             Text(
               message.content as String,
               style: AppTypography.body.copyWith(

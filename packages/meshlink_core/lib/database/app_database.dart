@@ -360,6 +360,81 @@ class RallyReports extends Table {
   BoolColumn get isUploaded => boolean().withDefault(const Constant(false))();
 }
 
+/// Bridge message queue - Messages waiting to be relayed (Phase 5)
+@DataClassName('BridgeMessageQueueEntity')
+class BridgeMessageQueue extends Table {
+  /// Message ID
+  TextColumn get messageId => text()();
+
+  /// SHA256 hash of recipient's X25519 public key (base64)
+  TextColumn get recipientKeyHash => text()();
+
+  /// Noise-encrypted packet payload (base64)
+  TextColumn get encryptedPayload => text()();
+
+  /// Time-to-live in hours
+  IntColumn get ttlHours => integer().withDefault(const Constant(4))();
+
+  /// Message priority (normal, urgent, emergency)
+  TextColumn get priority => text().withDefault(const Constant('normal'))();
+
+  /// When the message was queued locally
+  DateTimeColumn get queuedAt => dateTime()();
+
+  /// When the message expires
+  DateTimeColumn get expiresAt => dateTime()();
+
+  /// Retry count
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+
+  /// Last retry attempt
+  DateTimeColumn get lastRetryAt => dateTime().nullable()();
+
+  /// Upload status (pending, uploaded, failed)
+  TextColumn get uploadStatus => text().withDefault(const Constant('pending'))();
+
+  /// Server-assigned ID after upload
+  TextColumn get serverId => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {messageId};
+}
+
+/// Bridge settings - User preferences for bridge mode (Phase 5)
+@DataClassName('BridgeSettingsEntity')
+class BridgeSettings extends Table {
+  /// Settings ID (always 'default' for single row)
+  TextColumn get id => text().withDefault(const Constant('default'))();
+
+  /// Whether bridge mode is enabled
+  BoolColumn get isEnabled => boolean().withDefault(const Constant(false))();
+
+  /// Only relay for known contacts
+  BoolColumn get relayForContactsOnly =>
+      boolean().withDefault(const Constant(false))();
+
+  /// Maximum bandwidth to use per day (MB)
+  IntColumn get maxBandwidthMbPerDay =>
+      integer().withDefault(const Constant(50))();
+
+  /// Minimum battery percent to enable relaying
+  IntColumn get minBatteryPercent =>
+      integer().withDefault(const Constant(30))();
+
+  /// Bandwidth used today (MB)
+  RealColumn get bandwidthUsedTodayMb =>
+      real().withDefault(const Constant(0.0))();
+
+  /// Date when bandwidth counter was last reset
+  DateTimeColumn get bandwidthResetDate => dateTime().nullable()();
+
+  /// When settings were last updated
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 /// Drift database for MeshLink
 @DriftDatabase(tables: [
   Contacts,
@@ -372,6 +447,8 @@ class RallyReports extends Table {
   MeshSeenMessages,
   RallyChannelMembers,
   RallyReports,
+  BridgeMessageQueue,
+  BridgeSettings,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -382,7 +459,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration {
@@ -392,7 +469,7 @@ class AppDatabase extends _$AppDatabase {
       },
       onUpgrade: (Migrator m, int from, int to) async {
         // Migration from v1 to v2: Add mesh networking tables and fields
-        if (from == 1 && to == 2) {
+        if (from < 2) {
           // Create new mesh tables
           await m.createTable(meshPeers);
           await m.createTable(meshRoutes);
@@ -407,7 +484,7 @@ class AppDatabase extends _$AppDatabase {
         }
 
         // Migration from v2 to v3: Add Rally Mode support
-        if (from == 2 && to == 3) {
+        if (from < 3) {
           // Add Rally-specific columns to Conversations table
           await m.addColumn(conversations, conversations.centroidLatitude);
           await m.addColumn(conversations, conversations.centroidLongitude);
@@ -421,6 +498,13 @@ class AppDatabase extends _$AppDatabase {
           // Create new Rally tables
           await m.createTable(rallyChannelMembers);
           await m.createTable(rallyReports);
+        }
+
+        // Migration from v3 to v4: Add Bridge Relay support (Phase 5)
+        if (from < 4) {
+          // Create new Bridge tables
+          await m.createTable(bridgeMessageQueue);
+          await m.createTable(bridgeSettings);
         }
       },
     );
@@ -1050,11 +1134,176 @@ class AppDatabase extends _$AppDatabase {
   }
 
   // ============================================================================
+  // Bridge Message Queue Queries (Phase 5)
+  // ============================================================================
+
+  /// Get all pending bridge messages
+  Future<List<BridgeMessageQueueEntity>> getPendingBridgeMessages() {
+    return (select(bridgeMessageQueue)
+          ..where((m) => m.uploadStatus.equals('pending'))
+          ..where((m) => m.expiresAt.isBiggerThanValue(DateTime.now()))
+          ..orderBy([(m) => OrderingTerm.asc(m.queuedAt)]))
+        .get();
+  }
+
+  /// Get bridge messages for a recipient
+  Future<List<BridgeMessageQueueEntity>> getBridgeMessagesForRecipient(
+    String recipientKeyHash,
+  ) {
+    return (select(bridgeMessageQueue)
+          ..where((m) => m.recipientKeyHash.equals(recipientKeyHash))
+          ..where((m) => m.expiresAt.isBiggerThanValue(DateTime.now())))
+        .get();
+  }
+
+  /// Insert a bridge message
+  Future<void> insertBridgeMessage({
+    required String messageId,
+    required String recipientKeyHash,
+    required String encryptedPayload,
+    int ttlHours = 4,
+    String priority = 'normal',
+  }) async {
+    final now = DateTime.now();
+    await into(bridgeMessageQueue).insert(
+      BridgeMessageQueueCompanion.insert(
+        messageId: messageId,
+        recipientKeyHash: recipientKeyHash,
+        encryptedPayload: encryptedPayload,
+        ttlHours: Value(ttlHours),
+        priority: Value(priority),
+        queuedAt: now,
+        expiresAt: now.add(Duration(hours: ttlHours)),
+      ),
+    );
+  }
+
+  /// Update bridge message upload status
+  Future<void> updateBridgeMessageStatus({
+    required String messageId,
+    required String uploadStatus,
+    String? serverId,
+  }) {
+    return (update(bridgeMessageQueue)
+          ..where((m) => m.messageId.equals(messageId)))
+        .write(
+      BridgeMessageQueueCompanion(
+        uploadStatus: Value(uploadStatus),
+        serverId: Value(serverId),
+        lastRetryAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Increment retry count for bridge message
+  Future<void> incrementBridgeMessageRetry(String messageId) async {
+    final msg = await (select(bridgeMessageQueue)
+          ..where((m) => m.messageId.equals(messageId)))
+        .getSingleOrNull();
+
+    if (msg != null) {
+      await (update(bridgeMessageQueue)
+            ..where((m) => m.messageId.equals(messageId)))
+          .write(
+        BridgeMessageQueueCompanion(
+          retryCount: Value(msg.retryCount + 1),
+          lastRetryAt: Value(DateTime.now()),
+        ),
+      );
+    }
+  }
+
+  /// Delete bridge message
+  Future<void> deleteBridgeMessage(String messageId) {
+    return (delete(bridgeMessageQueue)
+          ..where((m) => m.messageId.equals(messageId)))
+        .go();
+  }
+
+  /// Delete expired bridge messages
+  Future<void> deleteExpiredBridgeMessages() {
+    return (delete(bridgeMessageQueue)
+          ..where((m) => m.expiresAt.isSmallerThanValue(DateTime.now())))
+        .go();
+  }
+
+  // ============================================================================
+  // Bridge Settings Queries (Phase 5)
+  // ============================================================================
+
+  /// Get bridge settings
+  Future<BridgeSettingsEntity?> getBridgeSettings() {
+    return (select(bridgeSettings)..where((s) => s.id.equals('default')))
+        .getSingleOrNull();
+  }
+
+  /// Save or update bridge settings
+  Future<void> saveBridgeSettings({
+    bool? isEnabled,
+    bool? relayForContactsOnly,
+    int? maxBandwidthMbPerDay,
+    int? minBatteryPercent,
+  }) async {
+    await into(bridgeSettings).insertOnConflictUpdate(
+      BridgeSettingsCompanion(
+        id: const Value('default'),
+        isEnabled: isEnabled != null ? Value(isEnabled) : const Value.absent(),
+        relayForContactsOnly: relayForContactsOnly != null
+            ? Value(relayForContactsOnly)
+            : const Value.absent(),
+        maxBandwidthMbPerDay: maxBandwidthMbPerDay != null
+            ? Value(maxBandwidthMbPerDay)
+            : const Value.absent(),
+        minBatteryPercent: minBatteryPercent != null
+            ? Value(minBatteryPercent)
+            : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  /// Update bandwidth usage
+  Future<void> updateBridgeBandwidthUsage(double mbUsed) async {
+    final settings = await getBridgeSettings();
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    double newUsage = mbUsed;
+
+    // Reset counter if new day
+    if (settings != null && settings.bandwidthResetDate != null) {
+      final resetDate = DateTime(
+        settings.bandwidthResetDate!.year,
+        settings.bandwidthResetDate!.month,
+        settings.bandwidthResetDate!.day,
+      );
+      if (resetDate.isBefore(today)) {
+        // New day, reset counter
+        newUsage = mbUsed;
+      } else {
+        // Same day, add to existing
+        newUsage = settings.bandwidthUsedTodayMb + mbUsed;
+      }
+    }
+
+    await into(bridgeSettings).insertOnConflictUpdate(
+      BridgeSettingsCompanion(
+        id: const Value('default'),
+        bandwidthUsedTodayMb: Value(newUsage),
+        bandwidthResetDate: Value(today),
+        updatedAt: Value(now),
+      ),
+    );
+  }
+
+  // ============================================================================
   // Cleanup
   // ============================================================================
 
   /// Delete all data (for testing or reset)
   Future<void> deleteAllData() async {
+    await delete(bridgeMessageQueue).go();
+    await delete(bridgeSettings).go();
     await delete(rallyReports).go();
     await delete(rallyChannelMembers).go();
     await delete(meshSeenMessages).go();

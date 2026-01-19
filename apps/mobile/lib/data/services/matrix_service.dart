@@ -273,6 +273,293 @@ class MatrixService {
   }
 
   // ============================================================================
+  // Group Chat Methods (Phase 6)
+  // ============================================================================
+
+  /// Create a group chat room
+  Future<String> createGroup({
+    required String name,
+    List<String>? initialMembers,
+    bool isEncrypted = true,
+    String? topic,
+    String? avatarUrl,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      // Prepare initial state events
+      final initialState = <StateEvent>[];
+
+      // Enable encryption by default
+      if (isEncrypted) {
+        initialState.add(
+          StateEvent(
+            type: EventTypes.Encryption,
+            stateKey: '',
+            content: {'algorithm': AlgorithmTypes.megolmV1AesSha2},
+          ),
+        );
+      }
+
+      // Set room topic if provided
+      if (topic != null) {
+        initialState.add(
+          StateEvent(
+            type: EventTypes.RoomTopic,
+            stateKey: '',
+            content: {'topic': topic},
+          ),
+        );
+      }
+
+      // Set room avatar if provided
+      if (avatarUrl != null) {
+        initialState.add(
+          StateEvent(
+            type: EventTypes.RoomAvatar,
+            stateKey: '',
+            content: {'url': avatarUrl},
+          ),
+        );
+      }
+
+      // Create the room
+      final roomId = await _client!.createRoom(
+        name: name,
+        invite: initialMembers,
+        preset: CreateRoomPreset.privateChat,
+        initialState: initialState,
+      );
+
+      debugPrint('Created group room: $roomId');
+
+      // Sync to get the room in local state
+      await _client!.sync();
+
+      return roomId;
+    } catch (e) {
+      throw MatrixServiceException('Failed to create group: $e');
+    }
+  }
+
+  /// Invite a user to a group
+  Future<void> inviteToGroup({
+    required String roomId,
+    required String userId,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      await room.invite(userId);
+      debugPrint('Invited $userId to $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to invite to group: $e');
+    }
+  }
+
+  /// Kick a user from a group
+  Future<void> kickFromGroup({
+    required String roomId,
+    required String userId,
+    String? reason,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      await room.kick(userId, reason: reason);
+      debugPrint('Kicked $userId from $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to kick from group: $e');
+    }
+  }
+
+  /// Ban a user from a group
+  Future<void> banFromGroup({
+    required String roomId,
+    required String userId,
+    String? reason,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      await room.ban(userId, reason: reason);
+      debugPrint('Banned $userId from $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to ban from group: $e');
+    }
+  }
+
+  /// Leave a group
+  Future<void> leaveGroup(String roomId) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      await room.leave();
+      debugPrint('Left group $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to leave group: $e');
+    }
+  }
+
+  /// Update group settings
+  Future<void> updateGroupSettings({
+    required String roomId,
+    String? name,
+    String? topic,
+    String? avatarUrl,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      if (name != null) {
+        await room.setName(name);
+      }
+
+      if (topic != null) {
+        await room.setDescription(topic);
+      }
+
+      if (avatarUrl != null) {
+        await room.setAvatar(Uri.parse(avatarUrl));
+      }
+
+      debugPrint('Updated group settings for $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to update group settings: $e');
+    }
+  }
+
+  /// Get members of a group
+  Future<List<User>> getGroupMembers(String roomId) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      // Request full member list
+      await room.requestParticipants();
+
+      return room.getParticipants();
+    } catch (e) {
+      throw MatrixServiceException('Failed to get group members: $e');
+    }
+  }
+
+  /// Set a member's power level (role)
+  Future<void> setMemberRole({
+    required String roomId,
+    required String userId,
+    required GroupRole role,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      final powerLevel = switch (role) {
+        GroupRole.owner => 100,
+        GroupRole.admin => 50,
+        GroupRole.member => 0,
+      };
+
+      await room.setPower(userId, powerLevel);
+      debugPrint('Set $userId power level to $powerLevel in $roomId');
+    } catch (e) {
+      throw MatrixServiceException('Failed to set member role: $e');
+    }
+  }
+
+  /// Check if current user is admin/owner of a room
+  bool isGroupAdmin(String roomId) {
+    if (_client == null || !isLoggedIn) {
+      return false;
+    }
+
+    final room = _client!.getRoomById(roomId);
+    if (room == null) {
+      return false;
+    }
+
+    return room.canSendEvent(EventTypes.RoomPowerLevels);
+  }
+
+  /// Check if room is a group (not a DM)
+  bool isGroup(String roomId) {
+    if (_client == null) {
+      return false;
+    }
+
+    final room = _client!.getRoomById(roomId);
+    if (room == null) {
+      return false;
+    }
+
+    // DMs have a direct chat mapping
+    return !room.isDirectChat;
+  }
+
+  /// Check if room has encryption enabled
+  bool isRoomEncrypted(String roomId) {
+    if (_client == null) {
+      return false;
+    }
+
+    final room = _client!.getRoomById(roomId);
+    if (room == null) {
+      return false;
+    }
+
+    return room.encrypted;
+  }
+
+  // ============================================================================
   // Private Methods
   // ============================================================================
 
@@ -309,4 +596,25 @@ class MatrixServiceException implements Exception {
 
   @override
   String toString() => 'MatrixServiceException: $message';
+}
+
+/// Group member roles
+enum GroupRole {
+  /// Room creator with full permissions (power level 100)
+  owner,
+
+  /// Admin with elevated permissions (power level 50)
+  admin,
+
+  /// Regular member (power level 0)
+  member,
+}
+
+/// Extension to convert power level to GroupRole
+extension GroupRoleExtension on int {
+  GroupRole toGroupRole() {
+    if (this >= 100) return GroupRole.owner;
+    if (this >= 50) return GroupRole.admin;
+    return GroupRole.member;
+  }
 }

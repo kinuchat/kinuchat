@@ -245,6 +245,7 @@
 - [ ] Integration tests
 - [ ] Documentation updates
 - [ ] Verify all GitHub links point to https://github.com/kinuchat/kinuchat (repo) not just /kinuchat/ (org)
+- [ ] Update web whitepaper to use full whitepaper from /Users/jayklauminzer/Desktop/KINU/whitepaper_kinu.md
 
 ---
 

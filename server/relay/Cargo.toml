@@ -1,0 +1,54 @@
+[package]
+name = "kinu-relay"
+version = "0.1.0"
+edition = "2021"
+description = "Kinu Bridge Relay Server - Message relay for offline users"
+authors = ["Kinu Team"]
+
+[dependencies]
+# Web framework
+axum = { version = "0.8", features = ["macros", "ws"] }
+tokio = { version = "1.45", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# WebSocket
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+
+# Redis
+redis = { version = "0.27", features = ["tokio-comp", "connection-manager"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Validation
+validator = { version = "0.19", features = ["derive"] }
+
+# Cryptography (for key hash verification)
+sha2 = "0.10"
+base64 = "0.22"
+
+# Environment & Config
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.16", features = ["v4", "serde"] }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Utilities
+hex = "0.4"
+
+[dev-dependencies]
+axum-test = "16"

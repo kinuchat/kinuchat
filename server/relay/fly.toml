@@ -1,0 +1,42 @@
+# Fly.io configuration for Kinu Relay Server
+# See https://fly.io/docs/reference/configuration/ for reference
+
+app = "kinu-relay"
+primary_region = "sjc"  # San Jose - same region as auth server
+
+[build]
+
+[http_service]
+  internal_port = 3001
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 800
+
+[env]
+  LISTEN_ADDR = "0.0.0.0:3001"
+  RUST_LOG = "kinu_relay=info,tower_http=info"
+  MAX_TTL_HOURS = "24"
+  DEFAULT_TTL_HOURS = "4"
+  MAX_PAYLOAD_BYTES = "65536"
+  RATE_LIMIT_PER_MINUTE = "60"
+  MAX_WS_CONNECTIONS = "10000"
+
+# Secrets to set via CLI (do NOT put actual values here):
+#
+# Option 1: Use Fly.io managed Upstash Redis (recommended)
+#   fly redis create --region sjc --name kinu-redis
+#   # This will output a REDIS_URL - use it below
+#
+# Option 2: Use external Redis
+#   fly secrets set REDIS_URL="redis://user:password@host:6379" --app kinu-relay
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

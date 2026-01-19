@@ -7,6 +7,7 @@ import 'chat_screen.dart';
 import '../rally/rally_screen.dart';
 import '../settings/settings_screen.dart';
 import '../matrix/matrix_auth_screen.dart';
+import '../groups/create_group_screen.dart';
 
 /// Home screen showing chat list
 class HomeScreen extends ConsumerStatefulWidget {
@@ -114,7 +115,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: _selectedIndex == 0
           ? FloatingActionButton(
               onPressed: () {
-                _showNewConversationDialog();
+                _showNewConversationOptions();
               },
               child: const Icon(Icons.add),
             )
@@ -203,6 +204,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: const Text('Set Up'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showNewConversationOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.person_add),
+              title: const Text('New Chat'),
+              subtitle: const Text('Start a direct message'),
+              onTap: () {
+                Navigator.pop(context);
+                _showNewConversationDialog();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group_add),
+              title: const Text('New Group'),
+              subtitle: const Text('Create an encrypted group chat'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreateGroupScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
