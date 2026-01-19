@@ -1,23 +1,24 @@
-# MeshLink
+# Kinu
 
 **Hybrid Cloud/Mesh Encrypted Messaging**
 
-MeshLink is a privacy-first encrypted messaging application that seamlessly transitions between cloud-based messaging and Bluetooth Low Energy (BLE) mesh networking. When internet connectivity is strong, messages travel through encrypted cloud infrastructure. When connectivity degrades or fails, the app automatically switches to local mesh communication.
+Kinu is a privacy-first encrypted messaging application that seamlessly transitions between cloud-based messaging and Bluetooth Low Energy (BLE) mesh networking. When internet connectivity is strong, messages travel through encrypted cloud infrastructure. When connectivity degrades or fails, the app automatically switches to local mesh communication.
 
 ## Project Structure
 
 This is a Flutter monorepo managed with [Melos](https://melos.invertase.dev/).
 
 ```
-meshlink/
+kinu/
 ├── apps/
 │   └── mobile/                # Flutter mobile app (iOS/Android)
 ├── packages/
 │   ├── meshlink_core/         # Core business logic (crypto, mesh, transport)
 │   └── meshlink_ui/           # Shared UI components and design system
 ├── server/
-│   ├── relay/                 # Rust relay server (future)
-│   └── config/                # Server configurations
+│   ├── auth/                  # Rust authentication server
+│   └── matrix/                # Dendrite Matrix homeserver
+├── web/                       # Landing page (Astro)
 ├── docs/                      # Documentation
 ├── melos.yaml                 # Monorepo configuration
 └── analysis_options.yaml      # Strict linting rules
@@ -31,7 +32,27 @@ meshlink/
 - **Crypto**: Ed25519, X25519, Noise Protocol
 - **Cloud Messaging**: Matrix (Dendrite homeserver)
 - **Mesh Networking**: BLE via flutter_blue_plus
-- **Backend**: Rust relay server, PostgreSQL, Redis
+- **Auth Server**: Rust/Axum, SQLite, JWT
+- **Backend**: Fly.io deployment
+
+## Features
+
+### Authentication Server
+- **Passkey/WebAuthn** support for passwordless login
+- **Password authentication** with Argon2id hashing
+- **Two-Factor Authentication (TOTP)** with backup codes
+- **Device management** - track and revoke logged-in devices
+- **Email verification** via SMTP
+- **Account recovery** via email
+- **Data export** (GDPR compliance)
+
+### Mobile App
+- **End-to-end encrypted messaging** via Matrix
+- **BLE mesh networking** for offline communication
+- **Rally Mode** - location-based ephemeral channels
+- **Quiet hours** - scheduled notification muting
+- **Multi-device support** with device management
+- **Biometric authentication** support
 
 ## Getting Started
 
@@ -40,6 +61,7 @@ meshlink/
 - Flutter SDK 3.x or later
 - Dart SDK 3.x or later
 - Melos CLI tool
+- Rust toolchain (for auth server)
 
 ### Installation
 
@@ -57,6 +79,25 @@ This will:
 - Install dependencies for all packages
 - Link local packages together
 - Generate necessary files
+
+### Running the Auth Server
+
+```bash
+cd server/auth
+
+# Set up environment variables (see server/auth/README.md)
+cp .env.example .env
+
+# Run the server
+cargo run
+```
+
+### Running the Mobile App
+
+```bash
+cd apps/mobile
+flutter run
+```
 
 ### Common Commands
 
@@ -77,53 +118,21 @@ melos run build:runner
 melos run clean
 ```
 
-### Running the Mobile App
-
-```bash
-cd apps/mobile
-flutter run
-```
-
 ## Development Phases
 
-This project follows a phased development approach:
-
-- **Phase 0: Foundation** ✅ **Complete** - Project setup, core architecture, identity system
-- **Phase 1: Cloud Messaging** ✅ **Complete** - Matrix integration, basic 1:1 messaging
-- **Phase 2: Mesh Networking** ✅ **Complete** - BLE mesh implementation, transport switching
-- **Phase 3: Rally Mode** (Next) - Location-based public channels
-- **Phase 4: Bridge Relay** - AirTag-style message relay
-- **Phase 5: Polish and Launch** - Media support, groups, onboarding
+- **Phase 0: Foundation** ✅ - Project setup, core architecture, identity system
+- **Phase 1: Cloud Messaging** ✅ - Matrix integration, basic 1:1 messaging
+- **Phase 2: Mesh Networking** ✅ - BLE mesh implementation, transport switching
+- **Phase 3: Rally Mode** ✅ - Location-based public channels
+- **Phase 4: Account Management** ✅ - 2FA, device management, email verification, data export
+- **Phase 5: Bridge Relay** (Next) - AirTag-style message relay
+- **Phase 6: Polish and Launch** - Media support, groups, onboarding
 
 See `.claude/context/SPEC.md` for the complete specification.
 
-### Phase 2: Mesh Networking (Completed)
-
-**What's Working:**
-- ✅ BLE peer discovery and pairing via Noise Protocol XX handshake
-- ✅ Direct peer-to-peer encrypted messaging (internet-free)
-- ✅ Multi-hop routing with flooding algorithm (up to 7 hops)
-- ✅ Automatic transport selection (cloud vs mesh based on peer availability)
-- ✅ Store-and-forward message queuing for offline peers
-- ✅ Message deduplication to prevent routing loops
-- ✅ Background service for Android (foreground notification)
-- ✅ iOS background mode for BLE
-- ✅ Real-time UI indicators showing transport mode and peer count
-- ✅ 89/89 unit tests passing
-
-**Testing:**
-- Requires **physical devices** (BLE doesn't work in simulator/emulator)
-- See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for comprehensive test procedures
-- See [BATTERY_OPTIMIZATION.md](./BATTERY_OPTIMIZATION.md) for tuning performance
-
-**Known Limitations:**
-- iOS background BLE has reduced scan frequency (controlled by OS)
-- Battery usage: ~8-10% per hour with active mesh (can be optimized)
-- Max 7 hops for routing (as per spec)
-
 ## Architecture
 
-MeshLink follows Clean Architecture principles:
+Kinu follows Clean Architecture principles:
 
 - **Presentation Layer**: UI screens and widgets
 - **Domain Layer**: Business logic and use cases
@@ -136,6 +145,22 @@ MeshLink follows Clean Architecture principles:
 - **Transport Manager**: Automatic selection between cloud, mesh, and bridge transports
 - **Encryption**: Noise Protocol for mesh, Megolm for cloud groups
 - **Database**: Drift for local message and contact storage
+- **Auth Service**: JWT-based authentication with passkey/password support
+
+## Deployment
+
+### Auth Server (Fly.io)
+The auth server is deployed to Fly.io at `auth.kinuchat.com`.
+
+```bash
+cd server/auth
+fly deploy
+```
+
+### Matrix Server (Fly.io)
+Dendrite Matrix server at `matrix.kinuchat.com`.
+
+See `DEPLOYMENT_GUIDE.md` for detailed deployment instructions.
 
 ## Security & Privacy
 
@@ -144,6 +169,18 @@ MeshLink follows Clean Architecture principles:
 - No data collection or tracking
 - Self-hostable infrastructure
 - Open protocol
+- GDPR-compliant data export
+
+## API Documentation
+
+See individual component documentation:
+- [Auth Server API](server/auth/README.md)
+- [Mobile App](apps/mobile/README.md)
+
+## Testing
+
+- See [TESTING_GUIDE.md](./TESTING_GUIDE.md) for comprehensive test procedures
+- See [BATTERY_OPTIMIZATION.md](./BATTERY_OPTIMIZATION.md) for tuning performance
 
 ## License
 
@@ -152,9 +189,3 @@ TBD
 ## Contributing
 
 TBD
-
-## Documentation
-
-- Full specification: `.claude/context/SPEC.md`
-- Architecture details: Coming soon
-- Protocol specifications: Coming soon

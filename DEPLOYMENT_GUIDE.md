@@ -1,7 +1,7 @@
-# MeshLink iOS Device Deployment Guide
+# Kinu iOS Device Deployment Guide
 
 ## Overview
-This guide walks you through deploying MeshLink to your physical iOS devices (iPhone + iPad) for BLE mesh networking testing.
+This guide walks you through deploying Kinu to your physical iOS devices (iPhone + iPad) for BLE mesh networking testing.
 
 ---
 
@@ -43,8 +43,8 @@ cd ..
      - Click **+** → Add Apple ID
      - Sign in with your personal Apple ID
 
-6. **Bundle Identifier** should be: `com.meshlink.mobile`
-   - If there's a conflict, change it to: `com.YOUR_NAME.meshlink`
+6. **Bundle Identifier** should be: `com.kinuchat.mobile`
+   - If there's a conflict, change it to: `com.YOUR_NAME.kinu`
 
 7. Xcode will automatically create a **Provisioning Profile**
 

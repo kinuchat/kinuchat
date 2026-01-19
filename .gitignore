@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+.pub-cache/
+.dart_tool/
+build/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+*.swp
+
+# Flutter/Dart
+*.log
+*.g.dart
+*.freezed.dart
+*.drift.dart
+pubspec.lock
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Flutter/flutter_export_environment.sh
+
+# Android
+android/.gradle/
+android/local.properties
+*.apk
+*.aab
+
+# Rust
+target/
+Cargo.lock
+
+# Environment
+.env
+.env.local
+*.local
+
+# Build outputs
+*.db
+*.sqlite
+
+# Claude session files (internal)
+SESSION_STATE.md
+START_HERE.md
+CRITICAL_FIXES_APPLIED.md
+READY_TO_DEPLOY.md
+.claude/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
