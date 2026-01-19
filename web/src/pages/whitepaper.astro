@@ -573,7 +573,7 @@ ANONYMOUS NAME DERIVATION:
   adjective = WORDLIST_ADJ[hash[0] % len(WORDLIST_ADJ)]
   noun      = WORDLIST_NOUN[hash[1] % len(WORDLIST_NOUN)]
   number    = hash[2] % 100
-  name      = "{adjective}-{noun}-{number}"
+  name      = "{'{'}adjective{'}'}-{'{'}noun{'}'}-{'{'}number{'}'}"
   // Example: "brave-river-42"</pre>
           </div>
           <p class="text-slate-600">
@@ -611,14 +611,14 @@ ANONYMOUS NAME DERIVATION:
           <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6 not-prose">
             <pre class="text-xs md:text-sm text-slate-300 overflow-x-auto">
 RELAY ENVELOPE:
-{
+{'{'}
   "recipient_key_hash": base64(SHA256(recipient_X25519_public)),
   "encrypted_payload":  base64(noise_encrypted_packet),
   "ttl_hours":          4,
   "priority":           "normal" | "urgent" | "emergency",
   "nonce":              base64(random(16)),
   "created_at":         unix_milliseconds
-}</pre>
+{'}'}</pre>
           </div>
           <p class="text-slate-600 mt-4">
             <strong class="text-slate-800">Privacy Guarantees:</strong>
@@ -676,7 +676,7 @@ POST /relay/upload
   Auth: None (rate limited by IP)
   Action: Store envelope keyed by recipient_key_hash with TTL
 
-GET /relay/poll?key_hash={hash}
+GET /relay/poll?key_hash={'{'}hash{'}'}
   Auth: None
   Action: Return and delete all envelopes for key_hash
 
