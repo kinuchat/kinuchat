@@ -1,0 +1,19 @@
+{
+  "elements": {},
+  "imports": [
+    "package:meshlink_core/crypto/identity_service.dart",
+    "package:meshlink_core/crypto/secure_storage.dart",
+    "package:meshlink_core/models/identity.dart",
+    "package:meshlink_core/models/key_pair.dart",
+    "package:meshlink_core/models/message.dart",
+    "package:meshlink_core/models/contact.dart",
+    "package:meshlink_core/transport/transport_manager.dart",
+    "package:meshlink_core/transport/cloud_transport.dart",
+    "package:meshlink_core/transport/mesh_transport.dart",
+    "package:meshlink_core/transport/bridge_transport.dart",
+    "package:meshlink_core/database/app_database.dart",
+    "package:meshlink_core/auth/account.dart",
+    "package:meshlink_core/auth/auth_service.dart",
+    "package:meshlink_core/auth/passkey_service.dart"
+  ]
+}

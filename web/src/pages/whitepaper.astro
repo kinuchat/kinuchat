@@ -1,0 +1,326 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Whitepaper - Kinu" description="Technical overview of Kinu's hybrid cloud/mesh architecture, encryption protocols, and privacy-first design.">
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/logo.png" alt="Kinu" class="h-10 w-auto" />
+      </a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="/#features" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</a>
+        <a href="/#why" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Why Kinu</a>
+        <a href="/whitepaper" class="text-slate-900 text-sm font-medium">Whitepaper</a>
+        <a href="/#notify" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          Get Early Access
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-24 pb-16">
+    <article class="max-w-4xl mx-auto px-6">
+      <header class="mb-12 text-center">
+        <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2 mb-6">
+          <span class="text-blue-600 text-sm font-medium">Technical Document</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-slate-900">Kinu Whitepaper</h1>
+        <p class="text-xl text-slate-600">
+          A Hybrid Cloud/Mesh Architecture for Private, Resilient Communication
+        </p>
+        <p class="text-slate-500 mt-4">Version 1.0 - January 2025</p>
+      </header>
+
+      <div class="prose prose-lg max-w-none">
+        <nav class="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-12">
+          <h2 class="text-lg font-semibold mb-4 mt-0 text-slate-900">Table of Contents</h2>
+          <ol class="space-y-2 text-slate-600 list-decimal list-inside">
+            <li><a href="#abstract" class="hover:text-slate-900 transition-colors">Abstract</a></li>
+            <li><a href="#introduction" class="hover:text-slate-900 transition-colors">Introduction</a></li>
+            <li><a href="#architecture" class="hover:text-slate-900 transition-colors">System Architecture</a></li>
+            <li><a href="#encryption" class="hover:text-slate-900 transition-colors">Encryption & Security</a></li>
+            <li><a href="#mesh" class="hover:text-slate-900 transition-colors">Mesh Networking</a></li>
+            <li><a href="#hybrid" class="hover:text-slate-900 transition-colors">Hybrid Transport</a></li>
+            <li><a href="#rally" class="hover:text-slate-900 transition-colors">Rally Mode</a></li>
+            <li><a href="#future" class="hover:text-slate-900 transition-colors">Future Work</a></li>
+          </ol>
+        </nav>
+
+        <section id="abstract" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">1. Abstract</h2>
+          <p class="text-slate-600">
+            Kinu is a privacy-first messaging application that combines end-to-end encryption with mesh networking capabilities.
+            Unlike traditional messaging apps that rely solely on internet connectivity, Kinu provides a hybrid transport layer
+            that seamlessly switches between cloud-based Matrix protocol communication and local Bluetooth Low Energy (BLE)
+            mesh networking.
+          </p>
+          <p class="text-slate-600">
+            This architecture ensures that users can communicate securely regardless of network availability, making Kinu
+            suitable for everyday use while also providing critical communication capabilities during network outages,
+            natural disasters, or in areas with limited connectivity.
+          </p>
+        </section>
+
+        <section id="introduction" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">2. Introduction</h2>
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">2.1 The Privacy Problem</h3>
+          <p class="text-slate-600">
+            Modern messaging applications face two fundamental challenges: privacy and reliability. Most popular
+            messaging platforms collect extensive metadata, scan message contents for advertising purposes, and
+            maintain centralized infrastructure that creates single points of failure and surveillance.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">2.2 The Connectivity Problem</h3>
+          <p class="text-slate-600">
+            Traditional messaging apps are entirely dependent on internet connectivity. During natural disasters,
+            large-scale events, or in regions with infrastructure limitations, users lose their primary means
+            of digital communication precisely when they need it most.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">2.3 Our Solution</h3>
+          <p class="text-slate-600">
+            Kinu addresses both challenges through a hybrid architecture that provides:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2">
+            <li>End-to-end encryption using the Matrix protocol's Olm/Megolm implementation</li>
+            <li>Zero-knowledge server architecture where servers cannot read message contents</li>
+            <li>BLE mesh networking for communication without internet connectivity</li>
+            <li>Automatic transport selection based on network conditions and peer proximity</li>
+            <li>Unified message history across all transport methods</li>
+          </ul>
+        </section>
+
+        <section id="architecture" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">3. System Architecture</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">3.1 Layer Overview</h3>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6">
+            <pre class="text-sm text-slate-300 overflow-x-auto">
+┌─────────────────────────────────────────────────┐
+│                 Application Layer               │
+│         (Flutter UI, State Management)          │
+├─────────────────────────────────────────────────┤
+│                  Domain Layer                   │
+│    (Message Handling, Contact Management)       │
+├─────────────────────────────────────────────────┤
+│               Transport Manager                 │
+│     (Automatic Selection & Failover)            │
+├──────────────┬──────────────┬───────────────────┤
+│ Cloud        │ Mesh         │ Bridge            │
+│ Transport    │ Transport    │ Transport         │
+│ (Matrix)     │ (BLE)        │ (Relay)           │
+├──────────────┴──────────────┴───────────────────┤
+│              Encryption Layer                   │
+│        (E2E Encryption, Key Management)         │
+├─────────────────────────────────────────────────┤
+│                Storage Layer                    │
+│         (Encrypted Local Database)              │
+└─────────────────────────────────────────────────┘
+            </pre>
+          </div>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">3.2 Transport Selection Matrix</h3>
+          <p class="text-slate-600">
+            The Transport Manager evaluates multiple factors to select the optimal transport:
+          </p>
+          <div class="overflow-x-auto my-6">
+            <table class="w-full text-sm border border-slate-200 rounded-lg overflow-hidden">
+              <thead>
+                <tr class="bg-slate-100 border-b border-slate-200">
+                  <th class="text-left py-3 px-4 text-slate-700">Condition</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Primary</th>
+                  <th class="text-left py-3 px-4 text-slate-700">Fallback</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600">
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Internet + Peer Nearby</td>
+                  <td class="py-3 px-4">Cloud</td>
+                  <td class="py-3 px-4">Mesh</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">Internet + Peer Remote</td>
+                  <td class="py-3 px-4">Cloud</td>
+                  <td class="py-3 px-4">Bridge</td>
+                </tr>
+                <tr class="border-b border-slate-100">
+                  <td class="py-3 px-4">No Internet + Peer Nearby</td>
+                  <td class="py-3 px-4">Mesh</td>
+                  <td class="py-3 px-4">Store & Forward</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4">No Internet + Peer Remote</td>
+                  <td class="py-3 px-4">Mesh (Multi-hop)</td>
+                  <td class="py-3 px-4">Queue for Later</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="encryption" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">4. Encryption & Security</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">4.1 Key Hierarchy</h3>
+          <p class="text-slate-600">
+            Kinu uses a hierarchical key structure for maximum security:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li><strong class="text-slate-800">Identity Keys (Ed25519):</strong> Long-term signing keys for device identity</li>
+            <li><strong class="text-slate-800">Pre-Keys (X25519):</strong> One-time keys for session establishment</li>
+            <li><strong class="text-slate-800">Session Keys:</strong> Ephemeral keys derived via Double Ratchet algorithm</li>
+            <li><strong class="text-slate-800">Message Keys:</strong> Per-message symmetric keys for content encryption</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">4.2 Protocol Stack</h3>
+          <p class="text-slate-600">
+            For cloud transport, Kinu uses the Matrix protocol's encryption stack:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li><strong class="text-slate-800">Olm:</strong> 1:1 encrypted sessions using Double Ratchet</li>
+            <li><strong class="text-slate-800">Megolm:</strong> Group encryption with efficient key distribution</li>
+            <li><strong class="text-slate-800">Cross-signing:</strong> Device verification and trust establishment</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">4.3 Mesh Encryption</h3>
+          <p class="text-slate-600">
+            For mesh transport, Kinu uses the Noise Protocol Framework with the XX handshake pattern:
+          </p>
+          <div class="bg-slate-900 border border-slate-700 rounded-lg p-6 my-6">
+            <pre class="text-sm text-slate-300 overflow-x-auto">
+XX Pattern:
+  -&gt; e
+  &lt;- e, ee, s, es
+  -&gt; s, se
+
+Cipher: ChaChaPoly
+Hash: BLAKE2s
+DH: X25519
+            </pre>
+          </div>
+        </section>
+
+        <section id="mesh" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">5. Mesh Networking</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">5.1 BLE Advertisement</h3>
+          <p class="text-slate-600">
+            Kinu devices advertise their presence using BLE advertising packets containing:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li>Rotating peer ID (derived from identity key, changes hourly)</li>
+            <li>Protocol version</li>
+            <li>Capability flags (relay enabled, message queue depth)</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">5.2 Message Routing</h3>
+          <p class="text-slate-600">
+            Messages in the mesh network use a flooding-based routing protocol with TTL limits:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li>Maximum TTL: 10 hops</li>
+            <li>Deduplication via message ID bloom filters</li>
+            <li>Priority queuing for acknowledged delivery</li>
+            <li>Automatic retry with exponential backoff</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">5.3 Store and Forward</h3>
+          <p class="text-slate-600">
+            When the recipient is not immediately reachable, intermediate nodes can:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li>Store encrypted messages for up to 24 hours</li>
+            <li>Forward when the recipient comes into range</li>
+            <li>Optionally bridge to cloud transport when internet becomes available</li>
+          </ul>
+        </section>
+
+        <section id="hybrid" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">6. Hybrid Transport</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">6.1 Seamless Switching</h3>
+          <p class="text-slate-600">
+            Kinu's Transport Manager monitors network conditions and automatically switches between
+            transports without user intervention. The transition is seamless—users see a unified
+            conversation thread regardless of which transport delivered each message.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">6.2 Message Deduplication</h3>
+          <p class="text-slate-600">
+            Messages sent over multiple transports (e.g., mesh and cloud) are deduplicated using
+            a deterministic message ID derived from the content hash and sender identity. This
+            ensures that messages are never displayed twice, even when delivered via multiple paths.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">6.3 Bridge Transport</h3>
+          <p class="text-slate-600">
+            Bridge nodes are Kinu devices with both internet and BLE connectivity that can relay
+            messages between the mesh network and cloud transport. This creates connectivity
+            pathways even when only a few devices in an area have internet access.
+          </p>
+        </section>
+
+        <section id="rally" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">7. Rally Mode</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">7.1 Privacy-Preserving Location Sharing</h3>
+          <p class="text-slate-600">
+            Rally Mode allows users to set a meeting point that remains encrypted until all
+            participants are within a specified proximity threshold. This is achieved through:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li>Geohash-based location encoding</li>
+            <li>Threshold proximity verification without revealing exact positions</li>
+            <li>Progressive disclosure as participants approach</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">7.2 Server Blindness</h3>
+          <p class="text-slate-600">
+            The Rally Mode protocol ensures that:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 my-4">
+            <li>Servers never see the actual meeting location</li>
+            <li>Only participants can verify proximity</li>
+            <li>Location data is never stored unencrypted</li>
+          </ul>
+        </section>
+
+        <section id="future" class="mb-12">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">8. Future Work</h2>
+          <ul class="list-disc list-inside text-slate-600 space-y-2">
+            <li>WiFi Direct support for higher bandwidth mesh connections</li>
+            <li>LoRa integration for extended range in rural areas</li>
+            <li>Decentralized identity verification without centralized authorities</li>
+            <li>SDK for third-party integration</li>
+            <li>Protocol standardization and interoperability</li>
+          </ul>
+        </section>
+
+        <section class="mt-16 pt-8 border-t border-slate-200">
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">References</h2>
+          <ol class="list-decimal list-inside text-slate-600 space-y-2 text-sm">
+            <li>Matrix.org Foundation. "Matrix Specification." https://spec.matrix.org/</li>
+            <li>Perrin, T. "The Noise Protocol Framework." https://noiseprotocol.org/</li>
+            <li>Marlinspike, M. "The Double Ratchet Algorithm." https://signal.org/docs/</li>
+            <li>Bluetooth SIG. "Bluetooth Mesh Networking." https://www.bluetooth.com/</li>
+          </ol>
+        </section>
+      </div>
+
+      <div class="mt-16 text-center">
+        <a href="/#notify" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all">
+          Get Early Access to Kinu
+        </a>
+      </div>
+    </article>
+  </main>
+
+  <footer class="border-t border-slate-200 py-8 bg-white">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <p class="text-slate-500 text-sm">
+        &copy; 2025 Kinu. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</Layout>

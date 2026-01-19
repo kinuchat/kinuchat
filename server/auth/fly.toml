@@ -1,0 +1,43 @@
+# Fly.io configuration for Kinu Auth Server
+# See https://fly.io/docs/reference/configuration/ for reference
+
+app = "kinu-auth"
+primary_region = "sjc"  # San Jose - adjust to your preferred region
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+# Persistent volume for SQLite database
+[mounts]
+  source = "kinu_auth_data"
+  destination = "/data"
+
+[env]
+  LISTEN_ADDR = "0.0.0.0:3000"
+  RUST_LOG = "meshlink_auth=info,tower_http=info"
+  DATABASE_URL = "sqlite:/data/kinu_auth.db?mode=rwc"
+  WEBAUTHN_RP_ID = "kinuchat.com"
+  WEBAUTHN_RP_ORIGIN = "https://kinuchat.com"
+  MATRIX_HOMESERVER_URL = "https://matrix.kinuchat.com"
+  MATRIX_SERVER_NAME = "kinuchat.com"
+
+# Secrets to set via CLI (do NOT put actual values here):
+# fly secrets set JWT_SECRET="$(openssl rand -base64 32)" --app kinu-auth
+# fly secrets set EMAIL_ENCRYPTION_KEY="$(openssl rand -hex 32)" --app kinu-auth
+# fly secrets set MATRIX_REGISTRATION_SECRET="your-dendrite-shared-secret" --app kinu-auth
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

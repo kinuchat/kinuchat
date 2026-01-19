@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:dio/dio.dart",
+    "package:meshlink_core/auth/account.dart"
+  ]
+}

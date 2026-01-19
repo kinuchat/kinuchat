@@ -1,0 +1,53 @@
+name: meshlink
+repository: https://github.com/yourusername/meshlink
+
+packages:
+  - apps/**
+  - packages/**
+
+command:
+  bootstrap:
+    runPubGetInParallel: true
+    runPubGetOffline: false
+    enforceLockfile: false
+
+  version:
+    branch: main
+    message: "chore(release): publish packages"
+
+scripts:
+  analyze:
+    description: Run Dart analyzer on all packages
+    run: melos exec -- dart analyze . --fatal-infos
+
+  format:
+    description: Format all Dart code
+    run: melos exec -- dart format .
+
+  format:check:
+    description: Check formatting of all Dart code
+    run: melos exec -- dart format --set-exit-if-changed .
+
+  test:
+    description: Run all tests
+    run: melos exec --fail-fast -- flutter test
+
+  test:coverage:
+    description: Run tests with coverage
+    run: melos exec --fail-fast -- flutter test --coverage
+
+  build:runner:
+    description: Run build_runner in all packages
+    run: melos exec --depends-on="build_runner" -- dart run build_runner build --delete-conflicting-outputs
+
+  build:runner:watch:
+    description: Watch and run build_runner in all packages
+    run: melos exec --depends-on="build_runner" -- dart run build_runner watch --delete-conflicting-outputs
+
+  clean:
+    description: Clean all packages
+    run: melos exec -- flutter clean
+
+  get:
+    description: Get dependencies for all packages
+    run: melos exec -- flutter pub get

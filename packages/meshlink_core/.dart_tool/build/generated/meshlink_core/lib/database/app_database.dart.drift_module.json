@@ -1,0 +1,2710 @@
+{
+  "elements": {
+    "AppDatabase": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "AppDatabase"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 11424,
+        "name": "AppDatabase"
+      },
+      "references": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "contacts"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "conversations"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "messages"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "group_members"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_peers"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_routes"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_message_queue"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_seen_messages"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "rally_channel_members"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "rally_reports"
+        }
+      ],
+      "type": "database",
+      "tables": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "contacts"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "conversations"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "messages"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "group_members"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_peers"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_routes"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_message_queue"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "mesh_seen_messages"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "rally_channel_members"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "rally_reports"
+        }
+      ],
+      "views": [],
+      "includes": [],
+      "queries": [],
+      "schema_version": 3,
+      "daos": [],
+      "has_constructor_arg": true
+    },
+    "contacts": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "contacts"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 176,
+        "name": "Contacts"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 275,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Unique contact ID (mesh peer ID or Matrix user ID)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "display_name",
+          "nameInDart": "displayName",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 328,
+            "name": "displayName"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Display name",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "avatar",
+          "nameInDart": "avatar",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 412,
+            "name": "avatar"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Optional avatar URL or base64 data",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "public_key",
+          "nameInDart": "publicKey",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 500,
+            "name": "publicKey"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Ed25519 public key (hex encoded)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "exchange_public_key",
+          "nameInDart": "exchangePublicKey",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 596,
+            "name": "exchangePublicKey"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// X25519 public key for key exchange (hex encoded)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "verification_status",
+          "nameInDart": "verificationStatus",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 694,
+            "name": "verificationStatus"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('unverified')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Verification status (verified, unverified)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 829,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the contact was added",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "last_seen",
+          "nameInDart": "lastSeen",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 921,
+            "name": "lastSeen"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last time we saw this contact online",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_blocked",
+          "nameInDart": "isBlocked",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1006,
+            "name": "isBlocked"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this contact blocked",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": true,
+          "nameInSql": "last_mesh_rssi",
+          "nameInDart": "lastMeshRssi",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1143,
+            "name": "lastMeshRssi"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// RSSI when last seen on mesh (signal strength in dBm)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "last_mesh_seen",
+          "nameInDart": "lastMeshSeen",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1243,
+            "name": "lastMeshSeen"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last time seen via mesh network",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": true,
+          "nameInSql": "last_mesh_hop_count",
+          "nameInDart": "lastMeshHopCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1344,
+            "name": "lastMeshHopCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Hop count when last reached via mesh",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "preferred_transport",
+          "nameInDart": "preferredTransport",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1459,
+            "name": "preferredTransport"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Preferred transport hint (cloud, mesh, bridge)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Contacts",
+      "row_class_name": "ContactEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "conversations": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "conversations"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 1652,
+        "name": "Conversations"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1728,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Unique conversation ID",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "type",
+          "nameInDart": "type",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1809,
+            "name": "type"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Conversation type (direct, group, rally)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "name",
+          "nameInDart": "name",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1875,
+            "name": "name"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Display name for groups",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "avatar",
+          "nameInDart": "avatar",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 1946,
+            "name": "avatar"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Avatar for groups",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2039,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the conversation was created",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "last_message_at",
+          "nameInDart": "lastMessageAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2117,
+            "name": "lastMessageAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last message timestamp",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "unread_count",
+          "nameInDart": "unreadCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2203,
+            "name": "unreadCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(0)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Unread message count",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_muted",
+          "nameInDart": "isMuted",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2313,
+            "name": "isMuted"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this conversation muted",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_archived",
+          "nameInDart": "isArchived",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2426,
+            "name": "isArchived"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this conversation archived",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": true,
+          "nameInSql": "centroid_latitude",
+          "nameInDart": "centroidLatitude",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2579,
+            "name": "centroidLatitude"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel center latitude",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": true,
+          "nameInSql": "centroid_longitude",
+          "nameInDart": "centroidLongitude",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2675,
+            "name": "centroidLongitude"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel center longitude",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": true,
+          "nameInSql": "channel_radius_meters",
+          "nameInDart": "channelRadiusMeters",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2780,
+            "name": "channelRadiusMeters"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel coverage radius in meters",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "geohash",
+          "nameInDart": "geohash",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2896,
+            "name": "geohash"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel geohash (precision 6 = ~1.2km)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "creator_id",
+          "nameInDart": "creatorId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 2977,
+            "name": "creatorId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel creator ID",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": true,
+          "nameInSql": "max_message_age_hours",
+          "nameInDart": "maxMessageAgeHours",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3073,
+            "name": "maxMessageAgeHours"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally message TTL in hours (default 4)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_public",
+          "nameInDart": "isPublic",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3174,
+            "name": "isPublic"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(true)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this a public Rally channel",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "participant_count",
+          "nameInDart": "participantCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3288,
+            "name": "participantCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(0)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel participant count",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Conversations",
+      "row_class_name": "ConversationEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "messages": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "messages"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 3463,
+        "name": "Messages"
+      },
+      "references": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "conversations"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3575,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Unique message ID (SHA256 hash of content + timestamp + sender)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "conversation_id",
+          "nameInDart": "conversationId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3652,
+            "name": "conversationId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Conversation this message belongs to",
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:meshlink_core/database/app_database.dart",
+                  "name": "conversations"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "sender_id",
+          "nameInDart": "senderId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3758,
+            "name": "senderId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Sender ID (contact ID)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "content",
+          "nameInDart": "content",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3844,
+            "name": "content"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Message content (encrypted for storage)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "type",
+          "nameInDart": "type",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 3929,
+            "name": "type"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('text')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Message type (text, image, voice, file)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "status",
+          "nameInDart": "status",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4063,
+            "name": "status"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('pending')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Message status (pending, sent, delivered, read, failed)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "transport",
+          "nameInDart": "transport",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4183,
+            "name": "transport"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Transport used (cloud, mesh, bridge)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "timestamp",
+          "nameInDart": "timestamp",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4274,
+            "name": "timestamp"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the message was created",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "delivered_at",
+          "nameInDart": "deliveredAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4360,
+            "name": "deliveredAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the message was delivered",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "read_at",
+          "nameInDart": "readAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4454,
+            "name": "readAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the message was read",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_from_me",
+          "nameInDart": "isFromMe",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4537,
+            "name": "isFromMe"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this message from me",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "reply_to_id",
+          "nameInDart": "replyToId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4622,
+            "name": "replyToId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Reply to message ID (for threading)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "metadata",
+          "nameInDart": "metadata",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4723,
+            "name": "metadata"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Metadata JSON (for media, reactions, etc.)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Messages",
+      "row_class_name": "MessageEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "group_members": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "group_members"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 4890,
+        "name": "GroupMembers"
+      },
+      "references": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "conversations"
+        },
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "contacts"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 4962,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Auto-incrementing ID",
+          "constraints": [
+            {
+              "type": "primary",
+              "is_auto_increment": true
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "conversation_id",
+          "nameInDart": "conversationId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5045,
+            "name": "conversationId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Conversation (group) ID",
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:meshlink_core/database/app_database.dart",
+                  "name": "conversations"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "contact_id",
+          "nameInDart": "contactId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5139,
+            "name": "contactId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Contact ID",
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:meshlink_core/database/app_database.dart",
+                  "name": "contacts"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "role",
+          "nameInDart": "role",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5247,
+            "name": "role"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('member')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Member role (owner, admin, member)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "joined_at",
+          "nameInDart": "joinedAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5354,
+            "name": "joinedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the member joined",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "unique",
+          "columns": [
+            "conversation_id",
+            "contact_id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "GroupMembers",
+      "row_class_name": "GroupMemberEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "mesh_peers": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "mesh_peers"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 5569,
+        "name": "MeshPeers"
+      },
+      "references": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "contacts"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "mesh_peer_id",
+          "nameInDart": "meshPeerId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5688,
+            "name": "meshPeerId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Mesh peer ID (8 bytes from SHA256 of Ed25519 public key, hex encoded)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "public_key",
+          "nameInDart": "publicKey",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5787,
+            "name": "publicKey"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Ed25519 public key (hex encoded, for verification)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "exchange_public_key",
+          "nameInDart": "exchangePublicKey",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5883,
+            "name": "exchangePublicKey"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// X25519 public key for key exchange (hex encoded)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "display_name",
+          "nameInDart": "displayName",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 5986,
+            "name": "displayName"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Display name (optional, from peer announcement)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "rssi",
+          "nameInDart": "rssi",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6097,
+            "name": "rssi"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// RSSI (signal strength in dBm, updated on each scan)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "connection_state",
+          "nameInDart": "connectionState",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6209,
+            "name": "connectionState"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('discovered')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Connection state (discovered, connecting, connected, disconnected)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "last_seen",
+          "nameInDart": "lastSeen",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6353,
+            "name": "lastSeen"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last time we saw this peer in BLE scan",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "first_seen",
+          "nameInDart": "firstSeen",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6434,
+            "name": "firstSeen"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// First discovered timestamp",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "noise_session_state",
+          "nameInDart": "noiseSessionState",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6557,
+            "name": "noiseSessionState"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Noise session state (null, handshake_init, handshake_resp, established)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "noise_transport_state",
+          "nameInDart": "noiseTransportState",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6690,
+            "name": "noiseTransportState"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Noise transport state (encrypted session keys, serialized as JSON)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_contact",
+          "nameInDart": "isContact",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6790,
+            "name": "isContact"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Is this peer a contact we know?",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "contact_id",
+          "nameInDart": "contactId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 6918,
+            "name": "contactId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Contact ID if this peer is a known contact",
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:meshlink_core/database/app_database.dart",
+                  "name": "contacts"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "mesh_peer_id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "MeshPeers",
+      "row_class_name": "MeshPeerEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "mesh_routes": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "mesh_routes"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 7144,
+        "name": "MeshRoutes"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7214,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Auto-incrementing ID",
+          "constraints": [
+            {
+              "type": "primary",
+              "is_auto_increment": true
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "destination_peer_id",
+          "nameInDart": "destinationPeerId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7298,
+            "name": "destinationPeerId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Destination mesh peer ID",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "next_hop_peer_id",
+          "nameInDart": "nextHopPeerId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7405,
+            "name": "nextHopPeerId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Next hop peer ID (immediate neighbor to forward to)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "hop_count",
+          "nameInDart": "hopCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7498,
+            "name": "hopCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Hop count to destination (TTL calculation)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": false,
+          "nameInSql": "quality_score",
+          "nameInDart": "qualityScore",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7597,
+            "name": "qualityScore"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(1.0)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Route quality score (based on RSSI, success rate)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "last_used",
+          "nameInDart": "lastUsed",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7727,
+            "name": "lastUsed"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last time this route was used successfully",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "discovered_at",
+          "nameInDart": "discoveredAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7812,
+            "name": "discoveredAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When this route was discovered",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "expires_at",
+          "nameInDart": "expiresAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 7901,
+            "name": "expiresAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Route expires if not refreshed",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "MeshRoutes",
+      "row_class_name": "MeshRouteEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "mesh_message_queue": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "mesh_message_queue"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 8045,
+        "name": "MeshMessageQueue"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "message_id",
+          "nameInDart": "messageId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8137,
+            "name": "messageId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Message ID (same as Messages table)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "recipient_peer_id",
+          "nameInDart": "recipientPeerId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8207,
+            "name": "recipientPeerId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Recipient mesh peer ID",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "encrypted_packet",
+          "nameInDart": "encryptedPacket",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8306,
+            "name": "encryptedPacket"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Encrypted packet payload (hex encoded binary)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "queued_at",
+          "nameInDart": "queuedAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8391,
+            "name": "queuedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the message was queued",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "retry_count",
+          "nameInDart": "retryCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8452,
+            "name": "retryCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(0)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Retry count",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "last_retry_at",
+          "nameInDart": "lastRetryAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8557,
+            "name": "lastRetryAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last retry attempt",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "expires_at",
+          "nameInDart": "expiresAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8677,
+            "name": "expiresAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Expires after (store-and-forward TTL, max 24 hours)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "message_id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "MeshMessageQueue",
+      "row_class_name": "MeshMessageQueueEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "mesh_seen_messages": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "mesh_seen_messages"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 8874,
+        "name": "MeshSeenMessages"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "message_id",
+          "nameInDart": "messageId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 8960,
+            "name": "messageId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Message ID from packet header",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "seen_at",
+          "nameInDart": "seenAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9042,
+            "name": "seenAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When we first saw this message",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "expires_at",
+          "nameInDart": "expiresAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9164,
+            "name": "expiresAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Auto-cleanup after 1 hour (messages older than this can be forgotten)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "message_id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "MeshSeenMessages",
+      "row_class_name": "MeshSeenMessageEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "rally_channel_members": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "rally_channel_members"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 9371,
+        "name": "RallyChannelMembers"
+      },
+      "references": [
+        {
+          "library_uri": "package:meshlink_core/database/app_database.dart",
+          "name": "conversations"
+        }
+      ],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9450,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Auto-incrementing ID",
+          "constraints": [
+            {
+              "type": "primary",
+              "is_auto_increment": true
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "channel_id",
+          "nameInDart": "channelId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9526,
+            "name": "channelId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Rally channel ID",
+          "constraints": [
+            {
+              "type": "foreign_key",
+              "column": {
+                "table": {
+                  "library_uri": "package:meshlink_core/database/app_database.dart",
+                  "name": "conversations"
+                },
+                "name": "id"
+              },
+              "onUpdate": null,
+              "onDelete": null,
+              "initiallyDeferred": false
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "user_id",
+          "nameInDart": "userId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9643,
+            "name": "userId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// User ID (mesh peer ID or anonymous ID)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "display_name",
+          "nameInDart": "displayName",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9730,
+            "name": "displayName"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Display name (anonymous/pseudonymous/real)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "identity_type",
+          "nameInDart": "identityType",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9829,
+            "name": "identityType"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Identity type (anonymous, pseudonymous, verified)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "joined_at",
+          "nameInDart": "joinedAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 9916,
+            "name": "joinedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the user joined the channel",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "last_seen_at",
+          "nameInDart": "lastSeenAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10015,
+            "name": "lastSeenAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Last time the user was active in the channel",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "message_count",
+          "nameInDart": "messageCount",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10105,
+            "name": "messageCount"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(0)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Number of messages posted by this user",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "reputation_score",
+          "nameInDart": "reputationScore",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10219,
+            "name": "reputationScore"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(50)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Local reputation score (0-100)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "unique",
+          "columns": [
+            "channel_id",
+            "user_id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "RallyChannelMembers",
+      "row_class_name": "RallyChannelMemberEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "rally_reports": {
+      "id": {
+        "library_uri": "package:meshlink_core/database/app_database.dart",
+        "name": "rally_reports"
+      },
+      "declaration": {
+        "source_uri": "package:meshlink_core/database/app_database.dart",
+        "offset": 10477,
+        "name": "RallyReports"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10549,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Auto-incrementing ID",
+          "constraints": [
+            {
+              "type": "primary",
+              "is_auto_increment": true
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "reporter_id",
+          "nameInDart": "reporterId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10621,
+            "name": "reporterId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Who reported",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "reported_user_id",
+          "nameInDart": "reportedUserId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10686,
+            "name": "reportedUserId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Who was reported",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "message_id",
+          "nameInDart": "messageId",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10758,
+            "name": "messageId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Optional message ID",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "category",
+          "nameInDart": "category",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10866,
+            "name": "category"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Report category (spam, harassment, threats, csam)",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "notes",
+          "nameInDart": "notes",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 10929,
+            "name": "notes"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Additional notes",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "reported_at",
+          "nameInDart": "reportedAt",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 11012,
+            "name": "reportedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// When the report was made",
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_uploaded",
+          "nameInDart": "isUploaded",
+          "declaration": {
+            "source_uri": "package:meshlink_core/database/app_database.dart",
+            "offset": 11130,
+            "name": "isUploaded"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": "/// Whether report was uploaded to authorities (for credible threats)",
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "RallyReports",
+      "row_class_name": "RallyReportEntity",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    }
+  },
+  "imports": [
+    "package:drift/drift.dart",
+    "package:drift/native.dart"
+  ]
+}

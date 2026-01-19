@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+
+  /* Navy blue brand colors matching the logo */
+  --color-kinu-50: #eef2ff;
+  --color-kinu-100: #e0e7ff;
+  --color-kinu-200: #c7d2fe;
+  --color-kinu-300: #a5b4fc;
+  --color-kinu-400: #818cf8;
+  --color-kinu-500: #1e3a5f;
+  --color-kinu-600: #1a3353;
+  --color-kinu-700: #152a45;
+  --color-kinu-800: #112237;
+  --color-kinu-900: #0d1929;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll snap container */
+.scroll-container {
+  height: 100vh;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+}
+
+/* Scroll snap sections */
+.snap-section {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* Gradient text utility - navy blue */
+.gradient-text {
+  background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Silk thread animation */
+.silk-thread {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+}
+
+.silk-thread.animate {
+  animation: draw-thread 2s ease-out forwards;
+}
+
+@keyframes draw-thread {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Word fade animation */
+.word {
+  opacity: 0;
+  transform: translateY(10px);
+  display: inline-block;
+}
+
+.word.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+/* Ken Burns effect */
+.ken-burns {
+  animation: ken-burns 20s ease-out infinite alternate;
+}
+
+@keyframes ken-burns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.1) translate(-2%, -2%);
+  }
+}
+
+/* Message dot animation */
+.message-dot {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.message-dot.active {
+  opacity: 1;
+  transform: scale(1);
+  transition: all 0.3s ease;
+}
+
+/* Phone highlight */
+.phone-node {
+  opacity: 0.4;
+  transition: opacity 0.3s ease;
+}
+
+.phone-node.active {
+  opacity: 1;
+}
+
+/* Comparison item animation */
+.compare-item {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.compare-item.from-right {
+  transform: translateX(20px);
+}
+
+.compare-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.5s ease;
+}
+
+/* Image overlay gradient */
+.image-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 0%,
+    rgba(0, 0, 0, 0.4) 50%,
+    rgba(0, 0, 0, 0.2) 100%
+  );
+}
+
+/* Lenis smooth scroll */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .silk-thread,
+  .word,
+  .ken-burns,
+  .message-dot,
+  .phone-node,
+  .compare-item {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .scroll-container {
+    scroll-snap-type: none;
+  }
+}

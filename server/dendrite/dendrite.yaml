@@ -1,0 +1,113 @@
+# Dendrite Configuration for Kinu Chat
+# Environment variables are substituted at runtime via entrypoint.sh
+
+version: 2
+
+global:
+  # The domain name of the server. This is used as the domain part of user IDs.
+  server_name: ${SERVER_NAME:-kinuchat.com}
+
+  # Path to the private key for signing Matrix protocol messages
+  private_key: /var/dendrite/matrix_key.pem
+
+  # The paths to look for the TLS certificate and private key
+  # Not needed when running behind Fly.io's proxy (handles TLS)
+
+  # Database configuration - using PostgreSQL on Fly.io
+  database:
+    connection_string: ${DATABASE_URL}
+    max_open_conns: 90
+    max_idle_conns: 5
+    conn_max_lifetime: -1
+
+  # JetStream configuration for NATS
+  jetstream:
+    storage_path: /var/dendrite/jetstream
+    topic_prefix: Dendrite
+
+  # Cache settings
+  cache:
+    max_size_estimated: 1gb
+    max_age: 1h
+
+# Client API configuration
+client_api:
+  # Disable open registration - users are created via Kinu auth service
+  registration_disabled: true
+
+  # Shared secret for admin registration (used by Kinu auth service)
+  registration_shared_secret: "${REGISTRATION_SECRET}"
+
+  # Enable guest access
+  guests_disabled: true
+
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    threshold: 20
+    cooloff_ms: 500
+    exempt_user_ids: []
+
+# Federation API configuration (disabled for now)
+federation_api:
+  # Disable federation for private deployment
+  disable_tls_validation: false
+  disable_http_keepalives: false
+
+  # Key server configuration
+  key_perspectives:
+    - server_name: matrix.org
+      keys:
+        - key_id: ed25519:auto
+          public_key: Noi6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
+        - key_id: ed25519:a]RNgI
+          public_key: ajLn6WqcDj0QmPxCNQqgezwTlBKrfqehY1u2FyWP9uYw
+
+  # Prefer direct fetches
+  prefer_direct_fetch: true
+
+# Media API configuration
+media_api:
+  # Path to store uploaded media
+  base_path: /var/dendrite/media
+
+  # Maximum file size (10MB)
+  max_file_size_bytes: 10485760
+
+  # Dynamic thumbnails
+  dynamic_thumbnails: true
+
+  # Thumbnail sizes
+  max_thumbnail_generators: 10
+
+# Room server configuration
+room_server:
+  # Maximum room input size
+  max_room_input_bytes: 65536
+
+# Sync API configuration
+sync_api:
+  # Search is disabled to save resources
+  search:
+    enabled: false
+
+  # Fulltext configuration
+  fulltext:
+    enabled: false
+
+# User API configuration
+user_api:
+  # BCrypt cost for password hashing
+  bcrypt_cost: 10
+
+  # Auto-join rooms (none for now)
+  auto_join_rooms: []
+
+# MSC configurations (experimental Matrix features)
+mscs:
+  mscs: []
+
+# Logging configuration
+logging:
+  - type: std
+    level: info

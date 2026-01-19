@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Privacy Policy - Kinu" description="Kinu's privacy policy. We believe your conversations are your business.">
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/logo.png" alt="Kinu" class="h-10 w-auto" />
+      </a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="/#features" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Features</a>
+        <a href="/whitepaper" class="text-slate-600 hover:text-slate-900 transition-colors text-sm">Whitepaper</a>
+        <a href="/#notify" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+          Get Early Access
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="pt-24 pb-16">
+    <article class="max-w-3xl mx-auto px-6">
+      <header class="mb-12">
+        <h1 class="text-4xl font-bold mb-4 text-slate-900">Privacy Policy</h1>
+        <p class="text-slate-500">Last updated: January 2025</p>
+      </header>
+
+      <div class="prose prose-lg max-w-none space-y-8">
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Our Privacy Philosophy</h2>
+          <p class="text-slate-600">
+            Kinu was built with one core belief: <strong class="text-slate-900">your conversations are your business</strong>.
+            We've designed our systems so that we cannot read your messages, even if we wanted to. This isn't just a policy—it's
+            a technical guarantee built into our architecture.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">What We Collect</h2>
+
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">Account Information</h3>
+          <ul class="list-disc list-inside text-slate-600 space-y-2">
+            <li><strong class="text-slate-800">Handle:</strong> Your chosen username (e.g., @alice)</li>
+            <li><strong class="text-slate-800">Display Name:</strong> The name shown to your contacts</li>
+            <li><strong class="text-slate-800">Recovery Email (optional):</strong> Encrypted and used only for account recovery</li>
+          </ul>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">What We DO NOT Collect</h3>
+          <ul class="list-disc list-inside text-slate-600 space-y-2">
+            <li>Message contents (encrypted end-to-end, we cannot read them)</li>
+            <li>Your contacts list</li>
+            <li>Your location (Rally Mode locations are encrypted client-side)</li>
+            <li>Device identifiers for advertising</li>
+            <li>Usage analytics for advertising purposes</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Encryption</h2>
+          <p class="text-slate-600">
+            All messages are encrypted end-to-end using the Matrix protocol's Olm/Megolm encryption.
+            This means:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li>Only you and your recipients can read your messages</li>
+            <li>Our servers only see encrypted data</li>
+            <li>Even if our servers were compromised, your messages remain private</li>
+            <li>We cannot comply with requests to read your messages because we technically cannot</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Mesh Networking Data</h2>
+          <p class="text-slate-600">
+            When using mesh networking features:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li>Messages are encrypted before being transmitted over Bluetooth</li>
+            <li>Relay devices cannot read the contents of messages they forward</li>
+            <li>Peer discovery uses rotating identifiers to prevent tracking</li>
+            <li>No mesh network activity is logged on our servers</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Data Storage</h2>
+          <h3 class="text-xl font-semibold mb-3 text-slate-800">On Your Device</h3>
+          <p class="text-slate-600">
+            Your messages, contacts, and encryption keys are stored locally on your device in an encrypted database.
+            This data never leaves your device unencrypted.
+          </p>
+
+          <h3 class="text-xl font-semibold mb-3 mt-6 text-slate-800">On Our Servers</h3>
+          <p class="text-slate-600">
+            Our servers store:
+          </p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li>Encrypted message data (we cannot decrypt it)</li>
+            <li>Account metadata (handle, encrypted email)</li>
+            <li>Public encryption keys for message delivery</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Data Retention</h2>
+          <ul class="list-disc list-inside text-slate-600 space-y-2">
+            <li>Account data is retained until you delete your account</li>
+            <li>Encrypted messages are stored for delivery and then can be deleted by you</li>
+            <li>Server logs are automatically purged after 30 days</li>
+            <li>Mesh network data is never persistently stored on our servers</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Your Rights</h2>
+          <p class="text-slate-600">You have the right to:</p>
+          <ul class="list-disc list-inside text-slate-600 space-y-2 mt-4">
+            <li><strong class="text-slate-800">Access:</strong> Request a copy of your account data</li>
+            <li><strong class="text-slate-800">Deletion:</strong> Delete your account and all associated data</li>
+            <li><strong class="text-slate-800">Portability:</strong> Export your data in a standard format</li>
+            <li><strong class="text-slate-800">Correction:</strong> Update your account information</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Third Parties</h2>
+          <p class="text-slate-600">
+            We do not sell, rent, or share your personal information with third parties for marketing purposes.
+            We do not use third-party analytics or advertising services that would have access to your data.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Law Enforcement</h2>
+          <p class="text-slate-600">
+            Due to our end-to-end encryption, we cannot provide message contents to law enforcement even if legally
+            compelled to do so. We will notify users of legal requests unless prohibited by law.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Changes to This Policy</h2>
+          <p class="text-slate-600">
+            We will notify users of any material changes to this privacy policy via the app and email (if provided).
+            Continued use of Kinu after changes constitutes acceptance of the updated policy.
+          </p>
+        </section>
+
+        <section>
+          <h2 class="text-2xl font-bold mb-4 text-slate-900">Contact Us</h2>
+          <p class="text-slate-600">
+            For privacy-related questions or requests, contact us at:
+            <a href="mailto:privacy@kinuchat.com" class="text-blue-600 hover:text-blue-700">privacy@kinuchat.com</a>
+          </p>
+        </section>
+      </div>
+    </article>
+  </main>
+
+  <footer class="border-t border-slate-200 py-8 bg-white">
+    <div class="max-w-6xl mx-auto px-6 text-center">
+      <p class="text-slate-500 text-sm">
+        &copy; 2026 Kinu Foundation. All rights reserved.
+      </p>
+    </div>
+  </footer>
+</Layout>

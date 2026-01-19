@@ -1,0 +1,36 @@
+name: meshlink_core
+description: Core business logic for MeshLink - crypto, mesh networking, and transport management
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  # Crypto
+  pointycastle: ^3.9.1
+  cryptography: ^2.7.0
+
+  # Database
+  drift: ^2.22.0
+  sqlite3: ^2.4.6
+
+  # Networking
+  dio: ^5.7.0
+
+  # Utils
+  uuid: ^4.5.1
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  convert: ^3.1.1
+  crypto: ^3.0.6
+
+dev_dependencies:
+  # Testing
+  test: ^1.25.8
+
+  # Code Generation
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.9.2
+  drift_dev: ^2.22.0

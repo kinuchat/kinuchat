@@ -1,0 +1,8 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter_blue_plus/flutter_blue_plus.dart",
+    "package:meshlink_core/models/identity.dart",
+    "package:meshlink_core/mesh/ble_constants.dart"
+  ]
+}

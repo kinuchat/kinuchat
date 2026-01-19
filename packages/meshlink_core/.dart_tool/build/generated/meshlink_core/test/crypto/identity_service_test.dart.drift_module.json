@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:test/test.dart",
+    "package:meshlink_core/crypto/identity_service.dart",
+    "package:meshlink_core/crypto/secure_storage.dart",
+    "package:meshlink_core/models/identity.dart",
+    "asset:meshlink_core/test/crypto/mock_secure_storage.dart"
+  ]
+}

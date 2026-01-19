@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:crypto/crypto.dart",
+    "package:cryptography/cryptography.dart",
+    "package:meshlink_core/models/identity.dart",
+    "package:meshlink_core/models/key_pair.dart",
+    "package:meshlink_core/crypto/secure_storage.dart"
+  ]
+}

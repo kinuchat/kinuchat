@@ -1,0 +1,14 @@
+# Fly.io files (not needed in container)
+fly.toml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md

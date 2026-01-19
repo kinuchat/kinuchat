@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:test/test.dart",
+    "package:meshlink_core/utils/geohash.dart"
+  ]
+}

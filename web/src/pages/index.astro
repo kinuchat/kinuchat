@@ -1,0 +1,627 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Kinu - Private Messaging That Works When Networks Don't">
+  <!-- Fixed Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+    <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3">
+        <img src="/logo.png" alt="Kinu" class="h-12 md:h-16 w-auto" />
+      </a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#stories" class="text-slate-600 hover:text-slate-900 transition-colors">Why Kinu</a>
+        <a href="#how" class="text-slate-600 hover:text-slate-900 transition-colors">How It Works</a>
+        <a href="/whitepaper" class="text-slate-600 hover:text-slate-900 transition-colors">Whitepaper</a>
+        <a href="#cta" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">
+          Get Early Access
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Scroll Progress Indicator -->
+  <div class="fixed top-0 left-0 h-1 bg-blue-600 z-[100] transition-all duration-150" id="progress-bar" style="width: 0%"></div>
+
+  <main>
+    <!-- Section 1: Hero with Silk Quote -->
+    <section class="snap-section min-h-screen flex flex-col justify-center px-6 pt-24 pb-12 bg-white relative overflow-hidden" id="hero">
+      <!-- Animated silk threads background -->
+      <svg class="absolute inset-0 w-full h-full opacity-10 pointer-events-none" id="silk-svg">
+        <path class="silk-thread" d="M0,100 Q200,50 400,100 T800,100" stroke="#1e3a5f" stroke-width="1" fill="none"/>
+        <path class="silk-thread" d="M0,200 Q300,150 500,200 T1000,180" stroke="#1e3a5f" stroke-width="1" fill="none" style="animation-delay: 0.3s"/>
+        <path class="silk-thread" d="M0,300 Q250,280 450,320 T900,290" stroke="#1e3a5f" stroke-width="1" fill="none" style="animation-delay: 0.6s"/>
+        <path class="silk-thread" d="M100,0 Q150,200 100,400 T120,800" stroke="#1e3a5f" stroke-width="1" fill="none" style="animation-delay: 0.9s"/>
+        <path class="silk-thread" d="M300,0 Q350,300 280,500 T320,900" stroke="#1e3a5f" stroke-width="1" fill="none" style="animation-delay: 1.2s"/>
+      </svg>
+
+      <div class="max-w-4xl mx-auto relative z-10">
+        <!-- The silk meaning -->
+        <div class="mb-8">
+          <p class="text-base text-slate-400 mb-4 font-medium tracking-widest" id="kinu-label">絹 · KINU · SILK</p>
+          <blockquote class="text-lg md:text-xl text-slate-500 leading-relaxed border-l-2 border-slate-200 pl-6 italic" id="quote">
+            Silk is spun from countless threads, each fragile alone, yet woven together they become unbreakable.
+            For centuries, secrets traveled the Silk Road: messages carried not by one path, but by many.
+          </blockquote>
+        </div>
+
+        <!-- Main headline -->
+        <div class="mt-12" id="headline-container">
+          <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-6" id="headline">
+            A messaging app that weaves connections the way silk weaves threads.
+          </h1>
+          <p class="text-lg md:text-xl text-slate-600 leading-relaxed max-w-3xl" id="subheadline">
+            Kinu is encrypted messaging that doesn't depend on cell towers, WiFi, or any single point of failure.
+            When the internet goes dark, Kinu keeps you connected through a mesh of nearby devices.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Fixed Story Indicator -->
+    <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex gap-2 opacity-0 transition-opacity duration-300" id="story-indicator">
+      <div class="story-dot w-8 h-1 bg-white/30 rounded transition-all duration-300" data-index="0"></div>
+      <div class="story-dot w-8 h-1 bg-white/30 rounded transition-all duration-300" data-index="1"></div>
+      <div class="story-dot w-8 h-1 bg-white/30 rounded transition-all duration-300" data-index="2"></div>
+      <div class="story-dot w-8 h-1 bg-white/30 rounded transition-all duration-300" data-index="3"></div>
+    </div>
+
+    <!-- Section 2: Story - Mountain Trail -->
+    <section class="snap-section min-h-screen relative flex items-center story-section" data-story="0" id="stories">
+      <div class="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=1920&q=80"
+          alt="Hiker on mountain trail"
+          class="w-full h-full object-cover ken-burns"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 image-overlay"></div>
+      </div>
+      <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
+        <div class="max-w-xl">
+          <p class="text-sm font-semibold text-blue-400 uppercase tracking-wider mb-4 story-label">The Moment You'll Need This</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 story-title">
+            You're three miles from the trailhead.
+          </h2>
+          <p class="text-lg md:text-xl text-slate-200 leading-relaxed story-text">
+            No signal. Your group split up an hour ago. With any other app, you'd be shouting into the wind.
+            With Kinu, your message hops from phone to phone until it reaches them, even if they're a mile away.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Story - Power Outage -->
+    <section class="snap-section min-h-screen relative flex items-center story-section" data-story="1">
+      <div class="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1920&q=80"
+          alt="Dark city street at night"
+          class="w-full h-full object-cover ken-burns"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 image-overlay"></div>
+      </div>
+      <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
+        <div class="max-w-xl">
+          <p class="text-sm font-semibold text-orange-400 uppercase tracking-wider mb-4 story-label">When Infrastructure Fails</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 story-title">
+            The power's been out for six hours.
+          </h2>
+          <p class="text-lg md:text-xl text-slate-200 leading-relaxed story-text">
+            Cell towers are down. Your family is across town. Everyone's checking their phones, hoping for a miracle.
+            Kinu users are the miracle. Their devices form a network that doesn't need infrastructure.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Story - Festival -->
+    <section class="snap-section min-h-screen relative flex items-center story-section" data-story="2">
+      <div class="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1920&q=80"
+          alt="Crowded festival with lights"
+          class="w-full h-full object-cover ken-burns"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 image-overlay"></div>
+      </div>
+      <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
+        <div class="max-w-xl">
+          <p class="text-sm font-semibold text-pink-400 uppercase tracking-wider mb-4 story-label">When Networks Overload</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 story-title">
+            50,000 people are trying to text at once.
+          </h2>
+          <p class="text-lg md:text-xl text-slate-200 leading-relaxed story-text">
+            The festival. The protest. The game. Cell towers buckle under the load.
+            But Kinu doesn't care. It routes around the chaos, device to device, finding a path when there shouldn't be one.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Story - Privacy -->
+    <section class="snap-section min-h-screen relative flex items-center story-section" data-story="3">
+      <div class="absolute inset-0">
+        <img
+          src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?w=1920&q=80"
+          alt="Person in contemplative setting"
+          class="w-full h-full object-cover ken-burns"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 image-overlay"></div>
+      </div>
+      <div class="relative z-10 max-w-4xl mx-auto px-6 py-20">
+        <div class="max-w-xl">
+          <p class="text-sm font-semibold text-green-400 uppercase tracking-wider mb-4 story-label">When Privacy Matters</p>
+          <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 story-title">
+            You just want a private conversation.
+          </h2>
+          <p class="text-lg md:text-xl text-slate-200 leading-relaxed story-text">
+            No scanning for ads. No metadata harvesting. No backdoors for governments.
+            Not because we promise, but because it's mathematically impossible.
+            We can't read your messages. Nobody can, except the person you sent them to.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: How It Works - Animated -->
+    <section class="snap-section min-h-screen flex items-center bg-white px-6" id="how">
+      <div class="max-w-5xl mx-auto w-full py-20">
+        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">How It Works</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-12">
+          Your message finds a way.
+        </h2>
+
+        <!-- Animated mesh visualization -->
+        <div class="relative mb-16" id="mesh-animation">
+          <div class="flex justify-between items-center max-w-3xl mx-auto">
+            <!-- Phone nodes -->
+            <div class="phone-node flex flex-col items-center" data-node="0">
+              <div class="w-12 h-20 md:w-16 md:h-24 bg-slate-200 rounded-xl flex items-center justify-center relative">
+                <div class="w-8 h-14 md:w-10 md:h-16 bg-slate-800 rounded-lg"></div>
+                <div class="message-dot absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full" data-dot="0"></div>
+              </div>
+              <span class="text-xs text-slate-500 mt-2">You</span>
+            </div>
+
+            <!-- Connection line -->
+            <div class="flex-1 h-0.5 bg-slate-200 mx-2 relative">
+              <div class="absolute inset-0 bg-blue-500 origin-left scale-x-0 transition-transform duration-500" id="line-1"></div>
+            </div>
+
+            <div class="phone-node flex flex-col items-center" data-node="1">
+              <div class="w-12 h-20 md:w-16 md:h-24 bg-slate-200 rounded-xl flex items-center justify-center relative">
+                <div class="w-8 h-14 md:w-10 md:h-16 bg-slate-800 rounded-lg"></div>
+                <div class="message-dot absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full" data-dot="1"></div>
+              </div>
+              <span class="text-xs text-slate-500 mt-2">Relay</span>
+            </div>
+
+            <div class="flex-1 h-0.5 bg-slate-200 mx-2 relative">
+              <div class="absolute inset-0 bg-blue-500 origin-left scale-x-0 transition-transform duration-500" id="line-2"></div>
+            </div>
+
+            <div class="phone-node flex flex-col items-center" data-node="2">
+              <div class="w-12 h-20 md:w-16 md:h-24 bg-slate-200 rounded-xl flex items-center justify-center relative">
+                <div class="w-8 h-14 md:w-10 md:h-16 bg-slate-800 rounded-lg"></div>
+                <div class="message-dot absolute -top-2 -right-2 w-4 h-4 bg-blue-500 rounded-full" data-dot="2"></div>
+              </div>
+              <span class="text-xs text-slate-500 mt-2">Relay</span>
+            </div>
+
+            <div class="flex-1 h-0.5 bg-slate-200 mx-2 relative">
+              <div class="absolute inset-0 bg-blue-500 origin-left scale-x-0 transition-transform duration-500" id="line-3"></div>
+            </div>
+
+            <div class="phone-node flex flex-col items-center" data-node="3">
+              <div class="w-12 h-20 md:w-16 md:h-24 bg-slate-200 rounded-xl flex items-center justify-center relative">
+                <div class="w-8 h-14 md:w-10 md:h-16 bg-slate-800 rounded-lg"></div>
+                <div class="message-dot absolute -top-2 -right-2 w-4 h-4 bg-green-500 rounded-full" data-dot="3"></div>
+              </div>
+              <span class="text-xs text-slate-500 mt-2">Friend</span>
+            </div>
+          </div>
+
+          <p class="text-center text-slate-600 mt-8" id="mesh-status">
+            Messages hop from device to device until they reach their destination.
+          </p>
+        </div>
+
+        <!-- Feature cards -->
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="bg-slate-50 rounded-xl p-6 feature-card">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.14 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Bluetooth Mesh</h3>
+            <p class="text-slate-600 text-sm">
+              When offline, Kinu uses Bluetooth to find nearby devices. Your message jumps up to 10 hops to reach its destination.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-6 feature-card">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Cloud When Available</h3>
+            <p class="text-slate-600 text-sm">
+              With internet, Kinu works like any modern messenger. Fast, reliable, synced across devices. Built on the Matrix protocol.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-6 feature-card">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">Seamless Switching</h3>
+            <p class="text-slate-600 text-sm">
+              You never think about it. Kinu automatically picks the best path. Your conversation stays unified.
+            </p>
+          </div>
+
+          <div class="bg-slate-50 rounded-xl p-6 feature-card">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">End-to-End Encrypted</h3>
+            <p class="text-slate-600 text-sm">
+              Every message is encrypted before it leaves your device. Even relay phones can't read a word.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 7: Comparison -->
+    <section class="snap-section min-h-screen flex items-center bg-slate-900 px-6" id="comparison">
+      <div class="max-w-4xl mx-auto w-full py-20">
+        <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">The Difference</p>
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-12">
+          Not another chat app.
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-12 md:gap-20">
+          <div>
+            <h3 class="text-xl font-bold mb-6 text-slate-400">Other messengers</h3>
+            <ul class="space-y-4">
+              <li class="compare-item flex items-start gap-3 text-slate-400">
+                <span class="text-red-400 mt-0.5">✕</span>
+                <span>Need cell towers or WiFi</span>
+              </li>
+              <li class="compare-item flex items-start gap-3 text-slate-400" style="transition-delay: 0.1s">
+                <span class="text-red-400 mt-0.5">✕</span>
+                <span>Scan messages for ads</span>
+              </li>
+              <li class="compare-item flex items-start gap-3 text-slate-400" style="transition-delay: 0.2s">
+                <span class="text-red-400 mt-0.5">✕</span>
+                <span>Harvest metadata about who you talk to</span>
+              </li>
+              <li class="compare-item flex items-start gap-3 text-slate-400" style="transition-delay: 0.3s">
+                <span class="text-red-400 mt-0.5">✕</span>
+                <span>Fail during emergencies</span>
+              </li>
+              <li class="compare-item flex items-start gap-3 text-slate-400" style="transition-delay: 0.4s">
+                <span class="text-red-400 mt-0.5">✕</span>
+                <span>Closed source. "Trust us."</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-xl font-bold mb-6 text-white">Kinu</h3>
+            <ul class="space-y-4">
+              <li class="compare-item from-right flex items-start gap-3 text-slate-300">
+                <span class="text-green-400 mt-0.5">✓</span>
+                <span>Works like a normal messenger when you have signal</span>
+              </li>
+              <li class="compare-item from-right flex items-start gap-3 text-slate-300" style="transition-delay: 0.1s">
+                <span class="text-green-400 mt-0.5">✓</span>
+                <span>Keeps working when infrastructure fails</span>
+              </li>
+              <li class="compare-item from-right flex items-start gap-3 text-slate-300" style="transition-delay: 0.2s">
+                <span class="text-green-400 mt-0.5">✓</span>
+                <span>Can't read your messages. By design.</span>
+              </li>
+              <li class="compare-item from-right flex items-start gap-3 text-slate-300" style="transition-delay: 0.3s">
+                <span class="text-green-400 mt-0.5">✓</span>
+                <span>Minimal metadata, encrypted when possible</span>
+              </li>
+              <li class="compare-item from-right flex items-start gap-3 text-slate-300" style="transition-delay: 0.4s">
+                <span class="text-green-400 mt-0.5">✓</span>
+                <span>Open source. Verify it yourself.</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 8: Open Source -->
+    <section class="snap-section min-h-screen flex items-center bg-white px-6">
+      <div class="max-w-4xl mx-auto w-full py-20">
+        <div class="grid md:grid-cols-[2fr,1fr] gap-12 items-center">
+          <div>
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Trust Through Transparency</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Don't trust us. Verify.
+            </h2>
+            <p class="text-lg text-slate-600 mb-6">
+              Kinu is open source. Every line of code is public. Security researchers, cryptographers,
+              and curious developers can audit exactly how your messages are protected.
+              Privacy claims mean nothing without proof.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <a href="https://github.com/kinuchat" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg font-medium transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                View Source Code
+              </a>
+              <a href="/whitepaper" class="inline-flex items-center gap-2 border border-slate-300 hover:border-slate-400 text-slate-700 px-5 py-2.5 rounded-lg font-medium transition-colors">
+                Read the Whitepaper
+              </a>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <div class="bg-slate-900 rounded-xl p-6 font-mono text-sm">
+              <div class="text-slate-500 mb-1">// Apache 2.0 License</div>
+              <div class="text-slate-500 mb-1">// Audit it. Fork it.</div>
+              <div class="text-slate-500">// Make it better.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 9: CTA -->
+    <section class="snap-section min-h-screen flex items-center bg-slate-50 px-6" id="cta">
+      <div class="max-w-2xl mx-auto w-full py-20 text-center">
+        <h2 class="text-3xl md:text-5xl font-bold text-slate-900 mb-4">
+          Be part of something different.
+        </h2>
+        <p class="text-lg text-slate-600 mb-8">
+          Kinu is launching soon on iOS and Android. Join the early access list.
+        </p>
+
+        <form class="max-w-md mx-auto mb-6" action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+          <div class="flex gap-3">
+            <input
+              type="email"
+              name="email"
+              placeholder="your@email.com"
+              required
+              class="flex-1 bg-white border border-slate-300 rounded-lg px-4 py-3 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200 transition-all"
+            />
+            <button
+              type="submit"
+              class="bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap"
+            >
+              Join Waitlist
+            </button>
+          </div>
+          <p class="text-slate-500 text-sm mt-3">One email when we launch. That's it.</p>
+        </form>
+
+        <!-- Footer links -->
+        <div class="mt-16 pt-8 border-t border-slate-200">
+          <div class="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-500 mb-6">
+            <a href="/whitepaper" class="hover:text-slate-900 transition-colors">Whitepaper</a>
+            <a href="/privacy" class="hover:text-slate-900 transition-colors">Privacy</a>
+            <a href="/terms" class="hover:text-slate-900 transition-colors">Terms</a>
+            <a href="https://github.com/kinuchat" class="hover:text-slate-900 transition-colors">GitHub</a>
+            <a href="mailto:hello@kinuchat.com" class="hover:text-slate-900 transition-colors">Contact</a>
+          </div>
+          <p class="text-slate-400 text-sm">
+            &copy; 2026 Kinu Foundation. Open source under Apache 2.0.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Animation Script -->
+  <script>
+    import { gsap } from 'gsap';
+    import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Wait for DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      // Progress bar
+      const progressBar = document.getElementById('progress-bar');
+      window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        if (progressBar) progressBar.style.width = `${progress}%`;
+      });
+
+      // Animate silk threads on load
+      setTimeout(() => {
+        document.querySelectorAll('.silk-thread').forEach((thread, i) => {
+          setTimeout(() => thread.classList.add('animate'), i * 300);
+        });
+      }, 500);
+
+      // Story indicator
+      const storyIndicator = document.getElementById('story-indicator');
+      const storyDots = document.querySelectorAll('.story-dot');
+      const storySections = document.querySelectorAll('.story-section');
+
+      // Show/hide indicator and update active dot based on visible story
+      const storyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Show indicator
+            if (storyIndicator) storyIndicator.style.opacity = '1';
+
+            // Update active dot
+            const storyIndex = entry.target.getAttribute('data-story');
+            storyDots.forEach((dot, i) => {
+              if (i === parseInt(storyIndex)) {
+                dot.classList.remove('bg-white/30');
+                dot.classList.add('bg-white');
+              } else {
+                dot.classList.remove('bg-white');
+                dot.classList.add('bg-white/30');
+              }
+            });
+          }
+        });
+      }, { threshold: 0.5 });
+
+      storySections.forEach(section => storyObserver.observe(section));
+
+      // Hide indicator when not in story sections
+      const hideIndicatorObserver = new IntersectionObserver((entries) => {
+        const anyStoryVisible = Array.from(storySections).some(section => {
+          const rect = section.getBoundingClientRect();
+          return rect.top < window.innerHeight && rect.bottom > 0;
+        });
+        if (storyIndicator) {
+          storyIndicator.style.opacity = anyStoryVisible ? '1' : '0';
+        }
+      }, { threshold: 0 });
+
+      // Observe the sections before and after stories to hide indicator
+      const heroSection = document.getElementById('hero');
+      const howSection = document.getElementById('how');
+      if (heroSection) hideIndicatorObserver.observe(heroSection);
+      if (howSection) hideIndicatorObserver.observe(howSection);
+
+      // Story sections animation
+      gsap.utils.toArray('.story-label, .story-title, .story-text').forEach(el => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 80%',
+            toggleActions: 'play none none reverse'
+          },
+          opacity: 0,
+          y: 30,
+          duration: 0.8,
+          ease: 'power2.out'
+        });
+      });
+
+      // Mesh animation
+      const meshSection = document.getElementById('how');
+      if (meshSection) {
+        ScrollTrigger.create({
+          trigger: meshSection,
+          start: 'top center',
+          onEnter: () => animateMesh(),
+          once: true
+        });
+      }
+
+      function animateMesh() {
+        const nodes = document.querySelectorAll('.phone-node');
+        const dots = document.querySelectorAll('.message-dot');
+        const lines = ['line-1', 'line-2', 'line-3'];
+
+        // Reset
+        nodes.forEach(n => n.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+
+        // Animate sequence
+        let delay = 0;
+
+        // Node 0 active, dot appears
+        setTimeout(() => {
+          nodes[0]?.classList.add('active');
+          dots[0]?.classList.add('active');
+        }, delay);
+
+        // Line 1, then node 1
+        delay += 600;
+        setTimeout(() => {
+          const line1 = document.getElementById('line-1');
+          if (line1) line1.style.transform = 'scaleX(1)';
+        }, delay);
+
+        delay += 400;
+        setTimeout(() => {
+          dots[0]?.classList.remove('active');
+          nodes[1]?.classList.add('active');
+          dots[1]?.classList.add('active');
+        }, delay);
+
+        // Line 2, then node 2
+        delay += 600;
+        setTimeout(() => {
+          const line2 = document.getElementById('line-2');
+          if (line2) line2.style.transform = 'scaleX(1)';
+        }, delay);
+
+        delay += 400;
+        setTimeout(() => {
+          dots[1]?.classList.remove('active');
+          nodes[2]?.classList.add('active');
+          dots[2]?.classList.add('active');
+        }, delay);
+
+        // Line 3, then node 3
+        delay += 600;
+        setTimeout(() => {
+          const line3 = document.getElementById('line-3');
+          if (line3) line3.style.transform = 'scaleX(1)';
+        }, delay);
+
+        delay += 400;
+        setTimeout(() => {
+          dots[2]?.classList.remove('active');
+          nodes[3]?.classList.add('active');
+          dots[3]?.classList.add('active');
+
+          const status = document.getElementById('mesh-status');
+          if (status) status.textContent = 'Delivered. No internet required.';
+        }, delay);
+      }
+
+      // Comparison items animation
+      const comparisonSection = document.getElementById('comparison');
+      if (comparisonSection) {
+        ScrollTrigger.create({
+          trigger: comparisonSection,
+          start: 'top center',
+          onEnter: () => {
+            document.querySelectorAll('.compare-item').forEach((item, i) => {
+              setTimeout(() => item.classList.add('visible'), i * 100);
+            });
+          },
+          once: true
+        });
+      }
+
+      // Feature cards animation
+      gsap.utils.toArray('.feature-card').forEach((card, i) => {
+        gsap.from(card, {
+          scrollTrigger: {
+            trigger: card,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse'
+          },
+          opacity: 0,
+          y: 20,
+          duration: 0.5,
+          delay: i * 0.1,
+          ease: 'power2.out'
+        });
+      });
+    });
+  </script>
+</Layout>

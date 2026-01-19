@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:meshlink_core/models/identity.dart",
+    "package:meshlink_core/mesh/ble_constants.dart"
+  ]
+}

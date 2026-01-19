@@ -1,0 +1,1 @@
+{"valid_import":true,"imports":[{"uri":"package:flutter_blue_plus/flutter_blue_plus.dart","transitive":false},{"uri":"package:meshlink_core/models/identity.dart","transitive":false},{"uri":"package:meshlink_core/mesh/ble_constants.dart","transitive":false}],"elements":[]}

@@ -1,0 +1,35 @@
+# Fly.io configuration for Kinu Matrix Server (Dendrite)
+# See https://fly.io/docs/reference/configuration/ for reference
+
+app = "kinu-matrix"
+primary_region = "sjc"  # San Jose - adjust to your preferred region
+
+[build]
+
+[http_service]
+  internal_port = 8008
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 200
+    soft_limit = 150
+
+# Persistent volume for Dendrite data (database, media, keys)
+[mounts]
+  source = "dendrite_data"
+  destination = "/var/dendrite"
+
+[env]
+  SERVER_NAME = "kinuchat.com"
+
+# Secrets to set via CLI (do NOT put actual values here):
+# fly secrets set REGISTRATION_SECRET="$(openssl rand -base64 32)" --app kinu-matrix
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1

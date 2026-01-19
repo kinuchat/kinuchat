@@ -1,0 +1,29 @@
+# Build artifacts
+target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database files (local dev)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Fly.io files (not needed in container)
+fly.toml

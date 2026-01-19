@@ -1,0 +1,8 @@
+{
+  "elements": {},
+  "imports": [
+    "package:test/test.dart",
+    "package:cryptography/cryptography.dart",
+    "package:meshlink_core/mesh/noise_handshake.dart"
+  ]
+}

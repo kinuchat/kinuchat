@@ -1,0 +1,76 @@
+[package]
+name = "meshlink-auth"
+version = "0.1.0"
+edition = "2021"
+description = "MeshLink Authentication Service"
+authors = ["MeshLink Team"]
+
+[dependencies]
+# Web framework
+axum = { version = "0.8", features = ["macros"] }
+tokio = { version = "1.45", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace"] }
+
+# Database (sqlite for local dev, postgres for production)
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid", "chrono"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Cryptography
+argon2 = "0.5"
+rand = "0.8"
+base64 = "0.22"
+sha1 = "0.10"
+sha2 = "0.10"
+hmac = "0.12"
+totp-rs = { version = "5.6", features = ["gen_secret", "otpauth"] }
+
+# WebAuthn / Passkeys
+webauthn-rs = { version = "0.5", features = ["danger-allow-state-serialisation"] }
+webauthn-rs-proto = "0.5"
+
+# JWT
+jsonwebtoken = "9"
+
+# Validation
+validator = { version = "0.19", features = ["derive"] }
+
+# Encryption (for email encryption)
+aes-gcm = "0.10"
+
+# Environment & Config
+dotenvy = "0.15"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+# Time
+chrono = { version = "0.4", features = ["serde"] }
+
+# UUID
+uuid = { version = "1.16", features = ["v4", "serde"] }
+
+# Error handling
+thiserror = "2.0"
+anyhow = "1.0"
+
+# Utilities
+hex = "0.4"
+lazy_static = "1.5"
+regex = "1.11"
+base32 = "0.5"
+url = "2.5"
+
+# HTTP client (for Matrix server communication)
+reqwest = { version = "0.12", features = ["json"] }
+urlencoding = "2.1"
+
+# Email (SMTP)
+lettre = { version = "0.11", features = ["tokio1", "tokio1-native-tls", "builder", "smtp-transport"] }
+
+[dev-dependencies]
+axum-test = "16"
