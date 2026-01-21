@@ -1,0 +1,213 @@
+{
+  "conversations": [
+    {
+      "contactName": "Alice Chen",
+      "avatarInitials": "A",
+      "lastSeen": "Online",
+      "isGroup": false,
+      "memberCount": null,
+      "unreadCount": null,
+      "transportIndicator": null,
+      "messages": [
+        {
+          "text": "Hey! Are you coming to the concert?",
+          "isFromMe": false,
+          "timestamp": "2026-01-19T16:40:50.250181",
+          "status": "read"
+        },
+        {
+          "text": "Yes! Can't wait 🎵",
+          "isFromMe": true,
+          "timestamp": "2026-01-19T16:42:50.251494",
+          "status": "read"
+        },
+        {
+          "text": "Great! Meet at the north entrance",
+          "isFromMe": false,
+          "timestamp": "2026-01-19T16:43:50.251503",
+          "status": "read"
+        },
+        {
+          "text": "Sure, see you there!",
+          "isFromMe": true,
+          "timestamp": "2026-01-19T16:44:50.251505",
+          "status": "delivered"
+        }
+      ]
+    },
+    {
+      "contactName": "Work Group",
+      "avatarInitials": "👥",
+      "lastSeen": null,
+      "isGroup": true,
+      "memberCount": 8,
+      "unreadCount": 3,
+      "transportIndicator": null,
+      "messages": [
+        {
+          "text": "Bob: The meeting is moved to 3pm",
+          "isFromMe": false,
+          "timestamp": "2026-01-19T15:44:50.251598",
+          "status": "read"
+        },
+        {
+          "text": "Got it, thanks!",
+          "isFromMe": true,
+          "timestamp": "2026-01-19T15:59:50.251602",
+          "status": "read"
+        }
+      ]
+    },
+    {
+      "contactName": "Mom",
+      "avatarInitials": "M",
+      "lastSeen": "Last seen yesterday",
+      "isGroup": false,
+      "memberCount": null,
+      "unreadCount": null,
+      "transportIndicator": null,
+      "messages": [
+        {
+          "text": "Call me when you can",
+          "isFromMe": false,
+          "timestamp": "2026-01-18T16:44:50.251629",
+          "status": "read"
+        }
+      ]
+    },
+    {
+      "contactName": "David Park",
+      "avatarInitials": "D",
+      "lastSeen": "via Mesh",
+      "isGroup": false,
+      "memberCount": null,
+      "unreadCount": null,
+      "transportIndicator": "mesh",
+      "messages": [
+        {
+          "text": "The signal here is terrible",
+          "isFromMe": false,
+          "timestamp": "2026-01-19T16:34:50.251654",
+          "status": "delivered"
+        },
+        {
+          "text": "Using mesh mode - works great!",
+          "isFromMe": true,
+          "timestamp": "2026-01-19T16:36:50.251656",
+          "status": "delivered"
+        }
+      ]
+    }
+  ],
+  "rallyChannel": {
+    "channelId": "rally-x7k2",
+    "location": "Central Park, NYC",
+    "peopleCount": 2400,
+    "messages": [
+      {
+        "anonymousName": "brave-fox-23",
+        "text": "Anyone know where the water station is?",
+        "timestamp": "2026-01-19T16:40:50.251764",
+        "isVerified": false,
+        "isUrgent": false,
+        "isMe": false
+      },
+      {
+        "anonymousName": "calm-river-87",
+        "text": "Northwest corner near the big tree",
+        "timestamp": "2026-01-19T16:41:50.251810",
+        "isVerified": false,
+        "isUrgent": false,
+        "isMe": false
+      },
+      {
+        "anonymousName": "quick-bear-12",
+        "text": "⚠️ Medic needed section B!",
+        "timestamp": "2026-01-19T16:42:50.251812",
+        "isVerified": false,
+        "isUrgent": true,
+        "isMe": false
+      },
+      {
+        "anonymousName": "@RedCross",
+        "text": "First aid tent is at coordinates 40.7829, -73.9654. We're sending someone to section B.",
+        "timestamp": "2026-01-19T16:43:50.251814",
+        "isVerified": true,
+        "isUrgent": false,
+        "isMe": false
+      },
+      {
+        "anonymousName": "bold-wave-55",
+        "text": "Thanks for the quick response! 🙏",
+        "timestamp": "2026-01-19T16:44:50.251815",
+        "isVerified": false,
+        "isUrgent": false,
+        "isMe": true
+      }
+    ]
+  },
+  "bridgeStats": {
+    "messagesRelayed": 12,
+    "bandwidthUsedMb": 2.3,
+    "nearbyPeers": 47,
+    "isActive": true,
+    "uptimeMinutes": 154
+  },
+  "contacts": [
+    {
+      "name": "Alice Chen",
+      "initials": "A",
+      "isVerified": true,
+      "lastSeen": "Online",
+      "isMeshNearby": false
+    },
+    {
+      "name": "Bob Smith",
+      "initials": "B",
+      "isVerified": true,
+      "lastSeen": "2 hours ago",
+      "isMeshNearby": false
+    },
+    {
+      "name": "Carol Williams",
+      "initials": "C",
+      "isVerified": false,
+      "lastSeen": "Yesterday",
+      "isMeshNearby": false
+    },
+    {
+      "name": "David Park",
+      "initials": "D",
+      "isVerified": true,
+      "lastSeen": "via Mesh",
+      "isMeshNearby": true
+    },
+    {
+      "name": "Emma Garcia",
+      "initials": "E",
+      "isVerified": false,
+      "lastSeen": "Last week",
+      "isMeshNearby": false
+    }
+  ],
+  "supporterTiers": [
+    {
+      "name": "Friend",
+      "price": "$2.99/month",
+      "badge": "❤️",
+      "description": "Show your support with a heart badge"
+    },
+    {
+      "name": "Champion",
+      "price": "$9.99/month",
+      "badge": "⭐",
+      "description": "Star badge + priority support"
+    },
+    {
+      "name": "Guardian",
+      "price": "$24.99/month",
+      "badge": "💎",
+      "description": "Gem badge + priority support + early access"
+    }
+  ]
+}

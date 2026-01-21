@@ -1,1 +1,1 @@
-{"valid_import":false,"imports":[],"elements":[]}
+{"valid_import":true,"imports":[{"uri":"package:meshlink_core/database/app_database.dart","transitive":false},{"uri":"package:meshlink_core/mesh/packet_codec.dart","transitive":false},{"uri":"package:meshlink_core/mesh/ble_constants.dart","transitive":false},{"uri":"package:meshlink_core/mesh/deduplication.dart","transitive":false}],"elements":[]}

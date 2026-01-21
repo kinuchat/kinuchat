@@ -10,6 +10,7 @@ library meshlink_core;
 // Crypto exports
 export 'crypto/identity_service.dart';
 export 'crypto/secure_storage.dart';
+export 'crypto/bridge_encryption.dart';
 
 // Models exports
 export 'models/identity.dart';

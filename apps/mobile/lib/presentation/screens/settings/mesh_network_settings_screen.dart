@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_ui/meshlink_ui.dart';
 
 import '../../../core/providers/settings_provider.dart';
+import 'bridge_settings_screen.dart';
 
 /// Mesh network settings screen
 class MeshNetworkSettingsScreen extends ConsumerWidget {
@@ -66,19 +67,18 @@ class MeshNetworkSettingsScreen extends ConsumerWidget {
           const Divider(height: Spacing.xl),
           _buildSectionHeader(context, 'Advanced'),
           ListTile(
-            leading: const Icon(Icons.router_outlined),
-            title: const Text('Relay Mode'),
+            leading: const Icon(Icons.hub_outlined),
+            title: const Text('Bridge Mode'),
             subtitle: const Text('Help relay messages for other users'),
-            trailing: Switch(
-              value: false,
-              onChanged: settings.meshNetworkEnabled
-                  ? (value) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Relay mode coming soon')),
-                      );
-                    }
-                  : null,
-            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BridgeSettingsScreen(),
+                ),
+              );
+            },
           ),
           const SizedBox(height: Spacing.xl),
           Padding(

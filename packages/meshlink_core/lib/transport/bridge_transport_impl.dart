@@ -76,6 +76,8 @@ class StoredEnvelope {
 
 /// WebSocket message types
 sealed class WsMessage {
+  const WsMessage();
+
   Map<String, dynamic> toJson();
 
   factory WsMessage.fromJson(Map<String, dynamic> json) {
@@ -98,7 +100,7 @@ sealed class WsMessage {
 
 class WsSubscribe extends WsMessage {
   final String keyHash;
-  WsSubscribe({required this.keyHash});
+  const WsSubscribe({required this.keyHash});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'subscribe', 'key_hash': keyHash};
@@ -106,7 +108,7 @@ class WsSubscribe extends WsMessage {
 
 class WsSubscribed extends WsMessage {
   final String keyHash;
-  WsSubscribed({required this.keyHash});
+  const WsSubscribed({required this.keyHash});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'subscribed', 'key_hash': keyHash};
@@ -122,7 +124,7 @@ class WsNewMessage extends WsMessage {
 
 class WsAck extends WsMessage {
   final List<String> messageIds;
-  WsAck({required this.messageIds});
+  const WsAck({required this.messageIds});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'ack', 'message_ids': messageIds};
@@ -130,25 +132,29 @@ class WsAck extends WsMessage {
 
 class WsAcked extends WsMessage {
   final int deleted;
-  WsAcked({required this.deleted});
+  const WsAcked({required this.deleted});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'acked', 'deleted': deleted};
 }
 
 class WsPing extends WsMessage {
+  const WsPing();
+
   @override
   Map<String, dynamic> toJson() => {'type': 'ping'};
 }
 
 class WsPong extends WsMessage {
+  const WsPong();
+
   @override
   Map<String, dynamic> toJson() => {'type': 'pong'};
 }
 
 class WsError extends WsMessage {
   final String message;
-  WsError({required this.message});
+  const WsError({required this.message});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'error', 'message': message};

@@ -8,9 +8,11 @@ import 'account_settings_screen.dart';
 import 'privacy_settings_screen.dart';
 import 'notifications_settings_screen.dart';
 import 'mesh_network_settings_screen.dart';
+import 'bridge_settings_screen.dart';
 import 'matrix_server_settings_screen.dart';
 import 'theme_settings_screen.dart';
 import 'help_screen.dart';
+import 'support_screen.dart';
 
 /// Main settings screen with categorized sections
 class SettingsScreen extends ConsumerWidget {
@@ -119,6 +121,20 @@ class SettingsScreen extends ConsumerWidget {
             ),
             _buildSettingsTile(
               context: context,
+              icon: Icons.hub_outlined,
+              title: 'Bridge Mode',
+              subtitle: 'Relay messages for others',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const BridgeSettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            _buildSettingsTile(
+              context: context,
               icon: Icons.cloud_outlined,
               title: 'Matrix Server',
               subtitle: 'Cloud messaging settings',
@@ -164,6 +180,7 @@ class SettingsScreen extends ConsumerWidget {
                 _showAboutDialog(context);
               },
             ),
+            _buildSupportTile(context, ref),
             _buildSettingsTile(
               context: context,
               icon: Icons.help_outline,
@@ -196,6 +213,7 @@ class SettingsScreen extends ConsumerWidget {
         identityAsync.valueOrNull?.displayName ??
         'User';
     final handle = accountState.account?.handle;
+    final supporterBadge = ref.watch(supporterBadgeProvider);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.lg),
@@ -216,9 +234,20 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  displayName,
-                  style: AppTypography.title,
+                Row(
+                  children: [
+                    Text(
+                      displayName,
+                      style: AppTypography.title,
+                    ),
+                    if (supporterBadge.isVisible) ...[
+                      const SizedBox(width: Spacing.sm),
+                      Text(
+                        supporterBadge.emoji,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ],
                 ),
                 if (handle != null) ...[
                   const SizedBox(height: 2),
@@ -264,6 +293,46 @@ class SettingsScreen extends ConsumerWidget {
           fontWeight: FontWeight.w600,
         ),
       ),
+    );
+  }
+
+  Widget _buildSupportTile(BuildContext context, WidgetRef ref) {
+    final supporterStatus = ref.watch(supporterStatusProvider);
+    final tier = supporterStatus.tier;
+    final isSupporter = tier != SupporterTier.none;
+
+    return ListTile(
+      leading: Icon(
+        isSupporter ? Icons.favorite : Icons.favorite_border,
+        color: isSupporter ? Colors.red : null,
+      ),
+      title: Row(
+        children: [
+          Text('Support Kinu', style: AppTypography.body),
+          if (isSupporter) ...[
+            const SizedBox(width: Spacing.sm),
+            Text(
+              tier.badgeEmoji,
+              style: const TextStyle(fontSize: 16),
+            ),
+          ],
+        ],
+      ),
+      subtitle: Text(
+        isSupporter ? '${tier.displayName} supporter' : 'Help keep Kinu free',
+        style: AppTypography.bodySmall.copyWith(
+          color: Theme.of(context).textTheme.bodySmall?.color,
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SupportScreen(),
+          ),
+        );
+      },
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/providers/bridge_providers.dart';
 import '../../data/services/bridge_mode_service.dart';
 
 /// Banner showing bridge mode status
@@ -9,10 +10,10 @@ class BridgeStatusBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Get state from bridgeModeService provider
-    const state = BridgeModeState.disabled;
-    const messagesRelayed = 0;
-    const bandwidthUsedMb = 0.0;
+    final demoMode = ref.watch(bridgeDemoModeProvider);
+    final state = demoMode ? BridgeModeState.active : ref.watch(bridgeModeProvider);
+    final statsAsync = ref.watch(bridgeStatsProvider);
+    final stats = statsAsync.value ?? const BridgeStats();
 
     if (state == BridgeModeState.disabled) {
       return const SizedBox.shrink();
@@ -42,14 +43,14 @@ class BridgeStatusBanner extends ConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    _getTitle(state),
+                    _getTitle(state, demoMode),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: _getTextColor(state),
                     ),
                   ),
                   Text(
-                    _getSubtitle(state, messagesRelayed, bandwidthUsedMb),
+                    _getSubtitle(state, stats, demoMode),
                     style: TextStyle(
                       fontSize: 12,
                       color: _getTextColor(state).withOpacity(0.8),
@@ -151,27 +152,31 @@ class BridgeStatusBanner extends ConsumerWidget {
     }
   }
 
-  String _getTitle(BridgeModeState state) {
+  String _getTitle(BridgeModeState state, bool demoMode) {
+    final suffix = demoMode ? ' (Demo)' : '';
     switch (state) {
       case BridgeModeState.active:
-        return 'Bridge Mode Active';
+        return 'Bridge Mode Active$suffix';
       case BridgeModeState.paused:
-        return 'Bridge Mode Paused';
+        return 'Bridge Mode Paused$suffix';
       case BridgeModeState.error:
-        return 'Bridge Mode Error';
+        return 'Bridge Mode Error$suffix';
       case BridgeModeState.starting:
-        return 'Starting Bridge Mode...';
+        return 'Starting Bridge Mode...$suffix';
       case BridgeModeState.stopping:
-        return 'Stopping Bridge Mode...';
+        return 'Stopping Bridge Mode...$suffix';
       case BridgeModeState.disabled:
-        return 'Bridge Mode Disabled';
+        return 'Bridge Mode Disabled$suffix';
     }
   }
 
-  String _getSubtitle(BridgeModeState state, int messages, double bandwidth) {
+  String _getSubtitle(BridgeModeState state, BridgeStats stats, bool demoMode) {
     switch (state) {
       case BridgeModeState.active:
-        return 'Relayed $messages messages (${bandwidth.toStringAsFixed(1)} MB)';
+        if (demoMode && stats.nearbyPeers > 0) {
+          return '${stats.nearbyPeers} nearby users \u2022 ${stats.messagesRelayed} relayed \u2022 ${stats.bandwidthUsedMb.toStringAsFixed(1)} MB';
+        }
+        return 'Relayed ${stats.messagesRelayed} messages (${stats.bandwidthUsedMb.toStringAsFixed(1)} MB)';
       case BridgeModeState.paused:
         return 'Waiting for conditions to resume';
       case BridgeModeState.error:
@@ -192,8 +197,8 @@ class BridgeStatusIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Get state from bridgeModeService provider
-    const state = BridgeModeState.disabled;
+    final demoMode = ref.watch(bridgeDemoModeProvider);
+    final state = demoMode ? BridgeModeState.active : ref.watch(bridgeModeProvider);
 
     if (state == BridgeModeState.disabled) {
       return const SizedBox.shrink();

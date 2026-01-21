@@ -8,3 +8,8 @@ export 'transport_providers.dart';
 export 'repository_providers.dart';
 export 'location_providers.dart';
 export 'rally_providers.dart';
+export 'bridge_providers.dart';
+export 'demo_providers.dart';
+export 'notification_providers.dart';
+export 'group_providers.dart';
+export 'donation_providers.dart';

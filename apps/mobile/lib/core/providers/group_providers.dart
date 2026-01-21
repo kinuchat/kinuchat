@@ -125,6 +125,16 @@ class GroupActionsNotifier extends StateNotifier<AsyncValue<void>> {
     }
   }
 
+  Future<void> deleteGroup(String groupId) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repository.deleteGroup(groupId);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
   Future<void> updateMemberRole({
     required String groupId,
     required String userId,

@@ -163,7 +163,7 @@ async fn handle_socket(socket: WebSocket, state: AppState) {
 
             // Send ping for keepalive
             _ = ping_interval.tick() => {
-                if sender.send(Message::Ping(vec![])).await.is_err() {
+                if sender.send(Message::Ping(vec![].into())).await.is_err() {
                     // Connection closed
                     break;
                 }

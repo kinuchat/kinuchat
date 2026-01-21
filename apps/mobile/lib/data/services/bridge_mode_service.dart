@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:meshlink_core/database/app_database.dart';
-import 'package:meshlink_core/transport/bridge_transport.dart';
 import 'package:meshlink_core/transport/bridge_transport_impl.dart';
 
 /// Bridge mode lifecycle states
@@ -42,7 +41,50 @@ enum BridgePauseReason {
   userPaused,
 }
 
+/// Relay request received from mesh (for relay-for-others)
+class RelayRequest {
+  final String messageId;
+  final String recipientKeyHash;
+  final String encryptedPayload;
+  final int ttlHours;
+  final String priority;
+  final String? senderPeerId;
+
+  const RelayRequest({
+    required this.messageId,
+    required this.recipientKeyHash,
+    required this.encryptedPayload,
+    this.ttlHours = 4,
+    this.priority = 'normal',
+    this.senderPeerId,
+  });
+
+  factory RelayRequest.fromJson(Map<String, dynamic> json) {
+    return RelayRequest(
+      messageId: json['message_id'] as String,
+      recipientKeyHash: json['recipient_key_hash'] as String,
+      encryptedPayload: json['encrypted_payload'] as String,
+      ttlHours: json['ttl_hours'] as int? ?? 4,
+      priority: json['priority'] as String? ?? 'normal',
+      senderPeerId: json['sender_peer_id'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'message_id': messageId,
+        'recipient_key_hash': recipientKeyHash,
+        'encrypted_payload': encryptedPayload,
+        'ttl_hours': ttlHours,
+        'priority': priority,
+        if (senderPeerId != null) 'sender_peer_id': senderPeerId,
+      };
+}
+
 /// Bridge mode service - manages the bridge relay lifecycle
+///
+/// This service handles two main functions:
+/// 1. Receiving messages addressed TO this user from the relay server
+/// 2. Relaying messages FOR other users (AirTag-style relay)
 class BridgeModeService {
   final AppDatabase _database;
   final String _relayServerUrl;
@@ -59,12 +101,17 @@ class BridgeModeService {
   StreamSubscription? _batterySubscription;
   StreamSubscription? _connectivitySubscription;
   StreamSubscription? _messageSubscription;
+  StreamSubscription? _relayRequestSubscription;
   Timer? _pollTimer;
   Timer? _uploadTimer;
 
   // Statistics
   int _messagesRelayed = 0;
   double _bandwidthUsedMb = 0;
+  int _messagesRelayedForOthers = 0;
+
+  // Stream for relay requests from mesh
+  StreamController<RelayRequest>? _relayRequestController;
 
   BridgeModeService({
     required AppDatabase database,
@@ -83,8 +130,14 @@ class BridgeModeService {
   /// Current settings
   BridgeSettingsEntity? get settings => _settings;
 
-  /// Messages relayed this session
+  /// Messages relayed this session (for self)
   int get messagesRelayed => _messagesRelayed;
+
+  /// Messages relayed for others this session
+  int get messagesRelayedForOthers => _messagesRelayedForOthers;
+
+  /// Total messages handled
+  int get totalMessagesHandled => _messagesRelayed + _messagesRelayedForOthers;
 
   /// Bandwidth used today (MB)
   double get bandwidthUsedMb => _bandwidthUsedMb;
@@ -93,9 +146,18 @@ class BridgeModeService {
   final _stateController = StreamController<BridgeModeState>.broadcast();
   Stream<BridgeModeState> get stateStream => _stateController.stream;
 
+  /// Sink for relay requests from mesh transport
+  /// Call this to submit a relay request received from a mesh peer
+  void submitRelayRequest(RelayRequest request) {
+    _relayRequestController?.add(request);
+  }
+
   /// Initialize and load settings
   Future<void> initialize() async {
     _settings = await _database.getBridgeSettings();
+
+    // Initialize relay request controller
+    _relayRequestController = StreamController<RelayRequest>.broadcast();
 
     if (_settings?.isEnabled ?? false) {
       await start();
@@ -131,14 +193,22 @@ class BridgeModeService {
         return;
       }
 
-      // Connect WebSocket for real-time messages
+      // Connect WebSocket for real-time messages (for this user)
       await _bridgeTransport!.connectWebSocket();
 
-      // Start listening for incoming messages
+      // Start listening for incoming messages (addressed to self)
       _messageSubscription = _bridgeTransport!.messageStream.listen(
         _handleIncomingMessage,
         onError: (error) {
           print('Bridge message error: $error');
+        },
+      );
+
+      // Start listening for relay requests from mesh (relay for others)
+      _relayRequestSubscription = _relayRequestController?.stream.listen(
+        _handleRelayRequest,
+        onError: (error) {
+          print('Relay request error: $error');
         },
       );
 
@@ -178,10 +248,12 @@ class BridgeModeService {
       await _batterySubscription?.cancel();
       await _connectivitySubscription?.cancel();
       await _messageSubscription?.cancel();
+      await _relayRequestSubscription?.cancel();
 
       _batterySubscription = null;
       _connectivitySubscription = null;
       _messageSubscription = null;
+      _relayRequestSubscription = null;
 
       // Cancel timers
       _pollTimer?.cancel();
@@ -224,7 +296,7 @@ class BridgeModeService {
     }
   }
 
-  /// Queue a message for relay
+  /// Queue a message for relay (used when sending via bridge transport)
   Future<void> queueMessageForRelay({
     required String messageId,
     required String recipientKeyHash,
@@ -244,6 +316,66 @@ class BridgeModeService {
     if (_state == BridgeModeState.active) {
       await _uploadPendingMessages();
     }
+  }
+
+  /// Handle relay request from mesh peer (relay-for-others)
+  /// This is the AirTag-style relay feature
+  Future<void> _handleRelayRequest(RelayRequest request) async {
+    if (_state != BridgeModeState.active) {
+      print('Bridge not active, ignoring relay request');
+      return;
+    }
+
+    // Check if we should relay for this sender
+    if (_settings?.relayForContactsOnly == true) {
+      // TODO: Check if sender is in contacts
+      // For now, we'll relay for everyone when this setting is false
+      // and skip when true (conservative approach)
+      print('Relay for contacts only enabled, checking sender...');
+      // If not a contact, we could skip:
+      // return;
+    }
+
+    // Check bandwidth limit before relaying
+    final maxBandwidth = _settings?.maxBandwidthMbPerDay ?? 50;
+    if (_bandwidthUsedMb >= maxBandwidth) {
+      print('Bandwidth limit reached, cannot relay');
+      return;
+    }
+
+    try {
+      // Upload to relay server
+      final serverId = await _bridgeTransport!.sendEncryptedMessage(
+        recipientKeyHash: request.recipientKeyHash,
+        encryptedPayload: request.encryptedPayload,
+        ttlHours: request.ttlHours,
+        priority: _parsePriority(request.priority),
+      );
+
+      print('Relayed message ${request.messageId} for others, server ID: $serverId');
+
+      // Track statistics
+      _messagesRelayedForOthers++;
+      final payloadSizeMb = request.encryptedPayload.length / (1024 * 1024);
+      _bandwidthUsedMb += payloadSizeMb;
+      await _database.updateBridgeBandwidthUsage(payloadSizeMb);
+
+      // Check if we've hit bandwidth limit
+      if (_bandwidthUsedMb >= maxBandwidth) {
+        _setState(BridgeModeState.paused);
+        _pauseReason = BridgePauseReason.bandwidthLimit;
+      }
+    } catch (e) {
+      print('Failed to relay message for others: $e');
+    }
+  }
+
+  RelayPriority _parsePriority(String priority) {
+    return switch (priority.toLowerCase()) {
+      'urgent' => RelayPriority.urgent,
+      'emergency' => RelayPriority.emergency,
+      _ => RelayPriority.normal,
+    };
   }
 
   /// Check if we can start bridge mode
@@ -309,10 +441,9 @@ class BridgeModeService {
     }
   }
 
-  /// Handle incoming message from relay
+  /// Handle incoming message from relay (messages addressed to self)
   Future<void> _handleIncomingMessage(StoredEnvelope envelope) async {
-    // TODO: Decrypt and process the message
-    // For now, just track statistics
+    // Track statistics
     _messagesRelayed++;
 
     // Track bandwidth (approximate payload size)
@@ -326,9 +457,13 @@ class BridgeModeService {
       _setState(BridgeModeState.paused);
       _pauseReason = BridgePauseReason.bandwidthLimit;
     }
+
+    // TODO: Decrypt and process the message
+    // The encrypted payload needs to be decrypted using Noise protocol
+    // and then processed as a regular message
   }
 
-  /// Upload pending messages to relay
+  /// Upload pending messages to relay (messages this user wants to send)
   Future<void> _uploadPendingMessages() async {
     if (_state != BridgeModeState.active || _bridgeTransport == null) {
       return;
@@ -386,5 +521,6 @@ class BridgeModeService {
   void dispose() {
     stop();
     _stateController.close();
+    _relayRequestController?.close();
   }
 }

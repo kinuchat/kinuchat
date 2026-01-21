@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../core/providers/providers.dart';
+import '../../../core/providers/demo_providers.dart';
 import '../../../data/repositories/rally_repository.dart';
 import '../../widgets/rally_map_view.dart';
 import 'rally_channel_screen.dart';
@@ -46,17 +47,19 @@ class _RallyScreenState extends ConsumerState<RallyScreen> {
           ),
         ],
       ),
-      body: locationPermissionAsync.when(
-        data: (permission) {
-          if (permission == LocationPermission.denied ||
-              permission == LocationPermission.deniedForever) {
-            return _buildPermissionRequest();
-          }
-          return _isMapView ? const RallyMapView() : _buildChannelList();
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => _buildError(error),
-      ),
+      body: ref.watch(appDemoModeProvider)
+          ? _buildChannelList()  // Skip permission check in demo mode
+          : locationPermissionAsync.when(
+              data: (permission) {
+                if (permission == LocationPermission.denied ||
+                    permission == LocationPermission.deniedForever) {
+                  return _buildPermissionRequest();
+                }
+                return _isMapView ? const RallyMapView() : _buildChannelList();
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stack) => _buildError(error),
+            ),
       floatingActionButton: _buildCreateChannelButton(),
     );
   }
@@ -98,6 +101,21 @@ class _RallyScreenState extends ConsumerState<RallyScreen> {
   }
 
   Widget _buildChannelList() {
+    final demoMode = ref.watch(appDemoModeProvider);
+
+    // Show demo channels when in demo mode
+    if (demoMode) {
+      final demoChannels = ref.watch(demoRallyChannelsProvider);
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: demoChannels.length,
+        itemBuilder: (context, index) {
+          final channel = demoChannels[index];
+          return DemoRallyChannelListItem(channel: channel);
+        },
+      );
+    }
+
     final channelsAsync = ref.watch(nearbyRallyChannelsProvider);
 
     return channelsAsync.when(
@@ -381,6 +399,49 @@ class RallyChannelListItem extends StatelessWidget {
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         onTap: onTap,
+      ),
+    );
+  }
+}
+
+/// Demo rally channel list item widget
+class DemoRallyChannelListItem extends StatelessWidget {
+  const DemoRallyChannelListItem({
+    required this.channel,
+    super.key,
+  });
+
+  final DemoRallyChannel channel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: Colors.purple.shade100,
+          child: Icon(
+            Icons.location_on,
+            color: Colors.purple.shade700,
+          ),
+        ),
+        title: Text(channel.name),
+        subtitle: Text(
+          '${channel.formattedDistance} • ${channel.participantCount} active',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        trailing: Icon(
+          Icons.chevron_right,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        onTap: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Demo channel: ${channel.name}'),
+              duration: const Duration(seconds: 1),
+            ),
+          );
+        },
       ),
     );
   }

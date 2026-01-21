@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/services/bridge_mode_service.dart';
+import '../../../core/providers/bridge_providers.dart';
 
 /// Bridge settings screen
 class BridgeSettingsScreen extends ConsumerStatefulWidget {
@@ -26,21 +26,60 @@ class _BridgeSettingsScreenState extends ConsumerState<BridgeSettingsScreen> {
   }
 
   Future<void> _loadSettings() async {
-    // TODO: Load from bridgeModeService provider
-    // For now, use defaults
-    setState(() {
-      _isEnabled = false;
-      _relayForContactsOnly = false;
-      _maxBandwidthMb = 50;
-      _minBatteryPercent = 30;
-    });
+    final settingsAsync = ref.read(bridgeSettingsProvider);
+    final settings = settingsAsync.value;
+
+    if (settings != null) {
+      setState(() {
+        _isEnabled = settings.isEnabled;
+        _relayForContactsOnly = settings.relayForContactsOnly;
+        _maxBandwidthMb = settings.maxBandwidthMbPerDay;
+        _minBatteryPercent = settings.minBatteryPercent;
+        _hasConsented = settings.isEnabled;
+      });
+    }
+  }
+
+  void _toggleDemoMode() {
+    final currentMode = ref.read(bridgeDemoModeProvider);
+    ref.read(bridgeDemoModeProvider.notifier).state = !currentMode;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(!currentMode ? 'Demo mode enabled' : 'Demo mode disabled'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final demoMode = ref.watch(bridgeDemoModeProvider);
+    final statsAsync = ref.watch(bridgeStatsProvider);
+    final stats = statsAsync.value ?? const BridgeStats();
+
+    // Sync with provider when settings change
+    ref.listen(bridgeSettingsProvider, (previous, next) {
+      final settings = next.value;
+      if (settings != null && !_hasConsented) {
+        setState(() {
+          _isEnabled = settings.isEnabled;
+          _relayForContactsOnly = settings.relayForContactsOnly;
+          _maxBandwidthMb = settings.maxBandwidthMbPerDay;
+          _minBatteryPercent = settings.minBatteryPercent;
+          _hasConsented = settings.isEnabled;
+        });
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bridge Mode'),
+        title: GestureDetector(
+          onLongPress: _toggleDemoMode,
+          child: Text(
+            demoMode ? 'Bridge Mode (Demo)' : 'Bridge Mode',
+          ),
+        ),
       ),
       body: ListView(
         children: [
@@ -151,23 +190,25 @@ class _BridgeSettingsScreenState extends ConsumerState<BridgeSettingsScreen> {
           SwitchListTile(
             title: const Text('Enable Bridge Mode'),
             subtitle: Text(
-              _isEnabled ? 'Relaying messages for others' : 'Not relaying',
+              (_isEnabled || demoMode) ? 'Relaying messages for others' : 'Not relaying',
             ),
-            value: _isEnabled,
-            onChanged: (_hasConsented || _isEnabled)
-                ? (value) {
-                    setState(() {
-                      _isEnabled = value;
-                    });
-                    _saveSettings();
-                  }
-                : null,
+            value: _isEnabled || demoMode,
+            onChanged: demoMode
+                ? null  // Disable toggle in demo mode
+                : (_hasConsented || _isEnabled)
+                    ? (value) {
+                        setState(() {
+                          _isEnabled = value;
+                        });
+                        _saveSettings();
+                      }
+                    : null,
           ),
 
           const Divider(),
 
           // Settings (only show when enabled)
-          if (_isEnabled) ...[
+          if (_isEnabled || demoMode) ...[
             const Padding(
               padding: EdgeInsets.all(16),
               child: Text(
@@ -229,20 +270,30 @@ class _BridgeSettingsScreenState extends ConsumerState<BridgeSettingsScreen> {
             ListTile(
               leading: const Icon(Icons.mail_outline),
               title: const Text('Messages Relayed'),
-              trailing: const Text(
-                '0', // TODO: Get from service
-                style: TextStyle(fontWeight: FontWeight.bold),
+              trailing: Text(
+                '${stats.messagesRelayed}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
 
             ListTile(
               leading: const Icon(Icons.data_usage),
               title: const Text('Bandwidth Used Today'),
-              trailing: const Text(
-                '0 MB', // TODO: Get from service
-                style: TextStyle(fontWeight: FontWeight.bold),
+              trailing: Text(
+                '${stats.bandwidthUsedMb.toStringAsFixed(1)} MB',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+
+            if (demoMode)
+              ListTile(
+                leading: const Icon(Icons.people_outline),
+                title: const Text('Nearby Peers'),
+                trailing: Text(
+                  '${stats.nearbyPeers}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
           ],
         ],
       ),
@@ -316,6 +367,11 @@ class _BridgeSettingsScreenState extends ConsumerState<BridgeSettingsScreen> {
   }
 
   Future<void> _saveSettings() async {
-    // TODO: Save via bridgeModeService provider
+    await ref.read(bridgeModeProvider.notifier).updateSettings(
+      isEnabled: _isEnabled,
+      relayForContactsOnly: _relayForContactsOnly,
+      maxBandwidthMbPerDay: _maxBandwidthMb,
+      minBatteryPercent: _minBatteryPercent,
+    );
   }
 }

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:matrix/matrix.dart';
 
 import '../../../core/providers/group_providers.dart';
 import '../../../data/repositories/group_repository.dart';
 import '../../../data/services/matrix_service.dart';
+import 'group_settings_screen.dart';
+import 'invite_members_screen.dart';
 
 /// Screen showing group details and member management
 class GroupInfoScreen extends ConsumerWidget {
@@ -323,46 +324,35 @@ class GroupInfoScreen extends ConsumerWidget {
     );
   }
 
-  void _showInviteMemberDialog(BuildContext context, WidgetRef ref) {
-    final controller = TextEditingController();
+  void _showInviteMemberDialog(BuildContext context, WidgetRef ref) async {
+    // Get existing member IDs to filter them out
+    final membersAsync = ref.read(groupMembersProvider(groupId));
+    final existingMemberIds = membersAsync.maybeWhen(
+      data: (members) => members.map((m) => m.id).toList(),
+      orElse: () => <String>[],
+    );
 
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Invite Member'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'User ID',
-            hintText: '@username:kinuchat.com',
-          ),
+    final result = await Navigator.of(context).push<List<String>>(
+      MaterialPageRoute(
+        builder: (context) => InviteMembersScreen(
+          groupId: groupId,
+          existingMemberIds: existingMemberIds,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (controller.text.isNotEmpty) {
-                Navigator.pop(context);
-                ref.read(groupActionsProvider.notifier).inviteMember(
-                      groupId: groupId,
-                      userId: controller.text,
-                    );
-              }
-            },
-            child: const Text('Invite'),
-          ),
-        ],
       ),
     );
+
+    if (result != null && result.isNotEmpty) {
+      // Refresh members list after inviting
+      ref.invalidate(groupMembersProvider(groupId));
+      ref.invalidate(groupInfoProvider(groupId));
+    }
   }
 
   void _showGroupSettings(BuildContext context, WidgetRef ref) {
-    // TODO: Navigate to group settings screen
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Group settings coming soon')),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => GroupSettingsScreen(groupId: groupId),
+      ),
     );
   }
 

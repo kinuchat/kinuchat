@@ -27,6 +27,8 @@ class MeshTransportImpl {
       StreamController.broadcast();
   final StreamController<MessageDeliveryStatus> _statusController =
       StreamController.broadcast();
+  final StreamController<MeshRelayRequest> _relayRequestController =
+      StreamController.broadcast();
 
   // Subscriptions
   StreamSubscription<MeshPacketReceived>? _packetSubscription;
@@ -52,6 +54,10 @@ class MeshTransportImpl {
 
   /// Stream of message delivery status updates
   Stream<MessageDeliveryStatus> get deliveryStatus => _statusController.stream;
+
+  /// Stream of relay requests (for bridge mode service)
+  /// When a peer sends a relay request, it's emitted here for forwarding to the relay server
+  Stream<MeshRelayRequest> get relayRequests => _relayRequestController.stream;
 
   /// Check if transport is available
   Future<bool> isAvailable() async {
@@ -321,6 +327,12 @@ class MeshTransportImpl {
   Future<void> _deliverPacket(MeshPacket packet) async {
     final messageIdHex = _bytesToHex(packet.messageId);
 
+    // Handle relay request packets specially (for bridge mode)
+    if (packet.type == PacketType.relayRequest) {
+      await _handleRelayRequestPacket(packet, messageIdHex);
+      return;
+    }
+
     // Get sender's session
     // TODO: Need to track sender peer ID with packet
     // For now, try to decrypt with all sessions
@@ -348,6 +360,42 @@ class MeshTransportImpl {
       } catch (e) {
         continue;
       }
+    }
+  }
+
+  /// Handle relay request packet (bridge mode)
+  /// Relay requests contain an already-encrypted envelope destined for the relay server
+  Future<void> _handleRelayRequestPacket(MeshPacket packet, String messageIdHex) async {
+    try {
+      // Relay request payload format (JSON):
+      // {
+      //   "recipient_key_hash": "<base64>",
+      //   "encrypted_payload": "<base64>",
+      //   "ttl_hours": 4,
+      //   "priority": "normal"
+      // }
+      final payloadJson = utf8.decode(packet.payload);
+      final payloadData = jsonDecode(payloadJson) as Map<String, dynamic>;
+
+      final relayRequest = MeshRelayRequest(
+        messageId: messageIdHex,
+        recipientKeyHash: payloadData['recipient_key_hash'] as String,
+        encryptedPayload: payloadData['encrypted_payload'] as String,
+        ttlHours: payloadData['ttl_hours'] as int? ?? 4,
+        priority: payloadData['priority'] as String? ?? 'normal',
+        senderPeerId: '', // TODO: Track sender
+        receivedAt: DateTime.now(),
+      );
+
+      // Emit relay request for bridge mode service to handle
+      _relayRequestController.add(relayRequest);
+
+      // Send ACK if requested
+      if (PacketFlags.hasFlag(packet.flags, PacketFlags.requiresAck)) {
+        await _sendAck(messageIdHex, '');
+      }
+    } catch (e) {
+      // Invalid relay request format
     }
   }
 
@@ -519,6 +567,7 @@ class MeshTransportImpl {
     _queueProcessTimer?.cancel();
     _messageController.close();
     _statusController.close();
+    _relayRequestController.close();
   }
 }
 
@@ -560,4 +609,36 @@ enum DeliveryStatus {
   sent,
   delivered,
   failed,
+}
+
+/// Relay request received from mesh for bridge mode
+/// Contains an already-encrypted envelope to be forwarded to the relay server
+class MeshRelayRequest {
+  final String messageId;
+  final String recipientKeyHash;
+  final String encryptedPayload;
+  final int ttlHours;
+  final String priority;
+  final String senderPeerId;
+  final DateTime receivedAt;
+
+  const MeshRelayRequest({
+    required this.messageId,
+    required this.recipientKeyHash,
+    required this.encryptedPayload,
+    required this.ttlHours,
+    required this.priority,
+    required this.senderPeerId,
+    required this.receivedAt,
+  });
+
+  /// Convert to RelayRequest for bridge mode service
+  Map<String, dynamic> toJson() => {
+        'message_id': messageId,
+        'recipient_key_hash': recipientKeyHash,
+        'encrypted_payload': encryptedPayload,
+        'ttl_hours': ttlHours,
+        'priority': priority,
+        'sender_peer_id': senderPeerId,
+      };
 }

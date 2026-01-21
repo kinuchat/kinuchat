@@ -74,7 +74,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kinu'),
+        title: GestureDetector(
+          onLongPress: () => _toggleDemoMode(ref),
+          child: Text(ref.watch(appDemoModeProvider) ? 'Kinu (Demo)' : 'Kinu'),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -321,6 +324,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  void _toggleDemoMode(WidgetRef ref) {
+    final current = ref.read(appDemoModeProvider);
+    ref.read(appDemoModeProvider.notifier).state = !current;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(!current ? 'Demo mode enabled' : 'Demo mode disabled'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   Future<void> _handleLogout() async {
     try {
       // Logout from Kinu account (primary)
@@ -366,6 +380,20 @@ class ChatListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final demoMode = ref.watch(appDemoModeProvider);
+
+    // Show demo conversations when in demo mode
+    if (demoMode) {
+      final demoConversations = ref.watch(demoConversationsProvider);
+      return ListView.builder(
+        itemCount: demoConversations.length,
+        itemBuilder: (context, index) {
+          final conversation = demoConversations[index];
+          return DemoConversationListItem(conversation: conversation);
+        },
+      );
+    }
+
     final conversationsAsync = ref.watch(conversationsProvider);
 
     return conversationsAsync.when(
@@ -518,3 +546,93 @@ class ConversationListItem extends StatelessWidget {
   }
 }
 
+/// Demo conversation list item widget
+class DemoConversationListItem extends StatelessWidget {
+  const DemoConversationListItem({
+    required this.conversation,
+    super.key,
+  });
+
+  final DemoConversation conversation;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: CircleAvatar(
+        backgroundColor: conversation.isGroup
+            ? Colors.purple.shade100
+            : Colors.blue.shade100,
+        child: conversation.isGroup
+            ? Icon(Icons.group, color: Colors.purple.shade700)
+            : Text(
+                conversation.name.substring(0, 1).toUpperCase(),
+                style: TextStyle(color: Colors.blue.shade700),
+              ),
+      ),
+      title: Text(
+        conversation.name,
+        style: AppTypography.body.copyWith(
+          fontWeight: conversation.unreadCount > 0
+              ? FontWeight.w600
+              : FontWeight.normal,
+        ),
+      ),
+      subtitle: Text(
+        conversation.lastMessage ?? 'No messages yet',
+        style: AppTypography.bodySmall,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          if (conversation.lastMessageAt != null)
+            Text(
+              _formatTimestamp(conversation.lastMessageAt!),
+              style: AppTypography.caption,
+            ),
+          if (conversation.unreadCount > 0) ...[
+            const SizedBox(height: 4),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${conversation.unreadCount}',
+                style: AppTypography.caption.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+      onTap: () {
+        // In demo mode, just show a snackbar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Demo chat with ${conversation.name}'),
+            duration: const Duration(seconds: 1),
+          ),
+        );
+      },
+    );
+  }
+
+  String _formatTimestamp(DateTime timestamp) {
+    final now = DateTime.now();
+    final diff = now.difference(timestamp);
+
+    if (diff.inDays == 0) {
+      return '${timestamp.hour}:${timestamp.minute.toString().padLeft(2, '0')}';
+    } else if (diff.inDays == 1) {
+      return 'Yesterday';
+    } else {
+      return '${diff.inDays}d ago';
+    }
+  }
+}

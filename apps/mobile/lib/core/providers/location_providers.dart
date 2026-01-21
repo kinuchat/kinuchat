@@ -27,12 +27,28 @@ final currentLocationProvider = StreamProvider<Position?>((ref) async* {
     return;
   }
 
-  // Stream location updates
+  // First, get the current position (this is more reliable than waiting for stream)
+  try {
+    final currentPosition = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.medium, // Use medium for faster fix
+        timeLimit: Duration(seconds: 15),
+      ),
+    );
+    yield currentPosition;
+  } catch (e) {
+    // If getCurrentPosition fails, try last known position
+    final lastKnown = await Geolocator.getLastKnownPosition();
+    if (lastKnown != null) {
+      yield lastKnown;
+    }
+  }
+
+  // Then stream location updates
   yield* Geolocator.getPositionStream(
     locationSettings: const LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: 100, // Update every 100 meters
-      timeLimit: Duration(seconds: 30), // Maximum wait time
     ),
   );
 });

@@ -41,7 +41,7 @@ pub async fn upload(
     }
 
     // Check rate limit
-    let (allowed, remaining, reset_at) = match state
+    let (allowed, _remaining, reset_at) = match state
         .storage
         .check_rate_limit(&envelope.recipient_key_hash, state.config.rate_limit_per_minute)
         .await

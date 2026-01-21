@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:matrix/matrix.dart';
 import 'package:meshlink_core/database/app_database.dart';
 
@@ -161,6 +162,37 @@ class GroupRepository {
 
     // Delete local conversation and members
     await _database.deleteConversation(groupId);
+  }
+
+  /// Delete a group (admin only)
+  /// This kicks all members and then leaves, effectively deleting the group
+  Future<void> deleteGroup(String groupId) async {
+    // Verify we're an admin
+    if (!isAdmin(groupId)) {
+      throw Exception('Only admins can delete groups');
+    }
+
+    // Get all members
+    final members = await getMembers(groupId);
+    final currentUserId = _matrixService.client?.userID;
+
+    // Kick all members except ourselves
+    for (final member in members) {
+      if (member.id != currentUserId && member.membership == Membership.join) {
+        try {
+          await _matrixService.kickFromGroup(
+            roomId: groupId,
+            userId: member.id,
+            reason: 'Group deleted',
+          );
+        } catch (e) {
+          // Continue even if kick fails (user may have already left)
+        }
+      }
+    }
+
+    // Leave the group ourselves
+    await leaveGroup(groupId);
   }
 
   /// Get members of a group

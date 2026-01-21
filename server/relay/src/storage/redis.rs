@@ -217,7 +217,7 @@ impl RedisStorage {
     /// Health check - ping Redis
     pub async fn ping(&self) -> anyhow::Result<()> {
         let mut conn = self.conn.write().await;
-        redis::cmd("PING").query_async(&mut *conn).await?;
+        let _: String = redis::cmd("PING").query_async(&mut *conn).await?;
         Ok(())
     }
 }

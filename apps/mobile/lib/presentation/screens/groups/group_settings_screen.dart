@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers/group_providers.dart';
+import '../../widgets/avatar_picker.dart';
 
 /// Screen for editing group settings
 class GroupSettingsScreen extends ConsumerStatefulWidget {
@@ -22,6 +25,7 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
   late TextEditingController _nameController;
   late TextEditingController _topicController;
   bool _hasChanges = false;
+  File? _selectedAvatar;
 
   @override
   void initState() {
@@ -89,38 +93,16 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
               children: [
                 // Group avatar
                 Center(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.blue.shade200,
-                        backgroundImage: groupInfo.avatarUrl != null
-                            ? NetworkImage(groupInfo.avatarUrl!)
-                            : null,
-                        child: groupInfo.avatarUrl == null
-                            ? Icon(
-                                Icons.group,
-                                size: 50,
-                                color: Colors.blue.shade700,
-                              )
-                            : null,
-                      ),
-                      Positioned(
-                        right: 0,
-                        bottom: 0,
-                        child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.blue,
-                          child: IconButton(
-                            icon: const Icon(Icons.camera_alt, size: 18),
-                            color: Colors.white,
-                            onPressed: () {
-                              // TODO: Add avatar picker
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: AvatarPickerWidget(
+                    currentAvatarUrl: groupInfo.avatarUrl,
+                    selectedFile: _selectedAvatar,
+                    placeholderIcon: Icons.group,
+                    onImageSelected: (file) {
+                      setState(() {
+                        _selectedAvatar = file;
+                        _hasChanges = true;
+                      });
+                    },
                   ),
                 ),
 
@@ -267,26 +249,64 @@ class _GroupSettingsScreenState extends ConsumerState<GroupSettingsScreen> {
   void _confirmDeleteGroup(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Delete Group'),
         content: const Text(
           'Are you sure you want to delete this group? '
-          'This action cannot be undone and all messages will be lost.',
+          'All members will be removed and this action cannot be undone.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implement group deletion
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+
+              // Show loading indicator
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Group deletion not yet implemented'),
+                  content: Row(
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: 16),
+                      Text('Deleting group...'),
+                    ],
+                  ),
+                  duration: Duration(seconds: 30),
                 ),
               );
+
+              try {
+                await ref
+                    .read(groupActionsProvider.notifier)
+                    .deleteGroup(widget.groupId);
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Group deleted')),
+                  );
+
+                  // Navigate back to conversation list
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Failed to delete group: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Delete'),

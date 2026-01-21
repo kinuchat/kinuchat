@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_core/mesh/ble_service.dart';
 import 'package:meshlink_core/mesh/routing_engine.dart';
 import 'package:meshlink_core/mesh/mesh_transport_impl.dart';
 import '../../data/services/mesh_background_service.dart';
+import '../../data/services/bridge_mode_service.dart';
 import 'database_providers.dart';
 import 'identity_providers.dart';
+import 'bridge_providers.dart';
 
 /// Provider for BLE service
 final bleServiceProvider = Provider<BleService>((ref) {
@@ -62,7 +66,14 @@ class MeshNetworkNotifier extends StateNotifier<MeshNetworkState> {
       await _transport.start();
 
       // Start background service to keep mesh active when app is backgrounded
-      await _transport.startBackgroundService();
+      // Wrapped in try-catch as it may fail on some Android versions
+      try {
+        await _transport.startBackgroundService();
+      } catch (e) {
+        // Background service failed - app can continue without it
+        // This is common on Android 13+ if notification channel isn't set up
+        print('Background service failed to start: $e');
+      }
 
       state = state.copyWith(
         status: MeshNetworkStatus.active,
@@ -86,7 +97,11 @@ class MeshNetworkNotifier extends StateNotifier<MeshNetworkState> {
       await _transport.stop();
 
       // Stop background service
-      await _transport.stopBackgroundService();
+      try {
+        await _transport.stopBackgroundService();
+      } catch (e) {
+        // Ignore errors stopping background service
+      }
 
       state = state.copyWith(
         status: MeshNetworkStatus.inactive,
@@ -183,4 +198,37 @@ final meshAvailableProvider = Provider<bool>((ref) {
 final meshActiveProvider = Provider<bool>((ref) {
   final state = ref.watch(meshNetworkProvider);
   return state.status == MeshNetworkStatus.active;
+});
+
+/// Provider that wires mesh relay requests to bridge mode service
+/// This enables the AirTag-style relay functionality
+final meshBridgeRelayProvider = Provider<StreamSubscription?>((ref) {
+  final meshTransport = ref.watch(meshTransportProvider);
+  final bridgeModeService = ref.watch(bridgeModeServiceProvider);
+
+  if (meshTransport == null || bridgeModeService == null) {
+    return null;
+  }
+
+  // Subscribe to relay requests from mesh and forward to bridge mode service
+  final subscription = meshTransport.relayRequests.listen((meshRequest) {
+    // Convert MeshRelayRequest to RelayRequest for bridge mode service
+    final relayRequest = RelayRequest(
+      messageId: meshRequest.messageId,
+      recipientKeyHash: meshRequest.recipientKeyHash,
+      encryptedPayload: meshRequest.encryptedPayload,
+      ttlHours: meshRequest.ttlHours,
+      priority: meshRequest.priority,
+      senderPeerId: meshRequest.senderPeerId,
+    );
+
+    bridgeModeService.submitRelayRequest(relayRequest);
+  });
+
+  // Clean up on dispose
+  ref.onDispose(() {
+    subscription.cancel();
+  });
+
+  return subscription;
 });

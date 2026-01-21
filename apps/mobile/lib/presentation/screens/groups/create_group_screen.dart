@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_core/database/app_database.dart';
 
 import '../../../core/providers/group_providers.dart';
+import '../../../core/providers/database_providers.dart';
+import '../../widgets/contact_picker_dialog.dart';
+import '../../widgets/avatar_picker.dart';
 
 /// Screen for creating a new group chat
 class CreateGroupScreen extends ConsumerStatefulWidget {
@@ -17,6 +22,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
   final _nameController = TextEditingController();
   final _topicController = TextEditingController();
   final List<String> _selectedMembers = [];
+  File? _selectedAvatar;
 
   @override
   void dispose() {
@@ -69,35 +75,16 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            // Group avatar placeholder
+            // Group avatar
             Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.blue.shade100,
-                    child: Icon(
-                      Icons.group,
-                      size: 50,
-                      color: Colors.blue.shade700,
-                    ),
-                  ),
-                  Positioned(
-                    right: 0,
-                    bottom: 0,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.blue,
-                      child: IconButton(
-                        icon: const Icon(Icons.camera_alt, size: 18),
-                        color: Colors.white,
-                        onPressed: () {
-                          // TODO: Add avatar picker
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              child: AvatarPickerWidget(
+                selectedFile: _selectedAvatar,
+                placeholderIcon: Icons.group,
+                onImageSelected: (file) {
+                  setState(() {
+                    _selectedAvatar = file;
+                  });
+                },
               ),
             ),
 
@@ -190,25 +177,7 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
                 ),
               )
             else
-              Column(
-                children: _selectedMembers.map((memberId) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      child: Text(memberId[0].toUpperCase()),
-                    ),
-                    title: Text(memberId),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.remove_circle_outline),
-                      color: Colors.red,
-                      onPressed: () {
-                        setState(() {
-                          _selectedMembers.remove(memberId);
-                        });
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
+              _buildSelectedMembersList(),
 
             const SizedBox(height: 24),
 
@@ -254,25 +223,77 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     );
   }
 
-  void _showMemberPicker() {
-    // TODO: Show contact picker dialog
-    // For now, show a placeholder dialog
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Members'),
-        content: const Text(
-          'Contact picker will be implemented here.\n\n'
-          'For now, members can be invited after creating the group.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
-          ),
-        ],
+  Widget _buildSelectedMembersList() {
+    final contactsAsync = ref.watch(_selectedContactsProvider(_selectedMembers));
+
+    return contactsAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => Column(
+        children: _selectedMembers.map((memberId) {
+          return ListTile(
+            leading: CircleAvatar(
+              child: Text(memberId[0].toUpperCase()),
+            ),
+            title: Text(memberId),
+            trailing: IconButton(
+              icon: const Icon(Icons.remove_circle_outline),
+              color: Colors.red,
+              onPressed: () {
+                setState(() {
+                  _selectedMembers.remove(memberId);
+                });
+              },
+            ),
+          );
+        }).toList(),
       ),
+      data: (contacts) {
+        return Column(
+          children: _selectedMembers.map((memberId) {
+            final contact = contacts
+                .where((c) => c.id == memberId)
+                .firstOrNull;
+            final displayName = contact?.displayName ?? memberId;
+            final avatar = contact?.avatar;
+
+            return ListTile(
+              leading: CircleAvatar(
+                backgroundImage:
+                    avatar != null ? NetworkImage(avatar) : null,
+                child: avatar == null
+                    ? Text(displayName[0].toUpperCase())
+                    : null,
+              ),
+              title: Text(displayName),
+              subtitle: contact != null ? Text(memberId) : null,
+              trailing: IconButton(
+                icon: const Icon(Icons.remove_circle_outline),
+                color: Colors.red,
+                onPressed: () {
+                  setState(() {
+                    _selectedMembers.remove(memberId);
+                  });
+                },
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
+  }
+
+  void _showMemberPicker() async {
+    final selectedIds = await showContactPickerDialog(
+      context,
+      excludeIds: _selectedMembers,
+      title: 'Add Members',
+    );
+
+    if (selectedIds != null && selectedIds.isNotEmpty) {
+      setState(() {
+        _selectedMembers.addAll(selectedIds);
+      });
+    }
   }
 
   void _createGroup() {
@@ -287,3 +308,12 @@ class _CreateGroupScreenState extends ConsumerState<CreateGroupScreen> {
     }
   }
 }
+
+/// Provider to get contact info for selected member IDs
+final _selectedContactsProvider = FutureProvider.family
+    .autoDispose<List<ContactEntity>, List<String>>((ref, memberIds) async {
+  if (memberIds.isEmpty) return [];
+  final database = ref.watch(databaseProvider);
+  final allContacts = await database.getAllContacts();
+  return allContacts.where((c) => memberIds.contains(c.id)).toList();
+});

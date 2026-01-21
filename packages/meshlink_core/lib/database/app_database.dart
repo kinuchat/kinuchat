@@ -106,6 +106,14 @@ class Conversations extends Table {
   /// Rally channel participant count
   IntColumn get participantCount => integer().withDefault(const Constant(0))();
 
+  // Bridge relay fields (Phase 5)
+  /// For 1:1 DMs: the other party's X25519 public key (base64 encoded)
+  /// Used for computing bridge relay recipient key hash
+  TextColumn get participantKey => text().nullable()();
+
+  /// Whether this is a group conversation (vs 1:1)
+  BoolColumn get isGroup => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column> get primaryKey => {id};
 }

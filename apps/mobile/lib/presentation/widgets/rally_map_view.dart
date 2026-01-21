@@ -92,7 +92,7 @@ class _RallyMapViewState extends ConsumerState<RallyMapView> {
         // OpenStreetMap tile layer
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.meshlink.mobile',
+          userAgentPackageName: 'com.kinuchat.app',
           maxZoom: 19,
         ),
 

@@ -1,1 +1,1 @@
-{"valid_import":false,"imports":[],"elements":[]}
+{"valid_import":true,"imports":[{"uri":"package:meshlink_core/transport/bridge_transport.dart","transitive":false}],"elements":[]}

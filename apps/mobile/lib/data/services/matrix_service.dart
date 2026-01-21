@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:matrix/matrix.dart';
 import 'package:meshlink_core/crypto/secure_storage.dart';
+import 'package:mime/mime.dart' as mime_lookup;
 
 /// Matrix service for cloud messaging
 /// Based on Phase 1 implementation requirements
@@ -382,7 +385,7 @@ class MatrixService {
         throw MatrixServiceException('Room not found: $roomId');
       }
 
-      await room.kick(userId, reason: reason);
+      await room.kick(userId);
       debugPrint('Kicked $userId from $roomId');
     } catch (e) {
       throw MatrixServiceException('Failed to kick from group: $e');
@@ -405,7 +408,7 @@ class MatrixService {
         throw MatrixServiceException('Room not found: $roomId');
       }
 
-      await room.ban(userId, reason: reason);
+      await room.ban(userId);
       debugPrint('Banned $userId from $roomId');
     } catch (e) {
       throw MatrixServiceException('Failed to ban from group: $e');
@@ -456,8 +459,11 @@ class MatrixService {
         await room.setDescription(topic);
       }
 
+      // Note: setAvatar requires MatrixFile, not Uri
+      // Avatar URL setting would need to download and reupload the file
+      // For now, avatar updates are not supported via URL string
       if (avatarUrl != null) {
-        await room.setAvatar(Uri.parse(avatarUrl));
+        debugPrint('Avatar URL update not yet implemented: $avatarUrl');
       }
 
       debugPrint('Updated group settings for $roomId');
@@ -557,6 +563,325 @@ class MatrixService {
     }
 
     return room.encrypted;
+  }
+
+  // ============================================================================
+  // Media Methods (Phase 7)
+  // ============================================================================
+
+  /// Upload a file to the Matrix media repository
+  /// Returns the MXC URI (mxc://server/media_id)
+  Future<Uri> uploadMedia({
+    required Uint8List bytes,
+    required String fileName,
+    String? mimeType,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final contentType = mimeType ?? mime_lookup.lookupMimeType(fileName) ?? 'application/octet-stream';
+
+      final uri = await _client!.uploadContent(
+        bytes,
+        filename: fileName,
+        contentType: contentType,
+      );
+
+      return uri;
+    } catch (e) {
+      throw MatrixServiceException('Failed to upload media: $e');
+    }
+  }
+
+  /// Upload a file from disk
+  Future<Uri> uploadFile(File file) async {
+    final bytes = await file.readAsBytes();
+    final fileName = file.path.split('/').last;
+    return uploadMedia(bytes: bytes, fileName: fileName);
+  }
+
+  /// Send an image message
+  Future<String> sendImageMessage({
+    required String roomId,
+    required File imageFile,
+    String? caption,
+    int? width,
+    int? height,
+    Uint8List? thumbnailBytes,
+    int? thumbnailWidth,
+    int? thumbnailHeight,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      final bytes = await imageFile.readAsBytes();
+      final fileName = imageFile.path.split('/').last;
+      final mimeType = mime_lookup.lookupMimeType(fileName) ?? 'image/jpeg';
+
+      // Upload the image
+      final imageUri = await uploadMedia(
+        bytes: bytes,
+        fileName: fileName,
+        mimeType: mimeType,
+      );
+
+      // Upload thumbnail if provided
+      Uri? thumbnailUri;
+      if (thumbnailBytes != null) {
+        thumbnailUri = await uploadMedia(
+          bytes: thumbnailBytes,
+          fileName: 'thumb_$fileName',
+          mimeType: mimeType,
+        );
+      }
+
+      // Build message content
+      final content = <String, dynamic>{
+        'msgtype': 'm.image',
+        'body': caption ?? fileName,
+        'url': imageUri.toString(),
+        'info': {
+          'mimetype': mimeType,
+          'size': bytes.length,
+          if (width != null) 'w': width,
+          if (height != null) 'h': height,
+          if (thumbnailUri != null) 'thumbnail_url': thumbnailUri.toString(),
+          if (thumbnailWidth != null && thumbnailHeight != null)
+            'thumbnail_info': {
+              'w': thumbnailWidth,
+              'h': thumbnailHeight,
+              'mimetype': mimeType,
+              'size': thumbnailBytes?.length,
+            },
+        },
+      };
+
+      final eventId = await room.sendEvent(content);
+      return eventId ?? '';
+    } catch (e) {
+      throw MatrixServiceException('Failed to send image: $e');
+    }
+  }
+
+  /// Send a video message
+  Future<String> sendVideoMessage({
+    required String roomId,
+    required File videoFile,
+    String? caption,
+    int? width,
+    int? height,
+    int? duration,
+    Uint8List? thumbnailBytes,
+    int? thumbnailWidth,
+    int? thumbnailHeight,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      final bytes = await videoFile.readAsBytes();
+      final fileName = videoFile.path.split('/').last;
+      final mimeType = mime_lookup.lookupMimeType(fileName) ?? 'video/mp4';
+
+      // Upload the video
+      final videoUri = await uploadMedia(
+        bytes: bytes,
+        fileName: fileName,
+        mimeType: mimeType,
+      );
+
+      // Upload thumbnail if provided
+      Uri? thumbnailUri;
+      if (thumbnailBytes != null) {
+        thumbnailUri = await uploadMedia(
+          bytes: thumbnailBytes,
+          fileName: 'thumb_$fileName.jpg',
+          mimeType: 'image/jpeg',
+        );
+      }
+
+      // Build message content
+      final content = <String, dynamic>{
+        'msgtype': 'm.video',
+        'body': caption ?? fileName,
+        'url': videoUri.toString(),
+        'info': {
+          'mimetype': mimeType,
+          'size': bytes.length,
+          if (width != null) 'w': width,
+          if (height != null) 'h': height,
+          if (duration != null) 'duration': duration,
+          if (thumbnailUri != null) 'thumbnail_url': thumbnailUri.toString(),
+          if (thumbnailWidth != null && thumbnailHeight != null)
+            'thumbnail_info': {
+              'w': thumbnailWidth,
+              'h': thumbnailHeight,
+              'mimetype': 'image/jpeg',
+              'size': thumbnailBytes?.length,
+            },
+        },
+      };
+
+      final eventId = await room.sendEvent(content);
+      return eventId ?? '';
+    } catch (e) {
+      throw MatrixServiceException('Failed to send video: $e');
+    }
+  }
+
+  /// Send an audio/voice message
+  Future<String> sendAudioMessage({
+    required String roomId,
+    required File audioFile,
+    int? duration,
+    bool isVoiceMessage = false,
+    List<int>? waveform,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      final bytes = await audioFile.readAsBytes();
+      final fileName = audioFile.path.split('/').last;
+      final mimeType = mime_lookup.lookupMimeType(fileName) ?? 'audio/ogg';
+
+      // Upload the audio
+      final audioUri = await uploadMedia(
+        bytes: bytes,
+        fileName: fileName,
+        mimeType: mimeType,
+      );
+
+      // Build message content
+      final content = <String, dynamic>{
+        'msgtype': 'm.audio',
+        'body': isVoiceMessage ? 'Voice message' : fileName,
+        'url': audioUri.toString(),
+        'info': {
+          'mimetype': mimeType,
+          'size': bytes.length,
+          if (duration != null) 'duration': duration,
+        },
+        // Voice message indicator (MSC3245)
+        if (isVoiceMessage) 'org.matrix.msc3245.voice': {},
+        if (waveform != null) 'org.matrix.msc1767.audio': {
+          'duration': duration,
+          'waveform': waveform,
+        },
+      };
+
+      final eventId = await room.sendEvent(content);
+      return eventId ?? '';
+    } catch (e) {
+      throw MatrixServiceException('Failed to send audio: $e');
+    }
+  }
+
+  /// Send a file attachment
+  Future<String> sendFileMessage({
+    required String roomId,
+    required File file,
+    String? caption,
+  }) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final room = _client!.getRoomById(roomId);
+      if (room == null) {
+        throw MatrixServiceException('Room not found: $roomId');
+      }
+
+      final bytes = await file.readAsBytes();
+      final fileName = file.path.split('/').last;
+      final mimeType = mime_lookup.lookupMimeType(fileName) ?? 'application/octet-stream';
+
+      // Upload the file
+      final fileUri = await uploadMedia(
+        bytes: bytes,
+        fileName: fileName,
+        mimeType: mimeType,
+      );
+
+      // Build message content
+      final content = <String, dynamic>{
+        'msgtype': 'm.file',
+        'body': caption ?? fileName,
+        'filename': fileName,
+        'url': fileUri.toString(),
+        'info': {
+          'mimetype': mimeType,
+          'size': bytes.length,
+        },
+      };
+
+      final eventId = await room.sendEvent(content);
+      return eventId ?? '';
+    } catch (e) {
+      throw MatrixServiceException('Failed to send file: $e');
+    }
+  }
+
+  /// Download media from MXC URI
+  Future<Uint8List?> downloadMedia(Uri mxcUri) async {
+    if (_client == null || !isLoggedIn) {
+      throw MatrixServiceException('Not logged in');
+    }
+
+    try {
+      final downloadUrl = await getDownloadUri(mxcUri);
+      if (downloadUrl == null) {
+        throw MatrixServiceException('Failed to get download URL');
+      }
+      final response = await _client!.httpClient.get(downloadUrl);
+      return response.bodyBytes;
+    } catch (e) {
+      throw MatrixServiceException('Failed to download media: $e');
+    }
+  }
+
+  /// Get thumbnail URL for media
+  Future<Uri?> getThumbnailUri(
+    Uri mxcUri, {
+    int width = 200,
+    int height = 200,
+    ThumbnailMethod method = ThumbnailMethod.scale,
+  }) async {
+    if (_client?.homeserver == null) return null;
+    return mxcUri.getThumbnailUri(
+      _client!,
+      width: width,
+      height: height,
+      method: method,
+    );
+  }
+
+  /// Get download URL for media
+  Future<Uri?> getDownloadUri(Uri mxcUri) async {
+    if (_client?.homeserver == null) return null;
+    return mxcUri.getDownloadUri(_client!);
   }
 
   // ============================================================================
