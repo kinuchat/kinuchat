@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:matrix/matrix.dart' show EventUpdateType;
 import '../../data/repositories/conversation_repository.dart';
 import '../../data/repositories/message_repository.dart';
 import 'database_providers.dart';
@@ -59,12 +60,54 @@ final conversationsProvider = FutureProvider((ref) async {
 });
 
 /// Provider for messages in a conversation
+///
+/// Reads directly from Matrix SDK timeline - SDK handles decryption internally.
+/// This bypasses the local DB sync which fails for encrypted messages without
+/// proper Olm initialization.
 final messagesProvider = FutureProvider.family<List<dynamic>, String>((ref, conversationId) async {
   final repository = ref.watch(messageRepositoryProvider);
 
-  // Sync from Matrix first
-  await repository.syncMessages(conversationId: conversationId);
-
-  // Then get from local database
-  return repository.getMessages(conversationId: conversationId);
+  // Read directly from Matrix SDK (handles decryption)
+  return repository.getMessagesFromMatrix(conversationId: conversationId);
 });
+
+/// Provider that starts Matrix sync and listens to events to auto-refresh data
+/// Initialize this provider on app start to enable real-time updates
+///
+/// IMPORTANT: This provider ONLY invalidates conversationsProvider (for the home list).
+/// It does NOT invalidate messagesProvider to avoid infinite loops.
+/// Messages are refreshed via pull-to-refresh or explicit user action.
+final matrixSyncListenerProvider = Provider<void>((ref) {
+  final matrixService = ref.watch(matrixServiceProvider);
+
+  // Start continuous sync if logged in (runs in background)
+  if (matrixService.isLoggedIn) {
+    // Don't await - let it run in background
+    matrixService.startSync();
+  }
+
+  // Listen to sync events - ONLY invalidate conversations, NOT messages
+  final syncSubscription = matrixService.onSync.listen((syncUpdate) {
+    ref.invalidate(conversationsProvider);
+  });
+
+  // Listen to message events for conversation list updates
+  final eventSubscription = matrixService.onEvent.listen((event) {
+    // Only refresh conversations on timeline events (new messages)
+    // This updates last message/unread count in the chat list
+    // DO NOT invalidate messagesProvider here - it causes infinite loops
+    if (event.type == EventUpdateType.timeline) {
+      ref.invalidate(conversationsProvider);
+    }
+  });
+
+  ref.onDispose(() {
+    syncSubscription.cancel();
+    eventSubscription.cancel();
+    matrixService.stopSync();
+  });
+});
+
+// NOTE: periodicSyncProvider was removed as it's redundant.
+// Background sync in matrixSyncListenerProvider handles continuous syncing.
+// The periodic sync caused unnecessary invalidation loops.

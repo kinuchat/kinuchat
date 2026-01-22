@@ -2,7 +2,7 @@ name: mobile
 description: "Kinu - Hybrid Cloud/Mesh Encrypted Messaging"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.0+8
 
 environment:
   sdk: ^3.10.4

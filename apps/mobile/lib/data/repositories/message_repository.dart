@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:matrix/matrix.dart' as matrix;
 import 'package:meshlink_core/database/app_database.dart';
 import 'package:meshlink_core/transport/transport_manager.dart';
@@ -40,7 +41,7 @@ class MessageRepository {
   final BridgeTransportImpl? _bridgeTransport;
   final String? _myPublicKeyBase64;
 
-  /// Get messages for a conversation
+  /// Get messages for a conversation from local database
   Future<List<MessageEntity>> getMessages({
     required String conversationId,
     int limit = 50,
@@ -51,6 +52,65 @@ class MessageRepository {
       limit: limit,
       offset: offset,
     );
+  }
+
+  /// Get messages directly from Matrix SDK timeline
+  /// Bypasses local DB - SDK handles decryption internally
+  /// This solves the E2EE issue where encrypted events can't be read from local DB
+  Future<List<MessageEntity>> getMessagesFromMatrix({
+    required String conversationId,
+    int limit = 50,
+  }) async {
+    final room = _matrixService.getRoomById(conversationId);
+    if (room == null) {
+      debugPrint('[MessageRepository] Room not found: $conversationId');
+      return [];
+    }
+
+    final timeline = await room.getTimeline();
+    final currentUserId = _matrixService.client?.userID;
+
+    final messages = <MessageEntity>[];
+
+    for (final event in timeline.events) {
+      // Only process message events
+      if (event.type != matrix.EventTypes.Message) continue;
+
+      // Skip if body is empty (failed decryption or non-text content)
+      if (event.body.isEmpty) continue;
+
+      messages.add(MessageEntity(
+        id: event.eventId,
+        conversationId: event.roomId ?? conversationId,
+        senderId: event.senderId,
+        content: event.body,
+        type: _getMessageType(event),
+        status: 'delivered',
+        transport: 'cloud',
+        timestamp: event.originServerTs,
+        isFromMe: event.senderId == currentUserId,
+        deliveredAt: null,
+        readAt: null,
+        metadata: null,
+      ));
+
+      if (messages.length >= limit) break;
+    }
+
+    return messages;
+  }
+
+  /// Get message type from Matrix event
+  String _getMessageType(matrix.Event event) {
+    final msgtype = event.content['msgtype'];
+    return switch (msgtype) {
+      'm.text' => 'text',
+      'm.image' => 'image',
+      'm.video' => 'video',
+      'm.audio' => 'audio',
+      'm.file' => 'file',
+      _ => 'text',
+    };
   }
 
   /// Send a text message
@@ -151,18 +211,25 @@ class MessageRepository {
     }
   }
 
-  /// Sync messages from a Matrix room
+  /// Sync messages from a Matrix room to local database
+  ///
+  /// IMPORTANT: This method does NOT trigger a full Matrix sync.
+  /// It reads timeline from the already-synced client state.
+  /// Background sync (via matrixSyncListenerProvider) keeps client state updated.
   Future<void> syncMessages({
     required String conversationId,
     int limit = 50,
   }) async {
     try {
+      // DON'T call full sync here - background sync handles that
+      // Just read timeline from already-synced client state
+
       final room = _matrixService.getRoomById(conversationId);
       if (room == null) {
         return;
       }
 
-      // Get timeline events
+      // Get timeline events from already-synced state
       final timeline = await room.getTimeline();
       final events = timeline.events;
 

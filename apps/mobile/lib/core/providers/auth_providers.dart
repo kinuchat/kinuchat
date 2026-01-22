@@ -292,11 +292,29 @@ class AccountNotifier extends StateNotifier<AccountState> {
     await updateAccount(displayName: displayName);
   }
 
-  /// Logout
+  /// Logout - clears all auth state including Matrix and identity
   Future<void> logout() async {
+    // Clear Kinu auth tokens
     await _secureStorage.delete(key: _tokenKey);
     await _secureStorage.delete(key: _deviceIdKey);
     _authService.logout();
+
+    // Logout from Matrix
+    try {
+      await _ref.read(matrixAuthProvider.notifier).logout();
+      debugPrint('Logged out of Matrix');
+    } catch (e) {
+      debugPrint('Matrix logout failed: $e');
+    }
+
+    // Delete local identity (user will create new one on next registration)
+    try {
+      await _ref.read(identityProvider.notifier).deleteIdentity();
+      debugPrint('Deleted local identity');
+    } catch (e) {
+      debugPrint('Identity deletion failed: $e');
+    }
+
     state = const AccountState.unauthenticated();
   }
 

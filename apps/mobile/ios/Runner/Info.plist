@@ -52,6 +52,18 @@
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>Kinu uses Bluetooth to connect with nearby users for offline messaging</string>
 
+	<!-- Camera Permission for QR scanning and media messages -->
+	<key>NSCameraUsageDescription</key>
+	<string>Kinu needs camera access to scan QR codes and take photos for messages</string>
+
+	<!-- Microphone Permission for voice messages -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Kinu needs microphone access to record voice messages</string>
+
+	<!-- Photo Library Permission for sending images -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Kinu needs photo library access to send images in messages</string>
+
 	<!-- Location Permissions for Rally Mode -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Kinu needs your location to discover nearby Rally channels and connect you with people in your area</string>
@@ -66,6 +78,13 @@
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
 		<string>processing</string>
+	</array>
+
+	<!-- Background Task Identifiers (required for 'processing' mode) -->
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.kinuchat.app.workmanager</string>
+		<string>com.kinuchat.app.background</string>
 	</array>
 
 	<!-- Allow HTTP for local development -->

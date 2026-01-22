@@ -60,6 +60,11 @@ class ConversationRepository {
   /// Sync conversations from Matrix to local database
   Future<void> syncConversations() async {
     try {
+      // Trigger Matrix sync to get latest rooms from server
+      if (_matrixService.isLoggedIn) {
+        await _matrixService.client?.sync();
+      }
+
       final rooms = _matrixService.getRooms();
 
       for (final room in rooms) {

@@ -34,6 +34,9 @@ class MatrixService {
   Future<void> initialize() async {
     _client = Client('Kinu');
 
+    // Register default commands (required for sendTextEvent to work!)
+    _client!.registerDefaultCommands();
+
     // Check for stored credentials
     final accessToken = await _secureStorage.read(
       key: SecureStorageKeys.matrixAccessToken,
@@ -181,8 +184,17 @@ class MatrixService {
       final roomId = await _client!.startDirectChat(userId);
       debugPrint('Created new DM room with $userId: $roomId');
 
-      // Sync again to ensure room is in local state
-      await _client!.sync();
+      // Sync multiple times to ensure room is in local state
+      // Sometimes first sync doesn't include the new room
+      for (var i = 0; i < 3; i++) {
+        await _client!.sync();
+        final room = _client!.getRoomById(roomId);
+        if (room != null) {
+          debugPrint('Room synced after ${i + 1} sync(s)');
+          break;
+        }
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
 
       return roomId;
     } catch (e) {
@@ -227,9 +239,27 @@ class MatrixService {
         }
       }
 
-      final eventId = await room.sendTextEvent(message);
+      // Check if we need to join the room (we might only be invited)
+      if (room.membership == Membership.invite) {
+        debugPrint('Auto-joining room we were invited to: $roomId');
+        await room.join();
+        await _client!.sync();
+      }
+
+      // Retry logic for sendTextEvent - sometimes returns null on first try
+      String? eventId;
+      for (var attempt = 0; attempt < 3; attempt++) {
+        eventId = await room.sendTextEvent(message);
+        if (eventId != null) break;
+
+        // Wait and sync before retry
+        await Future.delayed(Duration(milliseconds: 500 * (attempt + 1)));
+        await _client!.sync();
+        debugPrint('Retry sendTextEvent attempt ${attempt + 1}');
+      }
+
       if (eventId == null) {
-        throw MatrixServiceException('Failed to get event ID');
+        throw MatrixServiceException('Failed to get event ID after 3 attempts');
       }
       return eventId;
     } catch (e) {
@@ -267,6 +297,40 @@ class MatrixService {
       return const Stream.empty();
     }
     return _client!.onEvent.stream;
+  }
+
+  bool _isSyncing = false;
+
+  /// Start continuous sync loop
+  /// Calls sync() repeatedly with timeout for long-polling
+  Future<void> startSync() async {
+    if (_client == null || !isLoggedIn || _isSyncing) {
+      return;
+    }
+
+    _isSyncing = true;
+    debugPrint('Matrix background sync starting...');
+
+    while (_isSyncing && _client != null && isLoggedIn) {
+      try {
+        // Long-poll - will wait up to 30s for new events
+        await _client!.sync(timeout: 30000);
+        // Small delay between syncs to prevent tight loop
+        await Future.delayed(const Duration(milliseconds: 500));
+      } catch (e) {
+        debugPrint('Matrix sync error: $e');
+        // Wait before retrying on error
+        await Future.delayed(const Duration(seconds: 5));
+      }
+    }
+
+    debugPrint('Matrix sync loop exited');
+  }
+
+  /// Stop sync loop
+  void stopSync() {
+    _isSyncing = false;
+    debugPrint('Matrix sync stopped');
   }
 
   /// Dispose resources

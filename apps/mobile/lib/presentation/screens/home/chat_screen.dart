@@ -36,6 +36,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       return;
     }
 
+    debugPrint('[ChatScreen] Sending message to ${widget.conversationId}');
+
     setState(() {
       _isSending = true;
     });
@@ -45,15 +47,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       final identity = ref.read(identityProvider).value;
 
       if (identity == null) {
+        debugPrint('[ChatScreen] ERROR: No identity found');
         throw Exception('No identity found');
       }
 
+      debugPrint('[ChatScreen] Calling repository.sendTextMessage...');
       await repository.sendTextMessage(
         conversationId: widget.conversationId,
         content: message,
         senderId: identity.meshPeerIdHex,
       );
 
+      debugPrint('[ChatScreen] Message sent successfully');
       _messageController.clear();
 
       // Scroll to bottom
@@ -66,8 +71,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
 
       // Refresh messages
+      debugPrint('[ChatScreen] Refreshing messages provider...');
       ref.invalidate(messagesProvider(widget.conversationId));
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('[ChatScreen] ERROR sending message: $e');
+      debugPrint('[ChatScreen] Stack: $stack');
       if (!mounted) {
         return;
       }
@@ -208,7 +216,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 }
 
-/// Message list view
+/// Message list view with pull-to-refresh support
 class MessageListView extends ConsumerWidget {
   const MessageListView({
     required this.conversationId,
@@ -221,6 +229,12 @@ class MessageListView extends ConsumerWidget {
   final ScrollController scrollController;
   final bool isGroup;
 
+  /// Refresh messages by invalidating the provider
+  /// Provider will re-read from Matrix SDK timeline (handles decryption)
+  Future<void> _refreshMessages(WidgetRef ref) async {
+    ref.invalidate(messagesProvider(conversationId));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final messagesAsync = ref.watch(messagesProvider(conversationId));
@@ -228,25 +242,37 @@ class MessageListView extends ConsumerWidget {
     return messagesAsync.when(
       data: (messages) {
         if (messages.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          // Empty state with pull-to-refresh
+          return RefreshIndicator(
+            onRefresh: () => _refreshMessages(ref),
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
               children: [
-                Icon(
-                  Icons.message_outlined,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-                ),
-                const SizedBox(height: Spacing.md),
-                Text(
-                  'No messages yet',
-                  style: AppTypography.body,
-                ),
-                const SizedBox(height: Spacing.sm),
-                Text(
-                  'Start the conversation!',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: Theme.of(context).textTheme.bodySmall?.color,
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.message_outlined,
+                          size: 64,
+                          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+                        ),
+                        const SizedBox(height: Spacing.md),
+                        Text(
+                          'No messages yet',
+                          style: AppTypography.body,
+                        ),
+                        const SizedBox(height: Spacing.sm),
+                        Text(
+                          'Pull to refresh or start the conversation!',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: Theme.of(context).textTheme.bodySmall?.color,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -254,49 +280,63 @@ class MessageListView extends ConsumerWidget {
           );
         }
 
-        return ListView.builder(
-          controller: scrollController,
-          reverse: true,
-          padding: const EdgeInsets.all(Spacing.md),
-          itemCount: messages.length,
-          itemBuilder: (context, index) {
-            final message = messages[messages.length - 1 - index];
-            return MessageBubble(
-              message: message,
-              showSenderName: isGroup,
-            );
-          },
+        // For reverse list, RefreshIndicator triggers when scrolling to the "top"
+        // which is visually at the bottom (oldest messages)
+        // We use a custom refresh approach for better UX
+        return RefreshIndicator(
+          onRefresh: () => _refreshMessages(ref),
+          child: ListView.builder(
+            controller: scrollController,
+            reverse: true,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(Spacing.md),
+            itemCount: messages.length,
+            itemBuilder: (context, index) {
+              // With reverse: true, index 0 is at the bottom visually
+              // messages are sorted DESC (newest first), so messages[0] = newest
+              // We want newest at bottom, so just use messages[index] directly
+              final message = messages[index];
+              return MessageBubble(
+                message: message,
+                showSenderName: isGroup,
+              );
+            },
+          ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
-            ),
-            const SizedBox(height: Spacing.md),
-            Text(
-              'Failed to load messages',
-              style: AppTypography.body,
-            ),
-            const SizedBox(height: Spacing.sm),
-            Text(
-              error.toString(),
-              style: AppTypography.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.lg),
-            FilledButton(
-              onPressed: () => ref.refresh(messagesProvider(conversationId)),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+      loading: () {
+        return const Center(child: CircularProgressIndicator());
+      },
+      error: (error, stack) {
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: AppColors.error,
+              ),
+              const SizedBox(height: Spacing.md),
+              Text(
+                'Failed to load messages',
+                style: AppTypography.body,
+              ),
+              const SizedBox(height: Spacing.sm),
+              Text(
+                error.toString(),
+                style: AppTypography.bodySmall,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: Spacing.lg),
+              FilledButton(
+                onPressed: () => ref.refresh(messagesProvider(conversationId)),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -314,72 +354,152 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFromMe = message.isFromMe as bool;
-    final senderName = message.senderName as String?;
+    try {
+      final isFromMe = _getIsFromMe(message);
+      final senderName = _getSenderName(message);
+      final content = _getContent(message);
+      final timestamp = _getTimestamp(message);
+      final status = _getStatus(message);
 
-    return Align(
-      alignment: isFromMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
+      return Align(
+        alignment: isFromMe ? Alignment.centerRight : Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: Spacing.sm),
+          padding: const EdgeInsets.symmetric(
+            horizontal: Spacing.md,
+            vertical: Spacing.sm,
+          ),
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width * 0.75,
+          ),
+          decoration: BoxDecoration(
+            color: isFromMe
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(Spacing.radiusMd),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (showSenderName && !isFromMe && senderName != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: Spacing.xs),
+                  child: Text(
+                    senderName,
+                    style: AppTypography.caption.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ),
+              Text(
+                content,
+                style: AppTypography.body.copyWith(
+                  color: isFromMe ? Colors.white : null,
+                ),
+              ),
+              const SizedBox(height: Spacing.xs),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    _formatTime(timestamp),
+                    style: AppTypography.caption.copyWith(
+                      color: isFromMe
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : Theme.of(context).textTheme.bodySmall?.color,
+                    ),
+                  ),
+                  if (isFromMe) ...[
+                    const SizedBox(width: Spacing.xs),
+                    Icon(
+                      _getStatusIcon(status),
+                      size: 16,
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    } catch (e, stack) {
+      debugPrint('[MessageBubble] Error rendering message: $e');
+      debugPrint('[MessageBubble] Stack: $stack');
+      // Show error placeholder instead of crashing
+      return Container(
         margin: const EdgeInsets.only(bottom: Spacing.sm),
-        padding: const EdgeInsets.symmetric(
-          horizontal: Spacing.md,
-          vertical: Spacing.sm,
-        ),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
+        padding: const EdgeInsets.all(Spacing.sm),
         decoration: BoxDecoration(
-          color: isFromMe
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.surfaceContainerHighest,
+          color: AppColors.error.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(Spacing.radiusMd),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (showSenderName && !isFromMe && senderName != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: Spacing.xs),
-                child: Text(
-                  senderName,
-                  style: AppTypography.caption.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-            Text(
-              message.content as String,
-              style: AppTypography.body.copyWith(
-                color: isFromMe ? Colors.white : null,
-              ),
-            ),
-            const SizedBox(height: Spacing.xs),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  _formatTime(message.timestamp as DateTime),
-                  style: AppTypography.caption.copyWith(
-                    color: isFromMe
-                        ? Colors.white.withValues(alpha: 0.7)
-                        : Theme.of(context).textTheme.bodySmall?.color,
-                  ),
-                ),
-                if (isFromMe) ...[
-                  const SizedBox(width: Spacing.xs),
-                  Icon(
-                    _getStatusIcon(message.status as String),
-                    size: 16,
-                    color: Colors.white.withValues(alpha: 0.7),
-                  ),
-                ],
-              ],
-            ),
-          ],
+        child: Text(
+          'Error displaying message',
+          style: AppTypography.caption.copyWith(color: AppColors.error),
         ),
-      ),
-    );
+      );
+    }
+  }
+
+  bool _getIsFromMe(dynamic message) {
+    try {
+      return message.isFromMe as bool;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  String _getContent(dynamic message) {
+    try {
+      return (message.content as String?) ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  DateTime _getTimestamp(dynamic message) {
+    try {
+      return message.timestamp as DateTime;
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+
+  String _getStatus(dynamic message) {
+    try {
+      return (message.status as String?) ?? 'pending';
+    } catch (_) {
+      return 'pending';
+    }
+  }
+
+  /// Get sender name from message, handling MessageEntity which only has senderId
+  String? _getSenderName(dynamic message) {
+    // Try to get senderName if it exists (for future-proofing)
+    try {
+      final name = message.senderName as String?;
+      if (name != null && name.isNotEmpty) return name;
+    } catch (_) {
+      // senderName doesn't exist on this message type
+    }
+
+    // Fall back to senderId if available
+    try {
+      final senderId = message.senderId as String?;
+      if (senderId != null && senderId.isNotEmpty) {
+        // Extract username from Matrix ID if it's in format @user:server
+        if (senderId.startsWith('@') && senderId.contains(':')) {
+          return senderId.substring(1, senderId.indexOf(':'));
+        }
+        return senderId;
+      }
+    } catch (_) {
+      // senderId doesn't exist
+    }
+
+    return null;
   }
 
   String _formatTime(DateTime timestamp) {

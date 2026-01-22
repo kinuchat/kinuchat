@@ -30,7 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _initializeMeshNetwork();
   }
 
-  /// Initialize mesh networking on app start
+  /// Initialize mesh networking and Matrix sync on app start
   Future<void> _initializeMeshNetwork() async {
     if (_meshInitialized) return;
     _meshInitialized = true;
@@ -54,6 +54,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         await ref.read(meshNetworkProvider.notifier).start();
         debugPrint('Mesh networking started automatically');
       }
+
+      // Initialize Matrix sync listener for real-time message updates
+      // This starts background sync and listens for conversation updates
+      ref.read(matrixSyncListenerProvider);
+      debugPrint('Matrix sync listener initialized');
     } catch (e, stack) {
       debugPrint('Failed to start mesh networking: $e');
       debugPrint('Stack trace: $stack');
@@ -302,6 +307,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (!mounted) {
         return;
       }
+
+      // Invalidate conversations cache so it includes the new one
+      ref.invalidate(conversationsProvider);
 
       // Navigate to chat screen
       Navigator.push(
