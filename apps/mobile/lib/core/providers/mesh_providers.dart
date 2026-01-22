@@ -66,14 +66,13 @@ class MeshNetworkNotifier extends StateNotifier<MeshNetworkState> {
       await _transport.start();
 
       // Start background service to keep mesh active when app is backgrounded
-      // Wrapped in try-catch as it may fail on some Android versions
-      try {
-        await _transport.startBackgroundService();
-      } catch (e) {
-        // Background service failed - app can continue without it
-        // This is common on Android 13+ if notification channel isn't set up
-        print('Background service failed to start: $e');
-      }
+      // TODO: Fix foreground service notification for Android 14+
+      // Temporarily disabled due to crash on Android 14+
+      // try {
+      //   await _transport.startBackgroundService();
+      // } catch (e) {
+      //   print('Background service failed to start: $e');
+      // }
 
       state = state.copyWith(
         status: MeshNetworkStatus.active,

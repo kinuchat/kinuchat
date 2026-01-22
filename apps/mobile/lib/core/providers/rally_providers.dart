@@ -5,6 +5,7 @@ import '../../data/repositories/rally_repository.dart';
 import 'database_providers.dart';
 import 'identity_providers.dart';
 import 'location_providers.dart';
+import 'mesh_providers.dart';
 
 // ============================================================================
 // Repository Provider
@@ -185,15 +186,68 @@ final createOrJoinRallyChannelProvider = FutureProvider.family<RallyChannel, ({d
     final displayName = ref.read(rallyDisplayNameProvider);
     final identityType = ref.read(rallyIdentityTypeProvider);
 
-    return await repository.createOrJoinChannelAt(
+    final channel = await repository.createOrJoinChannelAt(
       latitude: location.latitude,
       longitude: location.longitude,
       userId: userId,
       displayName: displayName,
       identityType: identityType,
     );
+
+    // Broadcast channel over mesh for offline discovery
+    try {
+      final meshTransport = ref.read(meshTransportProvider);
+      if (meshTransport != null) {
+        await meshTransport.broadcastRallyChannel(
+          channelId: channel.id,
+          name: channel.name,
+          geohash: channel.geohash,
+          latitude: channel.latitude,
+          longitude: channel.longitude,
+          radiusMeters: channel.radiusMeters,
+          maxMessageAgeHours: channel.maxMessageAgeHours,
+        );
+      }
+    } catch (e) {
+      // Non-critical: channel still works locally
+    }
+
+    return channel;
   },
 );
+
+/// Mesh Rally channel listener provider
+/// Listens for Rally channel announcements from mesh peers and stores them locally
+final meshRallyChannelListenerProvider = StreamProvider<void>((ref) async* {
+  final meshTransport = ref.watch(meshTransportProvider);
+  final repository = ref.watch(rallyRepositoryProvider);
+  
+  if (meshTransport == null) {
+    return;
+  }
+
+  await for (final announcement in meshTransport.rallyChannelAnnouncements) {
+    try {
+      // Store mesh-discovered channel in local database
+      await repository.storeMeshDiscoveredChannel(
+        channelId: announcement.channelId,
+        name: announcement.name,
+        geohash: announcement.geohash,
+        latitude: announcement.latitude,
+        longitude: announcement.longitude,
+        radiusMeters: announcement.radiusMeters,
+        maxMessageAgeHours: announcement.maxMessageAgeHours,
+        creatorPeerId: announcement.creatorPeerId,
+      );
+      
+      // Trigger refresh of nearby channels
+      ref.invalidate(nearbyRallyChannelsProvider);
+    } catch (e) {
+      // Failed to store channel
+    }
+    yield null;
+  }
+});
 
 /// Post message to Rally channel action
 ///

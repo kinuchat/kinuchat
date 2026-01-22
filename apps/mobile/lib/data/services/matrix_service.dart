@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:matrix/matrix.dart';
 import 'package:meshlink_core/crypto/secure_storage.dart';
 import 'package:mime/mime.dart' as mime_lookup;
+import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart' as sqflite;
 
 /// Matrix service for cloud messaging
 /// Based on Phase 1 implementation requirements
@@ -32,7 +34,26 @@ class MatrixService {
 
   /// Initialize Matrix client
   Future<void> initialize() async {
-    _client = Client('Kinu');
+    // Get persistent directory for database and file storage
+    final appDir = await getApplicationDocumentsDirectory();
+    final dbPath = '${appDir.path}/matrix_sdk.db';
+    final fileStoragePath = Uri.directory('${appDir.path}/matrix_files/');
+
+    // Create client with encryption database (required for E2EE)
+    _client = Client(
+      'Kinu',
+      databaseBuilder: (client) async {
+        // Open SQLite database for encryption key storage
+        final database = await sqflite.openDatabase(dbPath);
+        final db = MatrixSdkDatabase(
+          client.clientName,
+          database: database,
+          fileStorageLocation: fileStoragePath,
+        );
+        await db.open();
+        return db;
+      },
+    );
 
     // Register default commands (required for sendTextEvent to work!)
     _client!.registerDefaultCommands();
@@ -57,6 +78,13 @@ class MatrixService {
         newHomeserver: Uri.parse(_homeserverUrl),
         newUserID: userId,
       );
+
+      // Verify encryption is available after session restore
+      if (_client!.encryptionEnabled) {
+        debugPrint('[Matrix] Encryption enabled (session restored)');
+      } else {
+        debugPrint('[Matrix] WARNING: Encryption not available (session restored)');
+      }
     }
   }
 
@@ -78,6 +106,13 @@ class MatrixService {
         username: username,
         password: password,
       );
+
+      // Wait for encryption to initialize
+      if (_client!.encryptionEnabled) {
+        debugPrint('[Matrix] Encryption enabled (registration)');
+      } else {
+        debugPrint('[Matrix] WARNING: Encryption not available (registration)');
+      }
 
       // Store credentials
       await _storeCredentials();
@@ -104,6 +139,13 @@ class MatrixService {
         identifier: AuthenticationUserIdentifier(user: username),
         password: password,
       );
+
+      // Wait for encryption to initialize
+      if (_client!.encryptionEnabled) {
+        debugPrint('[Matrix] Encryption enabled');
+      } else {
+        debugPrint('[Matrix] WARNING: Encryption not available');
+      }
 
       // Store credentials
       await _storeCredentials();
@@ -134,6 +176,13 @@ class MatrixService {
         newHomeserver: Uri.parse(serverUrl),
         newUserID: userId,
       );
+
+      // Wait for encryption to initialize
+      if (_client!.encryptionEnabled) {
+        debugPrint('[Matrix] Encryption enabled (token login)');
+      } else {
+        debugPrint('[Matrix] WARNING: Encryption not available (token login)');
+      }
 
       // Store credentials
       await _storeCredentials();

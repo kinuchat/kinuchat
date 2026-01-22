@@ -29,6 +29,8 @@ class MeshTransportImpl {
       StreamController.broadcast();
   final StreamController<MeshRelayRequest> _relayRequestController =
       StreamController.broadcast();
+  final StreamController<RallyChannelAnnouncement> _rallyChannelController =
+      StreamController.broadcast();
 
   // Subscriptions
   StreamSubscription<MeshPacketReceived>? _packetSubscription;
@@ -58,6 +60,11 @@ class MeshTransportImpl {
   /// Stream of relay requests (for bridge mode service)
   /// When a peer sends a relay request, it's emitted here for forwarding to the relay server
   Stream<MeshRelayRequest> get relayRequests => _relayRequestController.stream;
+
+  /// Stream of Rally channel announcements from mesh peers
+  /// Subscribe to discover Rally channels created by nearby devices
+  Stream<RallyChannelAnnouncement> get rallyChannelAnnouncements =>
+      _rallyChannelController.stream;
 
   /// Check if transport is available
   Future<bool> isAvailable() async {
@@ -327,6 +334,12 @@ class MeshTransportImpl {
   Future<void> _deliverPacket(MeshPacket packet) async {
     final messageIdHex = _bytesToHex(packet.messageId);
 
+    // Handle Rally broadcast packets
+    if (packet.type == PacketType.rallyBroadcast) {
+      await _handleRallyBroadcastPacket(packet);
+      return;
+    }
+
     // Handle relay request packets specially (for bridge mode)
     if (packet.type == PacketType.relayRequest) {
       await _handleRelayRequestPacket(packet, messageIdHex);
@@ -456,6 +469,69 @@ class MeshTransportImpl {
     await _routingEngine.floodPacket(packet);
   }
 
+  /// Broadcast a Rally channel to nearby mesh peers
+  /// This allows offline devices to discover Rally channels created by others
+  Future<void> broadcastRallyChannel({
+    required String channelId,
+    required String name,
+    required String geohash,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int maxMessageAgeHours,
+  }) async {
+    // Create Rally channel announcement payload
+    final announcementData = jsonEncode({
+      'channel_id': channelId,
+      'name': name,
+      'geohash': geohash,
+      'latitude': latitude,
+      'longitude': longitude,
+      'radius_meters': radiusMeters,
+      'max_message_age_hours': maxMessageAgeHours,
+      'created_by': _localIdentity.meshPeerIdHex,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+
+    final packet = MeshPacket(
+      type: PacketType.rallyBroadcast,
+      ttl: 3, // Limited TTL for Rally broadcasts
+      flags: 0, // Broadcast to all
+      timestamp: DateTime.now(),
+      messageId: Uint8List.fromList(
+        List.generate(16, (i) => DateTime.now().microsecondsSinceEpoch % 256),
+      ),
+      payload: Uint8List.fromList(utf8.encode(announcementData)),
+    );
+
+    await _routingEngine.floodPacket(packet);
+  }
+
+  /// Handle incoming Rally broadcast packet
+  Future<void> _handleRallyBroadcastPacket(MeshPacket packet) async {
+    try {
+      final payloadJson = utf8.decode(packet.payload);
+      final data = jsonDecode(payloadJson) as Map<String, dynamic>;
+
+      final announcement = RallyChannelAnnouncement(
+        channelId: data['channel_id'] as String,
+        name: data['name'] as String,
+        geohash: data['geohash'] as String,
+        latitude: (data['latitude'] as num).toDouble(),
+        longitude: (data['longitude'] as num).toDouble(),
+        radiusMeters: data['radius_meters'] as int,
+        maxMessageAgeHours: data['max_message_age_hours'] as int,
+        creatorPeerId: data['created_by'] as String,
+        receivedAt: DateTime.now(),
+      );
+
+      // Emit for Rally repository to handle
+      _rallyChannelController.add(announcement);
+    } catch (e) {
+      // Invalid Rally broadcast format
+    }
+  }
+
   /// Queue message for later delivery
   Future<void> _queueMessage({
     required String messageId,
@@ -568,6 +644,7 @@ class MeshTransportImpl {
     _messageController.close();
     _statusController.close();
     _relayRequestController.close();
+    _rallyChannelController.close();
   }
 }
 
@@ -641,4 +718,30 @@ class MeshRelayRequest {
         'priority': priority,
         'sender_peer_id': senderPeerId,
       };
+}
+
+/// Rally channel announcement received from mesh peer
+/// Used to discover Rally channels without internet connectivity
+class RallyChannelAnnouncement {
+  final String channelId;
+  final String name;
+  final String geohash;
+  final double latitude;
+  final double longitude;
+  final int radiusMeters;
+  final int maxMessageAgeHours;
+  final String creatorPeerId;
+  final DateTime receivedAt;
+
+  const RallyChannelAnnouncement({
+    required this.channelId,
+    required this.name,
+    required this.geohash,
+    required this.latitude,
+    required this.longitude,
+    required this.radiusMeters,
+    required this.maxMessageAgeHours,
+    required this.creatorPeerId,
+    required this.receivedAt,
+  });
 }

@@ -48,14 +48,49 @@ final messageRepositoryProvider = Provider<MessageRepository>((ref) {
   );
 });
 
-/// Provider for conversations list
+/// Exception indicating offline state for UI handling
+class OfflineException implements Exception {
+  const OfflineException([this.message = 'No internet connection']);
+  final String message;
+  @override
+  String toString() => message;
+}
+
+/// Check if an exception is due to connectivity issues
+bool isOfflineException(Object error) {
+  final errorStr = error.toString().toLowerCase();
+  return errorStr.contains('socketexception') ||
+      errorStr.contains('connection refused') ||
+      errorStr.contains('connection closed') ||
+      errorStr.contains('connection reset') ||
+      errorStr.contains('network is unreachable') ||
+      errorStr.contains('no internet') ||
+      errorStr.contains('failed host lookup') ||
+      errorStr.contains('websocket') ||
+      errorStr.contains('timeout');
+}
+
+/// Provider for conversations list - offline-aware
 final conversationsProvider = FutureProvider((ref) async {
   final repository = ref.watch(conversationRepositoryProvider);
+  final transportManager = ref.watch(transportManagerProvider);
 
-  // Sync from Matrix first
-  await repository.syncConversations();
+  // Check connectivity first
+  final hasInternet = await transportManager.hasInternetConnection();
 
-  // Then get from local database
+  if (hasInternet) {
+    // Online: sync from Matrix first
+    try {
+      await repository.syncConversations();
+    } catch (e) {
+      // If sync fails due to connectivity, fall back to cached
+      if (isOfflineException(e)) {
+        return repository.getConversations();
+      }
+      rethrow;
+    }
+  }
+  // Offline or after sync: return cached local data
   return repository.getConversations();
 });
 

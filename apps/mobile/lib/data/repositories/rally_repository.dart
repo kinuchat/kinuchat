@@ -423,6 +423,55 @@ class RallyRepository {
     return await _database.deleteExpiredRallyMessages();
   }
 
+  /// Store a Rally channel discovered via mesh network
+  ///
+  /// Called when receiving Rally channel announcements from nearby mesh peers.
+  /// Stores the channel in local database so it appears in channel discovery.
+  ///
+  /// [channelId] Unique channel ID
+  /// [name] Channel display name
+  /// [geohash] Location geohash
+  /// [latitude] Channel center latitude
+  /// [longitude] Channel center longitude
+  /// [radiusMeters] Channel radius
+  /// [maxMessageAgeHours] Message TTL
+  /// [creatorPeerId] Mesh peer ID of creator
+  Future<void> storeMeshDiscoveredChannel({
+    required String channelId,
+    required String name,
+    required String geohash,
+    required double latitude,
+    required double longitude,
+    required int radiusMeters,
+    required int maxMessageAgeHours,
+    required String creatorPeerId,
+  }) async {
+    // Check if channel already exists
+    final existing = await _database.getConversationById(channelId);
+    if (existing != null) {
+      return; // Already have this channel
+    }
+
+    // Store mesh-discovered channel
+    await _database.into(_database.conversations).insert(
+          ConversationsCompanion(
+            id: Value(channelId),
+            type: const Value('rally'),
+            name: Value(name),
+            centroidLatitude: Value(latitude),
+            centroidLongitude: Value(longitude),
+            channelRadiusMeters: Value(radiusMeters),
+            geohash: Value(geohash),
+            creatorId: Value(creatorPeerId),
+            maxMessageAgeHours: Value(maxMessageAgeHours),
+            isPublic: const Value(true),
+            participantCount: const Value(1), // At least the creator
+            createdAt: Value(DateTime.now()),
+            // Mark as discovered via mesh (could add a field for this)
+          ),
+        );
+  }
+
   // ============================================================================
   // Private Helper Methods
   // ============================================================================

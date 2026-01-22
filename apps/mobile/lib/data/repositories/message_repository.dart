@@ -57,29 +57,74 @@ class MessageRepository {
   /// Get messages directly from Matrix SDK timeline
   /// Bypasses local DB - SDK handles decryption internally
   /// This solves the E2EE issue where encrypted events can't be read from local DB
+  /// Also includes locally-stored messages (pending/sent) that may not be in timeline yet
   Future<List<MessageEntity>> getMessagesFromMatrix({
     required String conversationId,
     int limit = 50,
   }) async {
-    final room = _matrixService.getRoomById(conversationId);
+    // Try to get room, with retry if sync is still loading
+    matrix.Room? room = _matrixService.getRoomById(conversationId);
+
+    // If room not found, wait a bit for sync to complete
     if (room == null) {
-      debugPrint('[MessageRepository] Room not found: $conversationId');
-      return [];
+      debugPrint('[MessageRepository] Room not found, waiting for sync...');
+      for (var i = 0; i < 5; i++) {
+        await Future.delayed(const Duration(milliseconds: 500));
+        room = _matrixService.getRoomById(conversationId);
+        if (room != null) {
+          debugPrint('[MessageRepository] Room found after ${i + 1} retries');
+          break;
+        }
+      }
     }
+
+    if (room == null) {
+      debugPrint('[MessageRepository] Room still not found after retries: $conversationId');
+      // Fall back to local DB if room not found
+      return _database.getMessagesForConversation(conversationId, limit: limit);
+    }
+
+    debugPrint('[MessageRepository] Getting timeline for room: $conversationId');
+    debugPrint('[MessageRepository] Room encrypted: ${room.encrypted}');
 
     final timeline = await room.getTimeline();
     final currentUserId = _matrixService.client?.userID;
 
-    final messages = <MessageEntity>[];
+    debugPrint('[MessageRepository] Timeline has ${timeline.events.length} events');
 
+    // Get locally-stored messages (includes pending/sent that may not be in timeline)
+    final localMessages = await _database.getMessagesForConversation(
+      conversationId,
+      limit: limit,
+    );
+    debugPrint('[MessageRepository] Local DB has ${localMessages.length} messages');
+
+    // Build a map of messages by ID, starting with local messages
+    final messageMap = <String, MessageEntity>{};
+    for (final msg in localMessages) {
+      messageMap[msg.id] = msg;
+    }
+
+    // Add/update from Matrix timeline (these have decrypted content)
     for (final event in timeline.events) {
+      debugPrint('[MessageRepository] Event type: ${event.type}, body: "${event.body}", senderId: ${event.senderId}');
+
       // Only process message events
       if (event.type != matrix.EventTypes.Message) continue;
 
       // Skip if body is empty (failed decryption or non-text content)
-      if (event.body.isEmpty) continue;
+      if (event.body.isEmpty) {
+        // Log detailed info to help diagnose decryption issues
+        // Check if event is still encrypted (decryption failed)
+        final isEncryptedType = event.type == matrix.EventTypes.Encrypted;
+        debugPrint('[MessageRepository] Empty body - type: ${event.type}, '
+            'isEncrypted: $isEncryptedType, senderId: ${event.senderId}, '
+            'eventId: ${event.eventId}');
+        continue;
+      }
 
-      messages.add(MessageEntity(
+      // Use Matrix event data (has decrypted content)
+      messageMap[event.eventId] = MessageEntity(
         id: event.eventId,
         conversationId: event.roomId ?? conversationId,
         senderId: event.senderId,
@@ -92,12 +137,15 @@ class MessageRepository {
         deliveredAt: null,
         readAt: null,
         metadata: null,
-      ));
-
-      if (messages.length >= limit) break;
+      );
     }
 
-    return messages;
+    // Convert to list and sort by timestamp (newest first for reverse list)
+    final messages = messageMap.values.toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    debugPrint('[MessageRepository] Returning ${messages.length} merged messages');
+    return messages.take(limit).toList();
   }
 
   /// Get message type from Matrix event

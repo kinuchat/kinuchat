@@ -5,6 +5,7 @@ import 'package:meshlink_core/mesh/mesh_transport_impl.dart';
 
 /// Background service for mesh networking
 /// Keeps BLE mesh active when app is backgrounded
+@pragma('vm:entry-point')
 class MeshBackgroundService {
   static const String _notificationChannelId = 'meshlink_mesh_service';
   static const int _notificationId = 888;

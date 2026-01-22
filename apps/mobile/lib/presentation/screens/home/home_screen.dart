@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_ui/meshlink_ui.dart';
 import '../../../core/providers/providers.dart';
 import '../../widgets/mesh_status_banner.dart';
+import '../../widgets/offline_status_banner.dart';
 import 'chat_screen.dart';
 import '../rally/rally_screen.dart';
 import '../settings/settings_screen.dart';
@@ -112,6 +113,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: _selectedIndex == 0
           ? Column(
               children: [
+                const OfflineStatusBanner(),
                 const MeshStatusBanner(),
                 _buildMatrixSetupBanner(),
                 const Expanded(child: ChatListView()),
@@ -445,34 +447,56 @@ class ChatListView extends ConsumerWidget {
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error,
+      error: (error, stack) {
+        // Check if this is an offline/connectivity error
+        final isOffline = isOfflineException(error);
+        
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isOffline ? Icons.wifi_off : Icons.error_outline,
+                  size: 64,
+                  color: isOffline ? Colors.orange.shade400 : AppColors.error,
+                ),
+                const SizedBox(height: Spacing.md),
+                Text(
+                  isOffline 
+                      ? 'You\'re offline'
+                      : 'Failed to load conversations',
+                  style: AppTypography.title,
+                ),
+                const SizedBox(height: Spacing.sm),
+                Text(
+                  isOffline
+                      ? 'Enable mesh mode to chat with nearby people via Bluetooth'
+                      : 'Please check your connection and try again',
+                  style: AppTypography.bodySmall,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: Spacing.lg),
+                if (isOffline)
+                  FilledButton.icon(
+                    onPressed: () async {
+                      await ref.read(meshNetworkProvider.notifier).start();
+                      ref.invalidate(conversationsProvider);
+                    },
+                    icon: const Icon(Icons.bluetooth_connected),
+                    label: const Text('Enable Mesh Mode'),
+                  )
+                else
+                  FilledButton(
+                    onPressed: () => ref.invalidate(conversationsProvider),
+                    child: const Text('Retry'),
+                  ),
+              ],
             ),
-            const SizedBox(height: Spacing.md),
-            Text(
-              'Failed to load conversations',
-              style: AppTypography.body,
-            ),
-            const SizedBox(height: Spacing.sm),
-            Text(
-              error.toString(),
-              style: AppTypography.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: Spacing.lg),
-            FilledButton(
-              onPressed: () => ref.refresh(conversationsProvider),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

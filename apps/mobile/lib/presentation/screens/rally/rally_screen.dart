@@ -5,6 +5,7 @@ import '../../../core/providers/providers.dart';
 import '../../../core/providers/demo_providers.dart';
 import '../../../data/repositories/rally_repository.dart';
 import '../../widgets/rally_map_view.dart';
+import '../../widgets/offline_status_banner.dart';
 import 'rally_channel_screen.dart';
 
 /// Rally Mode main screen
@@ -27,6 +28,9 @@ class _RallyScreenState extends ConsumerState<RallyScreen> {
   @override
   Widget build(BuildContext context) {
     final locationPermissionAsync = ref.watch(locationPermissionProvider);
+    
+    // Initialize mesh Rally channel listener (non-blocking)
+    ref.listen(meshRallyChannelListenerProvider, (_, __) {});
 
     return Scaffold(
       appBar: AppBar(
@@ -47,19 +51,26 @@ class _RallyScreenState extends ConsumerState<RallyScreen> {
           ),
         ],
       ),
-      body: ref.watch(appDemoModeProvider)
-          ? _buildChannelList()  // Skip permission check in demo mode
-          : locationPermissionAsync.when(
-              data: (permission) {
-                if (permission == LocationPermission.denied ||
-                    permission == LocationPermission.deniedForever) {
-                  return _buildPermissionRequest();
-                }
-                return _isMapView ? const RallyMapView() : _buildChannelList();
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => _buildError(error),
-            ),
+      body: Column(
+        children: [
+          const OfflineStatusBanner(),
+          Expanded(
+            child: ref.watch(appDemoModeProvider)
+                ? _buildChannelList()  // Skip permission check in demo mode
+                : locationPermissionAsync.when(
+                    data: (permission) {
+                      if (permission == LocationPermission.denied ||
+                          permission == LocationPermission.deniedForever) {
+                        return _buildPermissionRequest();
+                      }
+                      return _isMapView ? const RallyMapView() : _buildChannelList();
+                    },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (error, stack) => _buildError(error),
+                  ),
+          ),
+        ],
+      ),
       floatingActionButton: _buildCreateChannelButton(),
     );
   }
