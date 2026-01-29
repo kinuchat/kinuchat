@@ -59,7 +59,8 @@ dependencies:
 
   # Background Services
   workmanager: ^0.6.0
-  flutter_background_service: ^5.0.10
+  # TODO: flutter_background_service crashes on Android 14+ - needs notification channel fix
+  # flutter_background_service: ^5.0.10
 
   # Push Notifications (OneSignal - no Google dependency)
   onesignal_flutter: ^5.2.7

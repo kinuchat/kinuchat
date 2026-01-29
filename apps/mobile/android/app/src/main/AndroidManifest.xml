@@ -47,13 +47,15 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Background Service for Mesh Networking -->
+        <!-- Background Service for Mesh Networking - TODO: Fix notification channel for Android 14+ -->
+        <!--
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice"
             tools:replace="android:exported">
         </service>
+        -->
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

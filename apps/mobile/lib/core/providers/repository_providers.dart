@@ -70,27 +70,23 @@ bool isOfflineException(Object error) {
       errorStr.contains('timeout');
 }
 
-/// Provider for conversations list - offline-aware
+/// Provider for conversations list
 final conversationsProvider = FutureProvider((ref) async {
   final repository = ref.watch(conversationRepositoryProvider);
-  final transportManager = ref.watch(transportManagerProvider);
 
-  // Check connectivity first
-  final hasInternet = await transportManager.hasInternetConnection();
-
-  if (hasInternet) {
-    // Online: sync from Matrix first
-    try {
-      await repository.syncConversations();
-    } catch (e) {
-      // If sync fails due to connectivity, fall back to cached
-      if (isOfflineException(e)) {
-        return repository.getConversations();
-      }
+  // Try to sync from Matrix, fall back to cached on network errors
+  try {
+    await repository.syncConversations();
+  } catch (e) {
+    // If sync fails due to connectivity, continue with cached data
+    if (isOfflineException(e)) {
+      // Just continue to return cached data
+    } else {
       rethrow;
     }
   }
-  // Offline or after sync: return cached local data
+
+  // Return conversations from local database
   return repository.getConversations();
 });
 

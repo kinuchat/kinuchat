@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meshlink_ui/meshlink_ui.dart';
 import '../../../core/providers/providers.dart';
 import '../../widgets/mesh_status_banner.dart';
-import '../../widgets/offline_status_banner.dart';
 import 'chat_screen.dart';
 import '../rally/rally_screen.dart';
 import '../settings/settings_screen.dart';
@@ -113,7 +112,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: _selectedIndex == 0
           ? Column(
               children: [
-                const OfflineStatusBanner(),
                 const MeshStatusBanner(),
                 _buildMatrixSetupBanner(),
                 const Expanded(child: ChatListView()),
